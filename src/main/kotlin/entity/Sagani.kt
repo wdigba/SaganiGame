@@ -1,5 +1,6 @@
 package entity
 
+import java.io.FileReader
 import kotlin.random.Random.Default.nextInt
 
 /**
@@ -32,8 +33,44 @@ data class Sagani(val playerNames: List<Pair<String,Color>>) {
     val intermezzoStorage: MutableList<Tile> = mutableListOf()
 
     init {
+        require(playerNames.size in 2..4){"You need 2 to 4 players to play this game!"}
+        // create players
         playerNames.forEach { players.add(Player(it.first, it.second)) }
+        // choose random startPlayer
         startPlayer = nextInt(players.size)
+        // startPlayer is first actPlayer
         actPlayer = players[startPlayer]
+        // create stacks with all possible tiles from .csv-file
+        createStacks()
+        // shuffle tiles
+        stacks.shuffle()
+        // fill offerDisplay with 5 tiles
+        repeat(5){
+            offerDisplay.add(stacks.removeFirst())
+        }
+    }
+    private fun createStacks(){
+        // read each line of .csv-file
+        val lines = FileReader("src/main/kotlin/entity/tiles_colornames_v2.csv").readLines()
+        val tiles: MutableList<List<String>> = mutableListOf()
+        // split each line
+        lines.forEach { line -> tiles.add(line.split(","))}
+        // create a tile for each line
+        for(line in 1..72){
+            val arrows: MutableList<Arrow> = mutableListOf()
+            for(row in 2..9){
+                if(tiles[line][row] != "NONE"){
+                    arrows.add(Arrow(
+                        element = Element.valueOf(tiles[line][row]),
+                        direction = Direction.values()[row-2]
+                    ))
+                }
+            }
+            stacks.add(Tile(
+                points = tiles[line][10].toInt(),
+                element = Element.valueOf(tiles[line][1]),
+                arrows = arrows
+            ))
+        }
     }
 }
