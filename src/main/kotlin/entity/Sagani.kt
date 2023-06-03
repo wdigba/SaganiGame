@@ -33,7 +33,8 @@ data class Sagani(val playerNames: List<Pair<String,Color>>) {
     val intermezzoStorage: MutableList<Tile> = mutableListOf()
 
     init {
-        require(playerNames.size in 2..4){"You need 2 to 4 players to play this game!"}
+        // check if argument is legal
+        require(legalArgument())
         // create players
         playerNames.forEach { players.add(Player(it.first, it.second)) }
         // choose random startPlayer
@@ -48,6 +49,25 @@ data class Sagani(val playerNames: List<Pair<String,Color>>) {
         repeat(5){
             offerDisplay.add(stacks.removeFirst())
         }
+    }
+    private fun legalArgument(): Boolean{
+        // 2 to 4 players
+        var legal: Boolean = (playerNames.size in 2..4)
+        val colors: MutableList<Color> = mutableListOf()
+        // no empty names
+        playerNames.forEach {
+            if(legal){
+                legal = (it.first.trim() != "")
+            }
+        }
+        // unique colors
+        playerNames.forEach {
+            if(legal){
+                legal = !colors.contains(it.second)
+                colors.add(it.second)
+            }
+        }
+        return legal
     }
     private fun createStacks(){
         // read each line of .csv-file
