@@ -18,7 +18,7 @@ enum class Direction {
     companion object {
 
         /**
-         * A set of values for a reduced set of 4x8=32 cards (starting with the 7)
+         * A set of direction a tile can have
          */
         fun tileDirection(): Set<Direction> {
             return EnumSet.of(
