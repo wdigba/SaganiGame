@@ -15,6 +15,7 @@ enum class Direction {
     DOWN_LEFT,
     LEFT,
     UP_LEFT;
+
     companion object {
 
         /**

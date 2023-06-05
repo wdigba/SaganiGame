@@ -8,13 +8,14 @@ package entity
  * @property discs the player has access to without taking cacophony discs
  * @property board contains all tiles as values the player has placed during the game and their locations as keys
  */
-data class Player(val name: String, val color: Color){
-    var points: Pair<Int,Int> = Pair(0,0)
+data class Player(val name: String, val color: Color) {
+    var points: Pair<Int, Int> = Pair(0, 0)
     val discs: MutableList<Disc> = mutableListOf()
-    val board: Map<Pair<Int,Int>,Tile> = mapOf()
+    val board: Map<Pair<Int, Int>, Tile> = mapOf()
+
     init {
         // each player starts with 24 sound discs
-        repeat(24){
+        repeat(24) {
             discs.add(Disc.SOUND)
         }
     }

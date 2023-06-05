@@ -18,7 +18,7 @@ import kotlin.random.Random.Default.nextInt
  * @property offerDisplay: tiles player can choose from during their turn
  * @property intermezzoStorage: tile player can choose from during an intermezzo
  */
-data class Sagani(val playerNames: List<Pair<String,Color>>) {
+data class Sagani(val playerNames: List<Pair<String, Color>>) {
     var lastTurn: Sagani? = null
     var nextTurn: Sagani? = null
     var turnCount: Int = 0
@@ -34,15 +34,15 @@ data class Sagani(val playerNames: List<Pair<String,Color>>) {
 
     init {
         // 2 to 4 players
-        require(playerNames.size in 2..4){"You need to be 2 to 4 players to play this game."}
+        require(playerNames.size in 2..4) { "You need to be 2 to 4 players to play this game." }
         // no empty names
         playerNames.forEach {
-            require(it.first.trim() != ""){"Each player has to have a name."}
+            require(it.first.trim() != "") { "Each player has to have a name." }
         }
         // unique colors
         val colors: MutableList<Color> = mutableListOf()
         playerNames.forEach {
-            require(!colors.contains(it.second)){"Each player has to have a unique color."}
+            require(!colors.contains(it.second)) { "Each player has to have a unique color." }
             colors.add(it.second)
         }
 
@@ -57,33 +57,37 @@ data class Sagani(val playerNames: List<Pair<String,Color>>) {
         // shuffle tiles
         stacks.shuffle()
         // fill offerDisplay with 5 tiles
-        repeat(5){
+        repeat(5) {
             offerDisplay.add(stacks.removeFirst())
         }
     }
 
-    private fun createStacks(){
+    private fun createStacks() {
         // read each line of .csv-file
         val lines = File("tiles_colornames_v2.csv").readLines()
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
-        lines.forEach { line -> tiles.add(line.split(","))}
+        lines.forEach { line -> tiles.add(line.split(",")) }
         // create a tile for each line
-        for(line in 1..72){
+        for (line in 1..72) {
             val arrows: MutableList<Arrow> = mutableListOf()
-            for(row in 2..9){
-                if(tiles[line][row] != "NONE"){
-                    arrows.add(Arrow(
-                        element = Element.valueOf(tiles[line][row]),
-                        direction = Direction.values()[row-2]
-                    ))
+            for (row in 2..9) {
+                if (tiles[line][row] != "NONE") {
+                    arrows.add(
+                        Arrow(
+                            element = Element.valueOf(tiles[line][row]),
+                            direction = Direction.values()[row - 2]
+                        )
+                    )
                 }
             }
-            stacks.add(Tile(
-                points = tiles[line][10].toInt(),
-                element = Element.valueOf(tiles[line][1]),
-                arrows = arrows
-            ))
+            stacks.add(
+                Tile(
+                    points = tiles[line][10].toInt(),
+                    element = Element.valueOf(tiles[line][1]),
+                    arrows = arrows
+                )
+            )
         }
     }
 }

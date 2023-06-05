@@ -17,25 +17,29 @@ data class Tile(
     var direction: Direction = Direction.UP,
     val arrows: List<Arrow>,
     val discs: MutableList<Disc> = mutableListOf()
-){
+) {
     var flipped: Boolean = false
+
     init {
-        require(direction in tileDirection()){"Illegal direction."}
-        require(arrows.size in 1..4){"Each tile has to have 1 to 4 arrows."}
-        require(points == when(arrows.size){
-            1 -> 1
-            2 -> 3
-            3 -> 6
-            else -> 10
-        }){"Points don't match with number of arrows."}
+        require(direction in tileDirection()) { "Illegal direction." }
+        require(arrows.size in 1..4) { "Each tile has to have 1 to 4 arrows." }
+        require(
+            points == when (arrows.size) {
+                1 -> 1
+                2 -> 3
+                3 -> 6
+                else -> 10
+            }
+        ) { "Points don't match with number of arrows." }
     }
+
     /**
      * [rotate] changes the direction of the tile to the new direction
      * Each arrow's direction is adjusted to the new direction.
      */
-    fun rotate(newDirection: Direction = Direction.values()[(direction.ordinal + 2) % 8]){
+    fun rotate(newDirection: Direction = Direction.values()[(direction.ordinal + 2) % 8]) {
         // tile needs to have a tileDirection
-        require(newDirection in tileDirection()){"Illegal direction."}
+        require(newDirection in tileDirection()) { "Illegal direction." }
         // calculate rotation
         val rotation = Direction.values()[(newDirection.ordinal - direction.ordinal + 8) % 8]
         // rotate each arrow
