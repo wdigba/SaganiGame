@@ -1,6 +1,6 @@
 package entity
 
-import java.io.FileReader
+import java.io.File
 import kotlin.random.Random.Default.nextInt
 
 /**
@@ -33,8 +33,19 @@ data class Sagani(val playerNames: List<Pair<String,Color>>) {
     val intermezzoStorage: MutableList<Tile> = mutableListOf()
 
     init {
-        // check if argument is legal
-        require(legalArgument())
+        // 2 to 4 players
+        require(playerNames.size in 2..4){"You need to be 2 to 4 players to play this game."}
+        // no empty names
+        playerNames.forEach {
+            require(it.first.trim() != ""){"Each player has to have a name."}
+        }
+        // unique colors
+        val colors: MutableList<Color> = mutableListOf()
+        playerNames.forEach {
+            require(!colors.contains(it.second)){"Each player has to have a unique color."}
+            colors.add(it.second)
+        }
+
         // create players
         playerNames.forEach { players.add(Player(it.first, it.second)) }
         // choose random startPlayer
@@ -50,28 +61,10 @@ data class Sagani(val playerNames: List<Pair<String,Color>>) {
             offerDisplay.add(stacks.removeFirst())
         }
     }
-    private fun legalArgument(): Boolean{
-        // 2 to 4 players
-        var legal: Boolean = (playerNames.size in 2..4)
-        val colors: MutableList<Color> = mutableListOf()
-        // no empty names
-        playerNames.forEach {
-            if(legal){
-                legal = (it.first.trim() != "")
-            }
-        }
-        // unique colors
-        playerNames.forEach {
-            if(legal){
-                legal = !colors.contains(it.second)
-                colors.add(it.second)
-            }
-        }
-        return legal
-    }
+
     private fun createStacks(){
         // read each line of .csv-file
-        val lines = FileReader("src/main/kotlin/entity/tiles_colornames_v2.csv").readLines()
+        val lines = File("tiles_colornames_v2.csv").readLines()
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
         lines.forEach { line -> tiles.add(line.split(","))}
