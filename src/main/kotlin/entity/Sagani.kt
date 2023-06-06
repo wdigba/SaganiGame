@@ -18,14 +18,13 @@ import kotlin.random.Random.Default.nextInt
  * @property offerDisplay: tiles player can choose from during their turn
  * @property intermezzoStorage: tile player can choose from during an intermezzo
  */
-data class Sagani(val playerNames: List<Pair<String, Color>>) {
+data class Sagani(val players: List<Player>) {
     var lastTurn: Sagani? = null
     var nextTurn: Sagani? = null
     var turnCount: Int = 0
     var intermezzo: Boolean = false
     var lastRound: Boolean = false
     var startPlayer: Int
-    val players: MutableList<Player> = mutableListOf()
     var actPlayer: Player
     val intermezzoPlayers: MutableList<Player> = mutableListOf()
     val stacks: MutableList<Tile> = mutableListOf()
@@ -34,20 +33,18 @@ data class Sagani(val playerNames: List<Pair<String, Color>>) {
 
     init {
         // 2 to 4 players
-        require(playerNames.size in 2..4) { "You need to be 2 to 4 players to play this game." }
+        require(players.size in 2..4) { "You need to be 2 to 4 players to play this game." }
         // no empty names
-        playerNames.forEach {
-            require(it.first.trim() != "") { "Each player has to have a name." }
+        players.forEach {
+            require(it.name.trim() != "") { "Each player has to have a name." }
         }
         // unique colors
         val colors: MutableList<Color> = mutableListOf()
-        playerNames.forEach {
-            require(!colors.contains(it.second)) { "Each player has to have a unique color." }
-            colors.add(it.second)
+        players.forEach {
+            require(!colors.contains(it.color)) { "Each player has to have a unique color." }
+            colors.add(it.color)
         }
 
-        // create players
-        playerNames.forEach { players.add(Player(it.first, it.second)) }
         // choose random startPlayer
         startPlayer = nextInt(players.size)
         // startPlayer is first actPlayer

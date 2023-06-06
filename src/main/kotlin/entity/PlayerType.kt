@@ -6,5 +6,6 @@ package entity
 enum class PlayerType {
     HUMAN,
     RANDOM_AI,
-    BEST_AI
+    BEST_AI,
+    NETWORK_PLAYER
 }
