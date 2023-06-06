@@ -4,6 +4,7 @@ import entity.Direction.Companion.tileDirection
 
 /**
  * Players place [Tile] on their board during the game
+ * @property id of the tile in the given .csv-file
  * @property points the tile gives when flipped
  * @property element of the tile
  * @property direction of the tile
@@ -12,10 +13,11 @@ import entity.Direction.Companion.tileDirection
  * @property flipped: tile gets flipped when it is solved
  */
 data class Tile(
+    val id: Int,
     val points: Int,
     val element: Element,
-    var direction: Direction = Direction.UP,
     val arrows: List<Arrow>,
+    var direction: Direction = Direction.UP,
     val discs: MutableList<Disc> = mutableListOf()
 ) {
     var flipped: Boolean = false

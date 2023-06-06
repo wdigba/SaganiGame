@@ -29,6 +29,5 @@ enum class Direction {
                 LEFT
             )
         }
-
     }
 }

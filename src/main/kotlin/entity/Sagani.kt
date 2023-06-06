@@ -80,9 +80,10 @@ data class Sagani(val players: List<Player>) {
             }
             stacks.add(
                 Tile(
-                    points = tiles[line][10].toInt(),
-                    element = Element.valueOf(tiles[line][1]),
-                    arrows = arrows
+                    tiles[line][0].toInt(),
+                    tiles[line][10].toInt(),
+                    Element.valueOf(tiles[line][1]),
+                    arrows
                 )
             )
         }
