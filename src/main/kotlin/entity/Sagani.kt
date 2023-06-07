@@ -1,6 +1,5 @@
 package entity
 
-import java.io.File
 import kotlin.random.Random.Default.nextInt
 
 /**
@@ -18,7 +17,7 @@ import kotlin.random.Random.Default.nextInt
  * @property offerDisplay: tiles player can choose from during their turn
  * @property intermezzoStorage: tile player can choose from during an intermezzo
  */
-data class Sagani(val players: List<Player>) {
+data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
     var lastTurn: Sagani? = null
     var nextTurn: Sagani? = null
     var turnCount: Int = 0
@@ -27,7 +26,6 @@ data class Sagani(val players: List<Player>) {
     var startPlayer: Int
     var actPlayer: Player
     val intermezzoPlayers: MutableList<Player> = mutableListOf()
-    val stacks: MutableList<Tile> = mutableListOf()
     val offerDisplay: MutableList<Tile> = mutableListOf()
     val intermezzoStorage: MutableList<Tile> = mutableListOf()
 
@@ -44,48 +42,25 @@ data class Sagani(val players: List<Player>) {
             require(!colors.contains(it.color)) { "Each player has to have a unique color." }
             colors.add(it.color)
         }
+        // stacks contains all 72 Tiles
+        require(stacks.size == 72){"There have to be 72 tiles total to play this game."}
+        // unique tiles
+        val tileIDs: MutableList<Int> = mutableListOf()
+        stacks.forEach {
+            require(it.id in tileIDs){"Tile IDs are not unique."}
+            require(it.id in 1..72){"Illegal tile id."}
+            tileIDs.add(it.id)
+        }
 
         // choose random startPlayer
         startPlayer = nextInt(players.size)
         // startPlayer is first actPlayer
         actPlayer = players[startPlayer]
-        // create stacks with all possible tiles from .csv-file
-        createStacks()
         // shuffle tiles
         stacks.shuffle()
         // fill offerDisplay with 5 tiles
         repeat(5) {
             offerDisplay.add(stacks.removeFirst())
-        }
-    }
-
-    private fun createStacks() {
-        // read each line of .csv-file
-        val lines = File("tiles_colornames_v2.csv").readLines()
-        val tiles: MutableList<List<String>> = mutableListOf()
-        // split each line
-        lines.forEach { line -> tiles.add(line.split(",")) }
-        // create a tile for each line
-        for (line in 1..72) {
-            val arrows: MutableList<Arrow> = mutableListOf()
-            for (row in 2..9) {
-                if (tiles[line][row] != "NONE") {
-                    arrows.add(
-                        Arrow(
-                            element = Element.valueOf(tiles[line][row]),
-                            direction = Direction.values()[row - 2]
-                        )
-                    )
-                }
-            }
-            stacks.add(
-                Tile(
-                    tiles[line][0].toInt(),
-                    tiles[line][10].toInt(),
-                    Element.valueOf(tiles[line][1]),
-                    arrows
-                )
-            )
         }
     }
 }
