@@ -22,7 +22,7 @@ class TestRefreshable : Refreshable {
         private set
     var refreshAfterRotateTileCalled: Boolean = false
         private set
-    var refreshAfterrefreshUndoCalled: Boolean = false
+    var refreshAfterrefreshAfterUndoCalled: Boolean = false
         private set
 
     /**
@@ -37,7 +37,7 @@ class TestRefreshable : Refreshable {
         refreshAfterLoadGameCalled = false
         refreshAfterPlaceTileCalled = false
         refreshAfterRotateTileCalled = false
-        refreshAfterrefreshUndoCalled = false
+        refreshAfterrefreshAfterUndoCalled = false
     }
 
     /**
@@ -96,7 +96,7 @@ class TestRefreshable : Refreshable {
         refreshAfterRotateTileCalled = true
     }
 
-    override fun refreshUndo() {
-        refreshAfterrefreshUndoCalled = true
+    override fun refreshAfterUndo() {
+        refreshAfterrefreshAfterUndoCalled = true
     }
 }

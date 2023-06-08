@@ -47,5 +47,5 @@ interface Refreshable {
     /**
      * refresh Gui after undo()
      */
-    fun refreshUndo() {}
+    fun refreshAfterUndo() {}
 }
