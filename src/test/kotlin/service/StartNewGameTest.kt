@@ -5,7 +5,7 @@ import entity.PlayerType
 import kotlin.test.*
 
 /**
- * [StartNewGameTest] tests [GameService].startNewGame()
+ * [StartNewGameTest] tests [GameService].startNewGame() and [GameService].createStacks()
  */
 class StartNewGameTest {
     private val rootService = RootService()
@@ -46,6 +46,8 @@ class StartNewGameTest {
         assertEquals(bob.first, game.players[1].name)
         assertEquals(bob.second, game.players[1].color)
         assertEquals(bob.third, game.players[1].playerType)
+        // stacks contains 67 tiles
+        assertEquals(67, game.stacks.size)
         // refreshAfterStartNewGame() was called
         assert(refreshable.refreshAfterStartNewGameCalled)
     }
