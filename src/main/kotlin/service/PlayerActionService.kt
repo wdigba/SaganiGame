@@ -16,10 +16,10 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
         checkNotNull(game.lastTurn) { "No previous turn exists. This means this was the first game state" }
 
         // switch currentGame reference in rootservice to the new state
-        game.currentGame = game.lastTurn
+        rootService.currentGame = game.lastTurn
 
         // send update to GUI
-        onAllRefreshables { refreshUndo() }
+        //onAllRefreshables { refreshUndo() }
     }
 
     /**
@@ -34,10 +34,10 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
         checkNotNull(game.nextTurn) { "No previous turn exists. This means this was the first game state" }
 
         // switch currentGame reference in rootservice to the new state
-        game.currentGame = game.nextTurn
+        rootService.currentGame = game.nextTurn
 
         // send update to GUI
-        onAllRefreshables { refreshUndo() }
+        //onAllRefreshables { refreshUndo() }
 
     }
 }
