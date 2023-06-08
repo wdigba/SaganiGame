@@ -1,6 +1,6 @@
 package service.ki
 
-import service.*
+import service.RootService
 /**
  * The service responsible for executing the AI strategies
  */
