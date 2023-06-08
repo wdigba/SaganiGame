@@ -4,6 +4,9 @@ import entity.*
 import java.io.File
 import java.net.URL
 
+/**
+ * [GameService] provides server function for the game
+ */
 class GameService(private val rootService: RootService) : AbstractRefreshingService() {
     /**
      * [startNewGame] creates a new game
