@@ -27,7 +27,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
     private fun createStacks(stacks: MutableList<Tile>) {
         // read each line of .csv-file
         val url: URL? = GameService::class.java.getResource("/tiles_colornames_v2.csv")
-        checkNotNull(url){"There is no file."}
+        checkNotNull(url) { "There is no file." }
         val lines = File(url.path).readLines()
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line

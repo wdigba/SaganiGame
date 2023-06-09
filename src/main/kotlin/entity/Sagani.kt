@@ -43,12 +43,12 @@ data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
             colors.add(it.color)
         }
         // stacks contains all 72 Tiles
-        require(stacks.size == 72){"There have to be 72 tiles total to play this game."}
+        require(stacks.size == 72) { "There have to be 72 tiles total to play this game." }
         // unique tiles
         val tileIDs: MutableList<Int> = mutableListOf()
         stacks.forEach {
-            require(it.id !in tileIDs){"Tile IDs are not unique."}
-            require(it.id in 1..72){"Illegal tile id."}
+            require(it.id !in tileIDs) { "Tile IDs are not unique." }
+            require(it.id in 1..72) { "Illegal tile id." }
             tileIDs.add(it.id)
         }
 
