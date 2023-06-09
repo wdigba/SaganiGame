@@ -1,7 +1,7 @@
 package entity
 
 /**
- * Enum to distinguish between the four colors the players can have.
+ * Enum to distinguish between the four colors the players can have
  */
 enum class Color {
     WHITE,

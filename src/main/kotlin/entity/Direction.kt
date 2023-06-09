@@ -3,8 +3,8 @@ package entity
 import java.util.*
 
 /**
- * Enum to distinguish between the eight direction an arrow can point to.
- * tileDirection contains only the four directions a tile can have.
+ * Enum to distinguish between the eight direction an arrow can point to
+ * tileDirection contains only the four directions a tile can have
  */
 enum class Direction {
     UP,
