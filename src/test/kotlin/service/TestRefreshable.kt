@@ -1,5 +1,6 @@
 package service
 
+import edu.udo.cs.sopra.ntf.ConnectionState
 import view.Refreshable
 
 /**
@@ -24,6 +25,7 @@ class TestRefreshable : Refreshable {
         private set
     var refreshAfterrefreshAfterUndoCalled: Boolean = false
         private set
+    var refreshAfterConnectionStateChangeCalled: Boolean = false
 
     /**
      * reset all properties
@@ -38,6 +40,7 @@ class TestRefreshable : Refreshable {
         refreshAfterPlaceTileCalled = false
         refreshAfterRotateTileCalled = false
         refreshAfterrefreshAfterUndoCalled = false
+        refreshAfterConnectionStateChangeCalled = false
     }
 
     /**
@@ -98,5 +101,9 @@ class TestRefreshable : Refreshable {
 
     override fun refreshAfterUndo() {
         refreshAfterrefreshAfterUndoCalled = true
+    }
+
+    override fun refreshAfterConnectionStateChange(newState: ConnectionState) {
+        refreshAfterConnectionStateChangeCalled = true
     }
 }

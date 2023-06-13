@@ -1,5 +1,7 @@
 package view
 
+import edu.udo.cs.sopra.ntf.ConnectionState
+
 /**
  * [Refreshable] enables to refresh GUI in service layer functions
  */
@@ -48,4 +50,11 @@ interface Refreshable {
      * refresh Gui after undo()
      */
     fun refreshAfterUndo() {}
+
+    /**
+     * refresh Gui after a connection state change
+     *
+     * @param newState The new connection state
+     */
+    fun refreshAfterConnectionStateChange(newState: ConnectionState) {}
 }
