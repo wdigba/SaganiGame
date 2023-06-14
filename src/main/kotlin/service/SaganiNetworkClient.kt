@@ -1,14 +1,28 @@
 package service
 
+import edu.udo.cs.sopra.ntf.ConnectionState
 import edu.udo.cs.sopra.ntf.GameInitMessage
 import edu.udo.cs.sopra.ntf.TurnMessage
+import tools.aqua.bgw.core.BoardGameApplication
 import tools.aqua.bgw.net.client.BoardGameClient
 import tools.aqua.bgw.net.common.annotations.GameActionReceiver
 import tools.aqua.bgw.net.common.notification.PlayerJoinedNotification
+import tools.aqua.bgw.net.common.notification.PlayerLeftNotification
 import tools.aqua.bgw.net.common.response.CreateGameResponse
+import tools.aqua.bgw.net.common.response.CreateGameResponseStatus
 import tools.aqua.bgw.net.common.response.GameActionResponse
+import tools.aqua.bgw.net.common.response.GameActionResponseStatus
 import tools.aqua.bgw.net.common.response.JoinGameResponse
+import tools.aqua.bgw.net.common.response.JoinGameResponseStatus
 
+/**
+ * The client for an online game of Sagani.
+ *
+ * @property playerName The name of the player.
+ * @property host The host address of the server.
+ * @property secret The server secret.
+ * @property networkService The [NetworkService] that created this client.
+ */
 class SaganiNetworkClient(playerName: String, host: String, secret: String, val networkService: NetworkService) :
     BoardGameClient(playerName, host, secret) {
     /**
@@ -21,30 +35,144 @@ class SaganiNetworkClient(playerName: String, host: String, secret: String, val 
      */
     var otherPlayers = listOf<String>()
 
+    /**
+     * Handles a [CreateGameResponse] sent by the BGW net server. Will await the guest players when its status is
+     * [CreateGameResponseStatus.SUCCESS]. As recovery from network problems is not implemented, the method will
+     * disconnect and throw an [IllegalStateException].
+     *
+     * @throws IllegalStateException If the status is not [CreateGameResponseStatus.SUCCESS] or the game is currently
+     * not waiting for a [CreateGameResponse].
+     */
     override fun onCreateGameResponse(response: CreateGameResponse) {
-        // TODO
+        BoardGameApplication.runOnGUIThread {
+            check(networkService.connectionState == ConnectionState.WAITING_FOR_HOST_CONFIRMATION) {
+                "Received a create game response in an unexpected connection state."
+            }
+
+            when (response.status) {
+                CreateGameResponseStatus.SUCCESS -> {
+                    networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
+                    sessionID = response.sessionID
+                }
+
+                else -> disconnectAndError(response.status)
+            }
+        }
     }
 
+    /**
+     * Handles a [JoinGameResponse] sent by the BGW net server. Will await the init message when its status is
+     * [JoinGameResponseStatus.SUCCESS]. As recovery from network problems is not implemented, the method will
+     * disconnect and throw an [IllegalStateException].
+     *
+     * @throws IllegalStateException If the status is not [JoinGameResponseStatus.SUCCESS] or the game is currently
+     * not waiting for a [JoinGameResponse].
+     */
     override fun onJoinGameResponse(response: JoinGameResponse) {
-        // TODO
+        BoardGameApplication.runOnGUIThread {
+            check(networkService.connectionState == ConnectionState.WAITING_FOR_JOIN_CONFIRMATION) {
+                "Received a join game response in an unexpected connection state."
+            }
+
+            when (response.status) {
+                JoinGameResponseStatus.SUCCESS -> {
+                    otherPlayers = response.opponents
+                    sessionID = response.sessionID
+                    networkService.connectionState = ConnectionState.WAITING_FOR_INIT
+                }
+
+                else -> disconnectAndError(response.status)
+            }
+        }
     }
 
+    /**
+     * Handles a [PlayerJoinedNotification] sent by the BGW net server. Will add the player to the list of other players
+     * when the connection state is [ConnectionState.WAITING_FOR_OPPONENTS].
+     *
+     * @throws IllegalStateException If the connection state is not [ConnectionState.WAITING_FOR_GUESTS].
+     */
     override fun onPlayerJoined(notification: PlayerJoinedNotification) {
-        // TODO
+        BoardGameApplication.runOnGUIThread {
+            check(networkService.connectionState == ConnectionState.WAITING_FOR_GUESTS) {
+                "Received a player joined notification in an unexpected connection state."
+            }
+
+            otherPlayers += notification.sender
+        }
     }
 
+    /**
+     * Handles a [PlayerLeftNotification] sent by the BGW net server. Will remove the player from the list of other
+     * players.
+     */
+    override fun onPlayerLeft(notification: PlayerLeftNotification) {
+        BoardGameApplication.runOnGUIThread {
+            otherPlayers -= notification.sender
+        }
+    }
+
+    /**
+     * Handles a [GameActionResponse] sent by the BGW net server. Does nothing when its status is
+     * [GameActionResponseStatus.SUCCESS]. As recovery from network problems is not implemented, the method will
+     * disconnect and throw an [IllegalStateException].
+     *
+     * @throws IllegalStateException If the status is not [GameActionResponseStatus.SUCCESS] or the game is currently
+     * not waiting for a [GameActionResponse].
+     */
     override fun onGameActionResponse(response: GameActionResponse) {
-        // TODO
+        BoardGameApplication.runOnGUIThread {
+            check(
+                networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS
+                        || networkService.connectionState == ConnectionState.PLAYING_MY_TURN
+            ) {
+                "Received a game action response in an unexpected connection state."
+            }
+
+            when (response.status) {
+                GameActionResponseStatus.SUCCESS -> {}
+                else -> disconnectAndError(response.status)
+            }
+        }
     }
 
+    /**
+     * Handles a [TurnMessage] sent by the BGW net server. Will handle the turn message when the connection state is
+     * [ConnectionState.WAITING_FOR_OPPONENTS].
+     *
+     * @throws IllegalStateException If the connection state is not [ConnectionState.WAITING_FOR_OPPONENTS].
+     */
     @GameActionReceiver
     fun onTurnMessageReceived(message: TurnMessage, sender: String) {
-        // TODO
+        BoardGameApplication.runOnGUIThread {
+            check(networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS) {
+                "Received a turn message in an unexpected connection state."
+            }
+
+            // TODO: Handle turn message
+        }
     }
 
+    /**
+     * Handles a [GameInitMessage] sent by the BGW net server. Will handle the game init message when the connection
+     * state is [ConnectionState.WAITING_FOR_INIT].
+     */
     @GameActionReceiver
     fun onHostGameInitReceived(message: GameInitMessage, sender: String) {
-        // TODO
+        BoardGameApplication.runOnGUIThread {
+            check(networkService.connectionState == ConnectionState.WAITING_FOR_INIT) {
+                "Received a game init message in an unexpected connection state."
+            }
+
+            // TODO: Start a new game
+        }
     }
 
+    /**
+     * Disconnects from the server and throws an [IllegalStateException] with the given [message].
+     */
+    private fun disconnectAndError(message: Any) {
+        networkService.disconnect()
+        error(message)
+    }
 }
