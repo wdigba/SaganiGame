@@ -34,12 +34,22 @@ class ConfigurationScene(private val rootService: RootService) :
         visual = ColorVisual(158, 181, 91)
     }
 
-        init{
-            background = ColorVisual(255,249,222)
-            addComponents(
-                headlineLabel,
-                networkButton, playersButton
-            )
+    val backButton = Button(
+        width = 200, height = 35,
+        posX = 100, posY = 400,
+        text = "Go Back",
+        font = Font(size = 18)
+    ).apply {
+        visual = ColorVisual(158, 181, 91)
 
-        }
+    }
+
+    init {
+        background = ColorVisual(255, 249, 222)
+        addComponents(
+            headlineLabel,
+            networkButton, playersButton, backButton
+        )
+
+    }
 }
