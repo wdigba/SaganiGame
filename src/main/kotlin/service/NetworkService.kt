@@ -1,4 +1,4 @@
 package service
 
-class NetworkService(private val rootService: RootService) : AbstractRefreshingService() {
+class NetworkService(private val rootService: RootService) {
 }
