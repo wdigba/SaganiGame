@@ -1,6 +1,6 @@
-import view.SopraApplication
+import view.SaganiApplication
 
 fun main() {
-    SopraApplication().show()
+    SaganiApplication().show()
     println("Application ended. Goodbye")
 }
