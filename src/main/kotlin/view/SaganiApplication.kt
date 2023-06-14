@@ -3,13 +3,13 @@ package view
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
 
-class SopraApplication : BoardGameApplication("SoPra Game") {
+class SaganiApplication : BoardGameApplication("SoPra Game") {
     private val rootService = RootService()
 
     private val playerConfigScene = PlayerConfigScene(rootService).apply  {
         //TODO: nur zu Testzwecken
         startButton.onMouseClicked = {
-            this@SopraApplication.hideMenuScene()
+            this@SaganiApplication.hideMenuScene()
         }
 
     }
@@ -17,7 +17,7 @@ class SopraApplication : BoardGameApplication("SoPra Game") {
 
     private val configurationScene = ConfigurationScene(rootService).apply {
         playersButton.onMouseClicked = {
-            this@SopraApplication.showMenuScene(playerConfigScene)
+            this@SaganiApplication.showMenuScene(playerConfigScene)
         }
     }
     private val saganiGameScene = SaganiGameScene(rootService)
@@ -25,14 +25,14 @@ class SopraApplication : BoardGameApplication("SoPra Game") {
     private val newGameMenuScene = NewGameMenuScene(rootService).apply {
         kIButton.onMouseClicked = {
             hideMenuScene()
-            this@SopraApplication.showGameScene(saganiGameScene)
+            this@SaganiApplication.showGameScene(saganiGameScene)
         }
         playButton.onMouseClicked = {
-            this@SopraApplication.showMenuScene(configurationScene)
+            this@SaganiApplication.showMenuScene(configurationScene)
         }
         ruleButton.onMouseClicked = {
             hideMenuScene()
-            this@SopraApplication.showGameScene(ruleScene)
+            this@SaganiApplication.showGameScene(ruleScene)
         }
     }
 
