@@ -99,7 +99,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     val backButton = Button(
         width = 140, height = 35,
         posX = 50, posY = 465,
-        text = "GO BACK",
+        text = "Go Back",
         font = Font(size = 18)
     ).apply {
         visual = ColorVisual(196, 187, 147)
@@ -114,7 +114,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     val startButton = Button(
         width = 140, height = 35,
         posX = 230, posY = 465,
-        text = "START",
+        text = "Start",
         font = Font(size = 18)
     ).apply {
         visual = ColorVisual(196, 187, 147)

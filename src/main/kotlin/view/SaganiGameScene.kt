@@ -19,10 +19,10 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
     private val undoButton = Button(
         width = 170, height = 40,
         posX = 50, posY = 980,
-        text = "UNDO", font = Font(size = 30), isWrapText = true
+        text = "UNDO", font = Font(size = 30)
     ).apply {
         visual = ColorVisual(196, 187, 147)
-        alignment = Alignment.TOP_CENTER
+
     }
     private val redoButton = Button(
         width = 170, height = 40,

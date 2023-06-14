@@ -43,11 +43,20 @@ class NewGameMenuScene(private val rootService: RootService) :
         visual = ColorVisual(158, 181, 91)
     }
 
+    val quitButton = Button(
+        width = 200, height = 35,
+        posX = 100, posY = 500,
+        text = "Quit",
+        font = Font(size = 18)
+    ).apply {
+        visual = ColorVisual(158, 181, 91)
+    }
+
     init {
         background = ColorVisual(255,249,222)
         addComponents(
             headlineLabel,
-            kIButton, playButton, ruleButton
+            kIButton, playButton, ruleButton,quitButton
         )
     }
 

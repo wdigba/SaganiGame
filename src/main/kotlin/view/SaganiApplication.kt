@@ -13,7 +13,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             this@SaganiApplication.hideMenuScene()
         }
         backButton.onMouseClicked = {
-            this@SaganiApplication.showMenuScene(newGameMenuScene)
+            this@SaganiApplication.showMenuScene(configurationScene)
         }
 
     }
@@ -22,6 +22,9 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
     private val configurationScene: ConfigurationScene = ConfigurationScene(rootService).apply {
         playersButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(playerConfigScene)
+        }
+        backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
     }
     private val saganiGameScene: SaganiGameScene = SaganiGameScene(rootService)
@@ -37,6 +40,9 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
         ruleButton.onMouseClicked = {
             hideMenuScene()
             this@SaganiApplication.showGameScene(ruleScene)
+        }
+        quitButton.onMouseClicked = {
+            exit()
         }
     }
 
