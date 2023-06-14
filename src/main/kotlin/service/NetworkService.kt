@@ -14,9 +14,9 @@ class NetworkService(private val rootService: RootService) : AbstractRefreshingS
         const val SERVER_ADDRESS = "sopra.cs.tu-dortmund.de:80/bgw-net/connect"
 
         /**
-         * The internal game ID.
+         * The internal game ID for Sagani.
          */
-        const val GAME_ID = "GAME_ID"
+        const val GAME_ID = "Sagani"
     }
 
     /**
