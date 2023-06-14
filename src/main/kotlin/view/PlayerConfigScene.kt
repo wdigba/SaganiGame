@@ -18,7 +18,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         font = Font(size = 22)
     )
 
-    private val p1Label = Label(
+    private val player1Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 125,
         text = "Player 1:"
@@ -26,17 +26,17 @@ class PlayerConfigScene(private val rootService: RootService) :
 
     // type inference fails here, so explicit  ": TextField" is required
     // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
-    private val p1Input: TextField = TextField(
+    private val player1Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 160
     ).apply {
         onKeyTyped = {
-            startButton.isDisabled = this.text.isBlank() || p2Input.text.isBlank()
+            startButton.isDisabled = this.text.isBlank() || player2Input.text.isBlank()
         }
     }
 
     //45
-    private val p2Label = Label(
+    private val player2Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
         text = "Player 2:"
@@ -45,17 +45,17 @@ class PlayerConfigScene(private val rootService: RootService) :
     //35
     // type inference fails here, so explicit  ": TextField" is required
     // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
-    private val p2Input: TextField = TextField(
+    private val player2Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 240
     ).apply {
         onKeyTyped = {
-            startButton.isDisabled = p1Input.text.isBlank() || this.text.isBlank()
+            startButton.isDisabled = player1Input.text.isBlank() || this.text.isBlank()
         }
     }
 
 
-    private val p3Label = Label(
+    private val player3Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 285,
         text = "Player 3:"
@@ -63,17 +63,17 @@ class PlayerConfigScene(private val rootService: RootService) :
 
     // type inference fails here, so explicit  ": TextField" is required
     // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
-    private val p3Input: TextField = TextField(
+    private val player3Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 320
     ).apply {
         onKeyTyped = {
-            startButton.isDisabled = this.text.isBlank() || p2Input.text.isBlank()
+            startButton.isDisabled = this.text.isBlank() || player2Input.text.isBlank()
         }
     }
 
 
-    private val p4Label = Label(
+    private val player4Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 365,
         text = "Player 4:"
@@ -81,39 +81,52 @@ class PlayerConfigScene(private val rootService: RootService) :
 
     // type inference fails here, so explicit  ": TextField" is required
     // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
-    private val p4Input: TextField = TextField(
+    private val player4Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 400
     ).apply {
         onKeyTyped = {
-            startButton.isDisabled = this.text.isBlank() || p2Input.text.isBlank()
+            startButton.isDisabled = this.text.isBlank() || player2Input.text.isBlank()
         }
     }
 
-    val quitButton = Button(
+    private val playerInputs = mutableListOf(player1Input,player2Input,player3Input,player4Input)
+
+    /**
+     * Button führt auf vorherige Seite und leert alle Eingabefelder
+     * PROBLEM: Wenn in SoPraApplication programmiert kommt ein rekursiver Fehler
+     */
+    val backButton = Button(
         width = 140, height = 35,
-        posX = 130, posY = 510,
-        text = "Quit",
+        posX = 50, posY = 465,
+        text = "GO BACK",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(221, 136, 136)
+        visual = ColorVisual(196, 187, 147)
+        onMouseClicked = {
+          for (input in playerInputs){
+              input.text = ""
+          }
+
+        }
     }
 
-    private val startButton = Button(
+    val startButton = Button(
         width = 140, height = 35,
-        posX = 130, posY = 465,
-        text = "Start",
+        posX = 230, posY = 465,
+        text = "START",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(136, 221, 136)
+        visual = ColorVisual(196, 187, 147)
         onMouseClicked = {
-
-            val players =
-                mutableListOf(p1Input.text.trim(), p2Input.text.trim(), p3Input.text.trim(), p4Input.text.trim())
+            val playerNames = mutableListOf<String>()
+            for (input in playerInputs){
+                playerNames.add(input.text.trim())
+            }
 
             // leere Werte entfernen
-            players.removeIf() { it.isBlank() }
-            players.removeIf() { it.isEmpty() }
+            playerNames.removeIf() { it.isBlank() }
+            playerNames.removeIf() { it.isEmpty() }
 
             //neues Spiel starten
         }
@@ -127,7 +140,6 @@ class PlayerConfigScene(private val rootService: RootService) :
         visual = ColorVisual(196, 187, 147)
         onMouseClicked = {
             repositionButtonsPlus()
-
         }
     }
 
@@ -144,37 +156,37 @@ class PlayerConfigScene(private val rootService: RootService) :
     //background = ColorVisual(158, 181, 91)
 
     init {
-        background = ColorVisual(255,249,222)
-        p3Label.isVisible = false
-        p3Input.isVisible = false
-        p4Input.isVisible = false
-        p4Label.isVisible = false
+        background = ColorVisual(255, 249, 222)
+        player3Label.isVisible = false
+        player3Input.isVisible = false
+        player4Input.isVisible = false
+        player4Label.isVisible = false
         minusButton.isVisible = false
         startButton.isDisabled = true
 
         opacity = .5
         addComponents(
             headlineLabel,
-            p1Label, p1Input,
-            p2Label, p2Input,
-            p3Label, p3Input,
-            p4Label, p4Input,
-            startButton, quitButton, plusButton, minusButton
+            player1Label, player1Input,
+            player2Label, player2Input,
+            player3Label, player3Input,
+            player4Label, player4Input,
+            startButton, backButton, plusButton, minusButton
         )
     }
 
 
     private fun repositionButtonsPlus() {
-        if (!p3Label.isVisible) {
+        if (!player3Label.isVisible) {
             minusButton.isVisible = true
-            plusButton.reposition(320,320)
-            p3Label.isVisible = true
-            p3Input.isVisible = true
+            plusButton.reposition(320, 320)
+            player3Label.isVisible = true
+            player3Input.isVisible = true
 
-        } else if (!p4Label.isVisible) {
+        } else if (!player4Label.isVisible) {
             minusButton.reposition(360, 400)
-            p4Input.isVisible = true
-            p4Label.isVisible = true
+            player4Input.isVisible = true
+            player4Label.isVisible = true
             plusButton.isVisible = false
         }
     }
@@ -182,23 +194,22 @@ class PlayerConfigScene(private val rootService: RootService) :
     private fun repositionButtonsMinus() {
         plusButton.isDisabled = false
         // blendet Felder aus
-        if (p4Label.isVisible) {
-            p4Label.isVisible = false
-            p4Input.text = ""
-            p4Input.isVisible = false
+        if (player4Label.isVisible) {
+            player4Label.isVisible = false
+            player4Input.text = ""
+            player4Input.isVisible = false
             minusButton.reposition(360, 320)
-            plusButton.reposition(320,320)
-            plusButton.isVisible=true
-        } else if (p3Label.isVisible) {
-            p3Label.isVisible = false
-            p3Input.text = ""
-            p3Input.isVisible = false
+            plusButton.reposition(320, 320)
+            plusButton.isVisible = true
+        } else if (player3Label.isVisible) {
+            player3Label.isVisible = false
+            player3Input.text = ""
+            player3Input.isVisible = false
             minusButton.isVisible = false
-            plusButton.reposition(320,240)
+            plusButton.reposition(320, 240)
             plusButton.isVisible = true
         }
     }
-
 
 
 }

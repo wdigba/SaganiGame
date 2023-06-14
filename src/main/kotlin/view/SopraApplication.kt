@@ -6,7 +6,15 @@ import tools.aqua.bgw.core.BoardGameApplication
 class SopraApplication : BoardGameApplication("SoPra Game") {
     private val rootService = RootService()
 
-    private val playerConfigScene = PlayerConfigScene(rootService)
+    private val playerConfigScene = PlayerConfigScene(rootService).apply  {
+        //TODO: nur zu Testzwecken
+        startButton.onMouseClicked = {
+            this@SopraApplication.hideMenuScene()
+        }
+
+    }
+
+
     private val configurationScene = ConfigurationScene(rootService).apply {
         playersButton.onMouseClicked = {
             this@SopraApplication.showMenuScene(playerConfigScene)
