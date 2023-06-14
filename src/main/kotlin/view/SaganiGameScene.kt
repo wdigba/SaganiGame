@@ -12,7 +12,7 @@ import tools.aqua.bgw.components.uicomponents.Button
 class SaganiGameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable{
     private val headlineLabel = Label(
         width = 300, height = 50, posX = 50, posY = 50,
-        text = "GameScene - Comming Soon",
+        text = "GameScene - Comming Soon, Maybe not",
         font = Font(size = 22)
     )
 
