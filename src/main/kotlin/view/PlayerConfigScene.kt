@@ -9,6 +9,14 @@ import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
+/**
+ * TODO:
+ * - Farben (Nils)
+ * - Shuffle Spielerreihenfolge Button (wird auch angezeigt) (Nils)
+ * - Random Farben
+ * - Random Namen ( Tutoren Name)
+ */
+
 class PlayerConfigScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
 
@@ -24,8 +32,6 @@ class PlayerConfigScene(private val rootService: RootService) :
         text = "Player 1:"
     )
 
-    // type inference fails here, so explicit  ": TextField" is required
-    // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
     private val player1Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 160
@@ -35,16 +41,12 @@ class PlayerConfigScene(private val rootService: RootService) :
         }
     }
 
-    //45
     private val player2Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
         text = "Player 2:"
     )
 
-    //35
-    // type inference fails here, so explicit  ": TextField" is required
-    // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
     private val player2Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 240
@@ -54,15 +56,12 @@ class PlayerConfigScene(private val rootService: RootService) :
         }
     }
 
-
     private val player3Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 285,
         text = "Player 3:"
     )
 
-    // type inference fails here, so explicit  ": TextField" is required
-    // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
     private val player3Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 320
@@ -72,15 +71,12 @@ class PlayerConfigScene(private val rootService: RootService) :
         }
     }
 
-
     private val player4Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 365,
         text = "Player 4:"
     )
 
-    // type inference fails here, so explicit  ": TextField" is required
-    // see https://discuss.kotlinlang.org/t/unexpected-type-checking-recursive-problem/6203/14
     private val player4Input: TextField = TextField(
         width = 200, height = 35,
         posX = 70, posY = 400
@@ -90,11 +86,14 @@ class PlayerConfigScene(private val rootService: RootService) :
         }
     }
 
-    private val playerInputs = mutableListOf(player1Input,player2Input,player3Input,player4Input)
+    /**
+     * List contains player inputs. If a player is added/removed in GUI the input is added/removed to the list accordingly.
+     * This happens in [repositionButtonsMinus]/[repositionButtonsPlus].
+     */
+    private val playerInputs = mutableListOf(player1Input, player2Input)
 
     /**
-     * Button führt auf vorherige Seite und leert alle Eingabefelder
-     * PROBLEM: Wenn in SoPraApplication programmiert kommt ein rekursiver Fehler
+     * Button leads to the previous MenuScene.
      */
     val backButton = Button(
         width = 140, height = 35,
@@ -104,13 +103,16 @@ class PlayerConfigScene(private val rootService: RootService) :
     ).apply {
         visual = ColorVisual(196, 187, 147)
         onMouseClicked = {
-          for (input in playerInputs){
-              input.text = ""
-          }
+            for (input in playerInputs) {
+                input.text = ""
+            }
 
         }
     }
 
+    /**
+     * Starts the game.
+     */
     val startButton = Button(
         width = 140, height = 35,
         posX = 230, posY = 465,
@@ -120,7 +122,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         visual = ColorVisual(196, 187, 147)
         onMouseClicked = {
             val playerNames = mutableListOf<String>()
-            for (input in playerInputs){
+            for (input in playerInputs) {
                 playerNames.add(input.text.trim())
             }
 
@@ -129,6 +131,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             playerNames.removeIf() { it.isEmpty() }
 
             //neues Spiel starten
+            //rootService.gameService.startNewGame()
         }
     }
 
@@ -153,7 +156,31 @@ class PlayerConfigScene(private val rootService: RootService) :
             repositionButtonsMinus()
         }
     }
-    //background = ColorVisual(158, 181, 91)
+
+
+    /**
+     * creates random names with random adjectives and adds them to the inputs accordingly.
+     */
+    private val randomNamesButton = Button(
+        width = 200, height = 35,
+        posX = 50, posY = 520,
+        text = "Random Names", font = Font(size = 18), alignment = Alignment.CENTER
+    ).apply {
+        visual = ColorVisual(196, 187, 147)
+        onMouseClicked = {
+            val randomNames = mutableListOf(
+                "Till", "Marc", "Luka", "Sven", "Nick", "Friedemann", "Moritz", "Stefan", "Kai", "Vadym",
+                "Niels", "Marie", "Niklas", "Polina", "Christian", "Torben", "Daniel", "Noah", "Karina"
+            )
+            val randomAdjectives = mutableListOf(
+                "awesome", "brilliant", "clumsy", "aggressive", "scary",
+                "amazing", "bored", "weird", "ambitious"
+            )
+            for (input in playerInputs) {
+                input.text = randomAdjectives.random() + " " + randomNames.random()
+            }
+        }
+    }
 
     init {
         background = ColorVisual(255, 249, 222)
@@ -171,7 +198,8 @@ class PlayerConfigScene(private val rootService: RootService) :
             player2Label, player2Input,
             player3Label, player3Input,
             player4Label, player4Input,
-            startButton, backButton, plusButton, minusButton
+            startButton, backButton, plusButton, minusButton,
+            randomNamesButton
         )
     }
 
@@ -182,12 +210,14 @@ class PlayerConfigScene(private val rootService: RootService) :
             plusButton.reposition(320, 320)
             player3Label.isVisible = true
             player3Input.isVisible = true
+            playerInputs.add(player3Input)
 
         } else if (!player4Label.isVisible) {
             minusButton.reposition(360, 400)
             player4Input.isVisible = true
             player4Label.isVisible = true
             plusButton.isVisible = false
+            playerInputs.add(player4Input)
         }
     }
 
@@ -198,6 +228,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player4Label.isVisible = false
             player4Input.text = ""
             player4Input.isVisible = false
+            playerInputs.remove(player4Input)
             minusButton.reposition(360, 320)
             plusButton.reposition(320, 320)
             plusButton.isVisible = true
@@ -205,6 +236,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player3Label.isVisible = false
             player3Input.text = ""
             player3Input.isVisible = false
+            playerInputs.remove(player3Input)
             minusButton.isVisible = false
             plusButton.reposition(320, 240)
             plusButton.isVisible = true
