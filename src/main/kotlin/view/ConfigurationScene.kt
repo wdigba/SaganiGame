@@ -6,6 +6,7 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import java.awt.Color
 
 class ConfigurationScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
@@ -20,32 +21,32 @@ class ConfigurationScene(private val rootService: RootService) :
         width = 200, height = 35,
         posX = 100, posY = 200,
         text = "Network game",
-        font = Font(size = 18)
+        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(158, 181, 91)
+        visual = ColorVisual(96,108,56)
     }
 
     val playersButton = Button(
         width = 200, height = 35,
         posX = 100, posY = 300,
         text = "Add players",
-        font = Font(size = 18)
+        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(158, 181, 91)
+        visual = ColorVisual(96,108,56)
     }
 
     val backButton = Button(
         width = 200, height = 35,
         posX = 100, posY = 400,
         text = "Go Back",
-        font = Font(size = 18)
+        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(158, 181, 91)
+        visual = ColorVisual(96,108,56)
 
     }
 
     init {
-        background = ColorVisual(255, 249, 222)
+        background = ColorVisual(254,250,224)
         addComponents(
             headlineLabel,
             networkButton, playersButton, backButton

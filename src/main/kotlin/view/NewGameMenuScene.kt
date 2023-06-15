@@ -6,6 +6,7 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import java.awt.Color
 
 class NewGameMenuScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
@@ -20,40 +21,40 @@ class NewGameMenuScene(private val rootService: RootService) :
         width = 200, height = 35,
         posX = 100, posY = 200,
         text = "Play with KI",
-        font = Font(size = 18)
+        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(158, 181, 91)
+        visual = ColorVisual(96,108,56)
     }
 
     val playButton = Button(
         width = 200, height = 35,
         posX = 100, posY = 300,
         text = "Play with others",
-        font = Font(size = 18)
+        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(158, 181, 91)
+        visual = ColorVisual(96,108,56)
     }
 
     val ruleButton = Button(
         width = 200, height = 35,
         posX = 100, posY = 400,
         text = "Rules",
-        font = Font(size = 18)
+        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(158, 181, 91)
+        visual = ColorVisual(96,108,56)
     }
 
     val quitButton = Button(
         width = 200, height = 35,
         posX = 100, posY = 500,
         text = "Quit",
-        font = Font(size = 18)
+        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(158, 181, 91)
+        visual = ColorVisual(96,108,56)
     }
 
     init {
-        background = ColorVisual(255,249,222)
+        background = ColorVisual(254,250,224)
         addComponents(
             headlineLabel,
             kIButton, playButton, ruleButton,quitButton

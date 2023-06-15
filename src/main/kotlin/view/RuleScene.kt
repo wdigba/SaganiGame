@@ -17,7 +17,7 @@ class RuleScene(private val rootService: RootService) :
     )
 
         init {
-            background = ColorVisual(158, 181, 91)
+            background = ColorVisual( 96,108,56)
             addComponents(headlineLabel)
         }
 }
