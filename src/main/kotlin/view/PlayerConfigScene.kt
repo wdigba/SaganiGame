@@ -101,7 +101,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         text = "Go Back",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(196, 187, 147)
+        visual = ColorVisual(96,108,56)
         onMouseClicked = {
             for (input in playerInputs) {
                 input.text = ""
@@ -119,7 +119,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         text = "Start",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(196, 187, 147)
+        visual = ColorVisual(96,108,56)
         onMouseClicked = {
             val playerNames = mutableListOf<String>()
             for (input in playerInputs) {
@@ -140,7 +140,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 320, posY = 240,
         text = "+", font = Font(size = 14), alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(196, 187, 147)
+        visual = ColorVisual(200,202,167)
         onMouseClicked = {
             repositionButtonsPlus()
         }
@@ -151,7 +151,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 360, posY = 320,
         text = "-", font = Font(size = 20), alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(196, 187, 147)
+        visual = ColorVisual(200,202,167)
         onMouseClicked = {
             repositionButtonsMinus()
         }
@@ -166,7 +166,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 50, posY = 520,
         text = "Random Names", font = Font(size = 18), alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(196, 187, 147)
+        visual = ColorVisual(96,108,56)
         onMouseClicked = {
             val randomNames = mutableListOf(
                 "Till", "Marc", "Luka", "Sven", "Nick", "Friedemann", "Moritz", "Stefan", "Kai", "Vadym",
@@ -183,7 +183,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     }
 
     init {
-        background = ColorVisual(255, 249, 222)
+        background = ColorVisual(254,250,224)
         player3Label.isVisible = false
         player3Input.isVisible = false
         player4Input.isVisible = false

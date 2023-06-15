@@ -21,7 +21,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         posX = 50, posY = 980,
         text = "UNDO", font = Font(size = 30)
     ).apply {
-        visual = ColorVisual(196, 187, 147)
+        visual = ColorVisual(96,108,56)
 
     }
     private val redoButton = Button(
@@ -29,12 +29,12 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         posX = 250, posY = 980,
         text = "REDO", font = Font(size = 30), alignment = Alignment.CENTER_LEFT
     ).apply {
-        visual = ColorVisual(196, 187, 147)
+        visual = ColorVisual(96,108,56)
     }
 
 
     init {
-        background = ColorVisual(158, 181, 91)
+        background = ColorVisual(96,108,56)
         addComponents(headlineLabel,
        undoButton,redoButton )
     }

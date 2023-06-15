@@ -7,7 +7,7 @@ import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
-class RuleScene(private val rootService: RootService) :
+class   RuleScene(private val rootService: RootService) :
     BoardGameScene(1920, 1080), Refreshable {
 
     private val headlineLabel = Label(
