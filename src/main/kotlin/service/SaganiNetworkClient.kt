@@ -2,6 +2,7 @@ package service
 
 import edu.udo.cs.sopra.ntf.ConnectionState
 import edu.udo.cs.sopra.ntf.GameInitMessage
+import edu.udo.cs.sopra.ntf.MoveType
 import edu.udo.cs.sopra.ntf.TurnMessage
 import tools.aqua.bgw.core.BoardGameApplication
 import tools.aqua.bgw.net.client.BoardGameClient
@@ -122,8 +123,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     override fun onGameActionResponse(response: GameActionResponse) {
         BoardGameApplication.runOnGUIThread {
             check(
-                networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS
-                        || networkService.connectionState == ConnectionState.PLAYING_MY_TURN
+                networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS || networkService.connectionState == ConnectionState.PLAYING_MY_TURN
             ) {
                 "Received a game action response in an unexpected connection state."
             }
@@ -148,7 +148,20 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 "Received a turn message in an unexpected connection state."
             }
 
-            // TODO: Handle turn message
+            val game = networkService.rootService.currentGame
+            checkNotNull(game) { "Received a turn message without a current game." }
+            if (message.type == MoveType.SKIP) {
+                // TODO: Skip intermezzo method call
+                return@runOnGUIThread
+            }
+            val offerDisplay = game.offerDisplay
+            val drawPile = game.stacks
+            val tileID = message.tilePlacement?.tileId ?: error("Received a turn message without a tile placement.")
+
+            val tile = offerDisplay.find { it.id == tileID } ?: drawPile.find { it.id == tileID }
+            ?: error("Received a turn message with an unknown tile.")
+            // TODO: Place tile
+            // TODO: Validate tile placement using the TurnChecksum
         }
     }
 

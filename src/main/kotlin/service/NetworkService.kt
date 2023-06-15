@@ -5,7 +5,7 @@ import edu.udo.cs.sopra.ntf.ConnectionState
 /**
  * The service that handles anything related to the network.
  */
-class NetworkService(private val rootService: RootService) : AbstractRefreshingService() {
+class NetworkService(val rootService: RootService) : AbstractRefreshingService() {
 
     companion object {
         /**
@@ -50,9 +50,7 @@ class NetworkService(private val rootService: RootService) : AbstractRefreshingS
      * @throws IllegalStateException If the client is already connected or the connection attempt fails
      */
     fun joinGame(name: String, sessionID: String) {
-        if (!connect(name)) {
-            error("Could not connect to server.")
-        }
+        if (!connect(name)) error("Could not connect to server.")
 
         connectionState = ConnectionState.CONNECTED
         client?.joinGame(sessionID, "Greetings from Germany!")
@@ -69,9 +67,7 @@ class NetworkService(private val rootService: RootService) : AbstractRefreshingS
      * @throws IllegalStateException If the client is already connected or the connection attempt fails
      */
     fun hostGame(name: String, sessionID: String? = null) {
-        if (!connect(name)) {
-            error("Could not connect to server.")
-        }
+        if (!connect(name)) error("Could not connect to server.")
 
         connectionState = ConnectionState.CONNECTED
         if (sessionID.isNullOrBlank()) {
