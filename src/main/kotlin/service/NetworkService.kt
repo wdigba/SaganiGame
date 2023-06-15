@@ -17,6 +17,11 @@ class NetworkService(private val rootService: RootService) : AbstractRefreshingS
          * The internal game ID for Sagani.
          */
         const val GAME_ID = "Sagani"
+
+        /**
+         * The secret for the BGW net server.
+         */
+        const val NETWORK_SECRET = "23_b_tbd"
     }
 
     /**
@@ -39,14 +44,13 @@ class NetworkService(private val rootService: RootService) : AbstractRefreshingS
     /**
      * Connect to the server and joins a game session as a guest player.
      *
-     * @param secret The server secret
      * @param name The name of the player
      * @param sessionID The session ID of the game to join (as defined by the host)
      *
      * @throws IllegalStateException If the client is already connected or the connection attempt fails
      */
-    fun joinGame(secret: String, name: String, sessionID: String) {
-        if (!connect(secret, name)) {
+    fun joinGame(name: String, sessionID: String) {
+        if (!connect(name)) {
             error("Could not connect to server.")
         }
 
@@ -59,14 +63,13 @@ class NetworkService(private val rootService: RootService) : AbstractRefreshingS
     /**
      * Connects to the server and creates a new game session.
      *
-     * @param secret The server secret
      * @param name The name of the player
      * @param sessionID The session ID of the game (for guests to join)
      *
      * @throws IllegalStateException If the client is already connected or the connection attempt fails
      */
-    fun hostGame(secret: String, name: String, sessionID: String? = null) {
-        if (!connect(secret, name)) {
+    fun hostGame(name: String, sessionID: String? = null) {
+        if (!connect(name)) {
             error("Could not connect to server.")
         }
 
@@ -95,21 +98,19 @@ class NetworkService(private val rootService: RootService) : AbstractRefreshingS
     /**
      * Creates a connection to the server, sets the [client] if successful and returns <code>true</code> on success.
      *
-     * @param secret The secret of the server.
      * @param name The name of the player.
      *
-     * @throws IllegalArgumentException If the [secret] or the [name] is blank.
+     * @throws IllegalArgumentException If the [name] is blank.
      * @throws IllegalArgumentException If the [connectionState] is not [ConnectionState.DISCONNECTED] or the client is
      * already connected.
      *
      * @return <code>true</code> if the connection was created successfully, <code>false</code> otherwise.
      */
-    private fun connect(secret: String, name: String): Boolean {
+    private fun connect(name: String): Boolean {
         check(connectionState == ConnectionState.DISCONNECTED) { "Already connected to server." }
-        require(secret.isNotBlank()) { "You must enter a secret." }
         require(name.isNotBlank()) { "You must enter a name." }
 
-        val client = SaganiNetworkClient(name, SERVER_ADDRESS, secret, this)
+        val client = SaganiNetworkClient(name, SERVER_ADDRESS, this)
         if (client.connect()) {
             this.client = client
             return true

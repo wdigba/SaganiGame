@@ -20,11 +20,10 @@ import tools.aqua.bgw.net.common.response.JoinGameResponseStatus
  *
  * @property playerName The name of the player.
  * @property host The host address of the server.
- * @property secret The server secret.
  * @property networkService The [NetworkService] that created this client.
  */
-class SaganiNetworkClient(playerName: String, host: String, secret: String, val networkService: NetworkService) :
-    BoardGameClient(playerName, host, secret) {
+class SaganiNetworkClient(playerName: String, host: String, val networkService: NetworkService) :
+    BoardGameClient(playerName, host, NetworkService.NETWORK_SECRET) {
     /**
      * The unique identifier of the session. Null if there is no session.
      */
