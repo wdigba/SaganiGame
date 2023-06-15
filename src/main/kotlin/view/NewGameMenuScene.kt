@@ -22,7 +22,7 @@ class NewGameMenuScene(private val rootService: RootService) :
         text = "Play with KI",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        visual = ColorVisual(158, 181, 91)
     }
 
     val playButton = Button(
@@ -31,7 +31,7 @@ class NewGameMenuScene(private val rootService: RootService) :
         text = "Play with others",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        visual = ColorVisual(158, 181, 91)
     }
 
     val ruleButton = Button(
@@ -40,7 +40,7 @@ class NewGameMenuScene(private val rootService: RootService) :
         text = "Rules",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        visual = ColorVisual(158, 181, 91)
     }
 
     val quitButton = Button(
@@ -49,11 +49,11 @@ class NewGameMenuScene(private val rootService: RootService) :
         text = "Quit",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        visual = ColorVisual(158, 181, 91)
     }
 
     init {
-        background = ColorVisual(254,250,224)
+        background = ColorVisual(255,249,222)
         addComponents(
             headlineLabel,
             kIButton, playButton, ruleButton,quitButton

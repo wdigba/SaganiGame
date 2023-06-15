@@ -18,7 +18,7 @@ class NetworkScene(private val rootService: RootService) :
     )
 
     init {
-        background = ColorVisual(254,250,224)
+        background = ColorVisual(158, 181, 91)
         addComponents(headlineLabel)
     }
 }

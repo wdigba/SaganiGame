@@ -22,7 +22,7 @@ class ConfigurationScene(private val rootService: RootService) :
         text = "Network game",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        visual = ColorVisual(158, 181, 91)
     }
 
     val playersButton = Button(
@@ -31,7 +31,7 @@ class ConfigurationScene(private val rootService: RootService) :
         text = "Add players",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        visual = ColorVisual(158, 181, 91)
     }
 
     val backButton = Button(
@@ -40,12 +40,12 @@ class ConfigurationScene(private val rootService: RootService) :
         text = "Go Back",
         font = Font(size = 18)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        visual = ColorVisual(158, 181, 91)
 
     }
 
     init {
-        background = ColorVisual(254,250,224)
+        background = ColorVisual(255, 249, 222)
         addComponents(
             headlineLabel,
             networkButton, playersButton, backButton
