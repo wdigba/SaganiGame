@@ -61,7 +61,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     private val comboBox3 =
         ComboBox<Double>(posX = 230, posY = 320, width = 50, prompt = "Select an option!")
     private val comboBox4 =
-        ComboBox<Double>(posX = 230, posY = 400, width = 50, prompt = "Select an option!")
+        ComboBox<String>(posX = 230, posY = 400, width = 50, prompt = "Select an option!")
 
 
     private val player2Label = Label(
@@ -212,12 +212,15 @@ class PlayerConfigScene(private val rootService: RootService) :
                 "Till", "Marc", "Luka", "Sven", "Nick", "Friedemann", "Moritz", "Stefan", "Kai", "Vadym",
                 "Nils", "Marie", "Niklas", "Polina", "Christian", "Torben", "Daniel", "Noah", "Karina"
             )
+            randomNames.shuffle()
             val randomAdjectives = mutableListOf(
                 "awesome", "brilliant", "clumsy", "aggressive", "scary",
                 "amazing", "bored", "weird", "ambitious"
             )
+            randomAdjectives.shuffle()
             for (input in playerInputs) {
-                input.text = randomAdjectives.random() + " " + randomNames.random()
+
+                input.text = randomAdjectives.removeFirst() + " " + randomNames.removeFirst()
             }
             startButton.isDisabled = checkIfStartIsAvailable()
         }
@@ -260,7 +263,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         comboBox4.formatFunction = {
             "${it.toString()}"
         }
-        comboBox4.items = mutableListOf(0.0, 0.1, 0.4, 0.2)
+        comboBox4.items = mutableListOf("Schwarz", "Blau", "Pink", "Weiß")
         comboBox4.selectedItemProperty.addListener { _, newValue ->
             outputLabel.text = "Combo box selection is : $newValue"
         }
@@ -272,7 +275,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player2Label, player2Input, color2Label, comboBox2,
             player3Label, player3Input, color3Label, comboBox3,
             player4Label, player4Input, color4Label, comboBox4,
-            startButton, backButton, plusButton, minusButton,
+            startButton, backButton, plusButton, minusButton, outputLabel,
             randomNamesButton
         )
     }
