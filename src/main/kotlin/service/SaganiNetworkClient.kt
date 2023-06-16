@@ -3,7 +3,9 @@ package service
 import edu.udo.cs.sopra.ntf.ConnectionState
 import edu.udo.cs.sopra.ntf.GameInitMessage
 import edu.udo.cs.sopra.ntf.MoveType
+import edu.udo.cs.sopra.ntf.Orientation
 import edu.udo.cs.sopra.ntf.TurnMessage
+import entity.Direction
 import tools.aqua.bgw.core.BoardGameApplication
 import tools.aqua.bgw.net.client.BoardGameClient
 import tools.aqua.bgw.net.common.annotations.GameActionReceiver
@@ -53,6 +55,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 CreateGameResponseStatus.SUCCESS -> {
                     networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
                     sessionID = response.sessionID
+                    if (NetworkService.DEBUG) println("[Debug] $playerName: Successfully created game $sessionID.")
                 }
 
                 else -> disconnectAndError(response.status)
@@ -79,6 +82,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                     otherPlayers = response.opponents
                     sessionID = response.sessionID
                     networkService.connectionState = ConnectionState.WAITING_FOR_INIT
+                    if (NetworkService.DEBUG) println("[Debug] $playerName: Successfully joined game $sessionID.")
                 }
 
                 else -> disconnectAndError(response.status)
@@ -98,6 +102,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 "Received a player joined notification in an unexpected connection state."
             }
 
+            if (NetworkService.DEBUG) println("[Debug] $playerName: Player \"${notification.sender}\" joined")
             otherPlayers += notification.sender
         }
     }
@@ -108,6 +113,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
      */
     override fun onPlayerLeft(notification: PlayerLeftNotification) {
         BoardGameApplication.runOnGUIThread {
+            if (NetworkService.DEBUG) println("[Debug] $playerName: Player \"${notification.sender}\" left.")
             otherPlayers -= notification.sender
         }
     }
@@ -129,7 +135,10 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             }
 
             when (response.status) {
-                GameActionResponseStatus.SUCCESS -> {}
+                GameActionResponseStatus.SUCCESS -> {
+                    if (NetworkService.DEBUG) println("[Debug] $playerName Game action response received.")
+                }
+
                 else -> disconnectAndError(response.status)
             }
         }
@@ -151,17 +160,36 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             val game = networkService.rootService.currentGame
             checkNotNull(game) { "Received a turn message without a current game." }
             if (message.type == MoveType.SKIP) {
-                // TODO: Skip intermezzo method call
+                if (NetworkService.DEBUG) println("[Debug] $playerName: Received a skip turn message.")
+                networkService.rootService.gameService.changeToNextPlayer()
                 return@runOnGUIThread
             }
+
             val offerDisplay = game.offerDisplay
             val drawPile = game.stacks
-            val tileID = message.tilePlacement?.tileId ?: error("Received a turn message without a tile placement.")
+            val intermezzoStorage = game.intermezzoStorage
+            val tilePlacement = message.tilePlacement ?: error("Received a turn message without a tile placement.")
 
-            val tile = offerDisplay.find { it.id == tileID } ?: drawPile.find { it.id == tileID }
-            ?: error("Received a turn message with an unknown tile.")
-            // TODO: Place tile
-            // TODO: Validate tile placement using the TurnChecksum
+            val tile =
+                offerDisplay.find { it.id == tilePlacement.tileId } ?: drawPile.find { it.id == tilePlacement.tileId }
+                ?: intermezzoStorage.find { it.id == tilePlacement.tileId }
+                ?: error("Received a turn message with an unknown tile.")
+
+            val position = Pair(tilePlacement.posX, tilePlacement.posY)
+            val direction = when (tilePlacement.orientation) {
+                Orientation.NORTH -> Direction.UP
+                Orientation.EAST -> Direction.RIGHT
+                Orientation.SOUTH -> Direction.DOWN
+                Orientation.WEST -> Direction.LEFT
+            }
+
+            if (NetworkService.DEBUG) {
+                println("[Debug] $playerName: Incoming Turn Message: ${tile.id} at $position in direction $direction.")
+            }
+
+            networkService.rootService.playerActionService.placeTile(
+                tile, direction, position
+            )
         }
     }
 
@@ -175,6 +203,8 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             check(networkService.connectionState == ConnectionState.WAITING_FOR_INIT) {
                 "Received a game init message in an unexpected connection state."
             }
+
+            if (NetworkService.DEBUG) println("[Debug] $playerName: Received a game init message.")
 
             // TODO: Start a new game
         }
