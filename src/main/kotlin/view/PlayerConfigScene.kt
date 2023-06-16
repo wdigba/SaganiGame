@@ -13,7 +13,7 @@ import java.awt.Color
  * - Farben (Nils)
  * - Shuffle Spielerreihenfolge Button (wird auch angezeigt) (Nils)
  * - Random Farben
- * - Random Namen ( Tutoren Name)
+ * - Random Namen ( Tutoren Name) *
  */
 
 class PlayerConfigScene(private val rootService: RootService) :
