@@ -135,13 +135,12 @@ class PlayerConfigScene(private val rootService: RootService) :
     /**
      * Button leads to the previous MenuScene.
      */
-    val backButton = Button(
-        width = 140, height = 35,
+    val backButton = StandardButton(
         posX = 50, posY = 465,
+        width = 140,
         text = "Go Back",
-        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(96, 108, 56)
+        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
         onMouseClicked = {
             for (input in playerInputs) {
                 input.text = ""
@@ -153,13 +152,12 @@ class PlayerConfigScene(private val rootService: RootService) :
     /**
      * Starts the game.
      */
-    val startButton = Button(
-        width = 140, height = 35,
+    val startButton = StandardButton(
         posX = 230, posY = 465,
+        width = 140,
         text = "Start",
-        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(96, 108, 56)
+        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
         onMouseClicked = {
             val playerNames = mutableListOf<String>()
             for (input in playerInputs) {
@@ -201,12 +199,11 @@ class PlayerConfigScene(private val rootService: RootService) :
     /**
      * creates random names with random adjectives and adds them to the inputs accordingly.
      */
-    private val randomNamesButton = Button(
-        width = 200, height = 35,
+    private val randomNamesButton = StandardButton(
         posX = 50, posY = 520,
-        text = "Random Names", font = Font(size = 18, color = Color.WHITE), alignment = Alignment.CENTER
+        text = "Random Names"
     ).apply {
-        visual = ColorVisual(96, 108, 56)
+        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
         onMouseClicked = {
             val randomNames = mutableListOf(
                 "Till", "Marc", "Luka", "Sven", "Nick", "Friedemann", "Moritz", "Stefan", "Kai", "Vadym",

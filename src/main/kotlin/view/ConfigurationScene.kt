@@ -1,12 +1,13 @@
 package view
 
 import service.RootService
-import tools.aqua.bgw.components.uicomponents.Button
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
-import java.awt.Color
+
+// TODO: PlayButton Klasse erstellen
+
 
 class ConfigurationScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
@@ -17,32 +18,25 @@ class ConfigurationScene(private val rootService: RootService) :
         font = Font(size = 22)
     )
 
-    val networkButton = Button(
-        width = 200, height = 35,
+    val networkButton = StandardButton(
         posX = 100, posY = 200,
-        text = "Network game",
-        font = Font(size = 18, color = Color.white)
+        text = "Network game"
     ).apply {
-        visual = ColorVisual(96,108,56)
+        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
     }
 
-    val playersButton = Button(
-        width = 200, height = 35,
+    val playersButton = StandardButton(
         posX = 100, posY = 300,
         text = "Add players",
-        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(96,108,56)
+        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
     }
 
-    val backButton = Button(
-        width = 200, height = 35,
+    val backButton = StandardButton(
         posX = 100, posY = 400,
         text = "Go Back",
-        font = Font(size = 18, color = Color.white)
     ).apply {
-        visual = ColorVisual(96,108,56)
-
+        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
     }
 
     init {

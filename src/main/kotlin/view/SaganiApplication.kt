@@ -34,7 +34,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             hideMenuScene()
             this@SaganiApplication.showGameScene(saganiGameScene)
         }
-        playButton.onMouseClicked = {
+        standardButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(configurationScene)
         }
         ruleButton.onMouseClicked = {
