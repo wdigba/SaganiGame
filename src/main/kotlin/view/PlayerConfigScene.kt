@@ -6,12 +6,9 @@ import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
-import java.awt.Color
 
 /**
  * TODO:
- * - Farben (Nils)
- * - Shuffle Spielerreihenfolge Button (wird auch angezeigt) (Nils)
  * - Random Farben
  * - Random Namen ( Tutoren Name) *
  */
@@ -41,6 +38,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         width = 150, height = 35,
         posX = 70, posY = 160
     ).apply {
+        componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
             startButton.isDisabled = checkIfStartIsAvailable()
         }
@@ -79,11 +77,11 @@ class PlayerConfigScene(private val rootService: RootService) :
         width = 150, height = 35,
         posX = 70, posY = 240
     ).apply {
+        componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
             startButton.isDisabled = checkIfStartIsAvailable()
         }
     }
-
 
     private val player3Label = Label(
         width = 100, height = 35,
@@ -100,6 +98,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         width = 150, height = 35,
         posX = 70, posY = 320
     ).apply {
+        componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
             startButton.isDisabled = checkIfStartIsAvailable()
         }
@@ -120,6 +119,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         width = 150, height = 35,
         posX = 70, posY = 400
     ).apply {
+        componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
             startButton.isDisabled = checkIfStartIsAvailable()
         }
@@ -178,7 +178,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 320, posY = 240,
         text = "+", font = Font(size = 14), alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(200, 202, 167)
+        visual = ColorVisual(Color.paleLeaf)
         onMouseClicked = {
             repositionButtonsPlus()
         }
@@ -189,7 +189,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 360, posY = 320,
         text = "-", font = Font(size = 20), alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(200, 202, 167)
+        visual = ColorVisual(Color.paleLeaf)
         onMouseClicked = {
             repositionButtonsMinus()
         }
@@ -211,8 +211,8 @@ class PlayerConfigScene(private val rootService: RootService) :
             )
             randomNames.shuffle()
             val randomAdjectives = mutableListOf(
-                "awesome", "brilliant", "clumsy", "aggressive", "scary",
-                "amazing", "bored", "weird", "ambitious"
+                "Awesome", "Brilliant", "Clumsy", "Aggressive", "Scary",
+                "Amazing", "Bored", "Weird", "Ambitious"
             )
             randomAdjectives.shuffle()
             for (input in playerInputs) {
@@ -224,7 +224,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     }
 
     init {
-        background = ColorVisual(254, 250, 224)
+        background = ColorVisual(Color.cornSilk)
         player3Label.isVisible = false
         player3Input.isVisible = false
         player4Input.isVisible = false
@@ -265,7 +265,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             outputLabel.text = "Combo box selection is : $newValue"
         }
 
-        opacity = .5
+        opacity = 1.0
         addComponents(
             headlineLabel,
             player1Label, player1Input, color1Label, comboBox1,

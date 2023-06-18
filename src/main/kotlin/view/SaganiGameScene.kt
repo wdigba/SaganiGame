@@ -6,8 +6,6 @@ import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
-import tools.aqua.bgw.components.uicomponents.Button
-import java.awt.Color
 
 
 class SaganiGameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable{
@@ -17,25 +15,20 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         font = Font(size = 22)
     )
 
-    private val undoButton = Button(
-        width = 170, height = 40,
+    private val undoButton = StandardButton(
         posX = 50, posY = 980,
-        text = "UNDO", font = Font(size = 30, color = Color.white)
+        text = "UNDO"
     ).apply {
-        visual = ColorVisual( 96,108,56)
-
     }
-    private val redoButton = Button(
-        width = 170, height = 40,
+    private val redoButton = StandardButton(
         posX = 250, posY = 980,
-        text = "REDO", font = Font(size = 30, color = Color.white), alignment = Alignment.CENTER_LEFT
+        text = "REDO", alignment = Alignment.CENTER_LEFT
     ).apply {
-        visual = ColorVisual( 96,108,56)
     }
 
 
     init {
-        background = ColorVisual( 96,108,56)
+        background = ColorVisual( Color.chaletGreen)
         addComponents(headlineLabel,
        undoButton,redoButton )
     }

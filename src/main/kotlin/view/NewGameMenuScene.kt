@@ -44,7 +44,8 @@ class NewGameMenuScene(private val rootService: RootService) :
     }
 
     init {
-        background = ColorVisual(254,250,224)
+        opacity = 1.0
+        background = ColorVisual(Color.cornSilk)
         addComponents(
             headlineLabel,
             kIButton, standardButton, ruleButton,quitButton

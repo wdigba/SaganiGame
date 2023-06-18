@@ -1,10 +1,8 @@
 package view
 
-import service.GameService
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
-import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
@@ -18,7 +16,8 @@ class NetworkScene(private val rootService: RootService) :
     )
 
     init {
-        background = ColorVisual(254,250,224)
+        opacity = 1.0
+        background = ColorVisual(Color.cornSilk)
         addComponents(headlineLabel)
     }
 }

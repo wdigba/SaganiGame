@@ -5,7 +5,6 @@ import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 import tools.aqua.bgw.visual.Visual
-import java.awt.Color
 
 /**
  * Custum Button class that extends [Button]
@@ -19,7 +18,7 @@ class StandardButton(
     width: Number = 200,
     height: Number = 35,
     text: String = "",
-    font: Font = Font(size = 18, color = Color.white),
+    font: Font = Font(size = 18, color = Color.cornSilk),
     alignment: Alignment = Alignment.CENTER,
     isWrapText: Boolean = false,
     visual: Visual = ColorVisual.TRANSPARENT,
