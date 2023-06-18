@@ -6,7 +6,7 @@ import entity.*
 import java.util.*
 
 /**
- * The service responsible for executing the AI strategies
+ * [KIService] is responsible for executing the AI strategies
  */
 class KIService(private val rootService: RootService) {
     class CoordinateInformation {
@@ -17,7 +17,7 @@ class KIService(private val rootService: RootService) {
         var waterCount  = 0
         var fireCount = 0
 
-        // the number of disc that would be freed if a card of the color corresponing color
+        // the number of disc that would be freed if a card of the corresponding color would be placed
         var discsIfAirPlaced    = 0
         var discsIfEarthPlaced  = 0
         var discsIfWaterPlaced  = 0
@@ -47,12 +47,7 @@ class KIService(private val rootService: RootService) {
 
     fun checkArrowAlignmentMetrix(player: Player){
         val scoreMap = buildScoreMap(player, 3)
-
-
-
     }
-
-
 
     fun buildScoreMap(player: Player, range: Int) : Map<Pair<Int, Int>, CoordinateInformation>{
         val scoreMap = fillScoreMap(player, range)
@@ -60,7 +55,7 @@ class KIService(private val rootService: RootService) {
         return scoreMap
     }
 
-
+    // determining the appropriate position depending on the given direction
     private fun calculateAdjacentPosition(pos: Pair<Int, Int>, direction: Direction): Pair<Int, Int> {
         return when (direction) {
             Direction.UP -> Pair(pos.first, pos.second + 1)
@@ -71,8 +66,8 @@ class KIService(private val rootService: RootService) {
         }
     }
 
-
-    fun isOnlyUnsatisfiedArrow(currentArrow: Arrow, tile: Tile): Boolean {
+    // whether the specified arrow is the only unsatisfied arrow in the given tile
+    private fun isOnlyUnsatisfiedArrow(currentArrow: Arrow, tile: Tile): Boolean {
         var unsatisfiedCount = 0
         for (arrow in tile.arrows) {
             if (arrow.disc.size == 0) {
@@ -90,7 +85,10 @@ class KIService(private val rootService: RootService) {
         return newScoreMap
     }
 
-
+    /**
+     * [calculatePotentialTilePlacements] calculates potential estimates of tile placement
+     * based on information about the coordinates and distances on the game board
+     */
     fun calculatePotentialTilePlacements(tile: Tile, scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>): Map<Pair<Int, Int>, Double> {
         val potentialScores = mutableMapOf<Pair<Int, Int>, Double>()
 
@@ -99,7 +97,7 @@ class KIService(private val rootService: RootService) {
                 continue
             }
 
-            for (rotation in Direction.values()) {
+            for (rotation in Direction.tileDirection()) {
                 tile.rotate(rotation)
                 val updatedScoreMap = getNewScoreMapForTile(scoreMap, tile, position)
                 val score = calculateBoardScore(updatedScoreMap)
@@ -111,6 +109,11 @@ class KIService(private val rootService: RootService) {
         return potentialScores
     }
 
+    /**
+     * [updatePosition] updates the information about a specific position in newScoreMap
+     * depending on the type of arrow and tile, incrementing the corresponding counters and the number of discs
+     * if the given arrow is the only unsatisfied arrow.
+     */
     private fun updatePosition(
         newScoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>,
         positionToUpdate: Pair<Int, Int>,
@@ -150,6 +153,9 @@ class KIService(private val rootService: RootService) {
         }
     }
 
+    /**
+     * [getNewScoreMapForTile] used to get a new copy of the scoreMap with updated values based on the placement of the tile at a specific position
+     */
     private fun getNewScoreMapForTile(scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>, tile: Tile, position: Pair<Int, Int>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
         val newScoreMap = deepCopyScoreMap(scoreMap)
         val tileInfo = newScoreMap[position] ?: CoordinateInformation()
@@ -168,12 +174,15 @@ class KIService(private val rootService: RootService) {
         return newScoreMap
     }
 
+    /**
+     * [calculateBoardScore] used to calculate the overall score of the game board based on the information contained in the scoreMap
+     */
     fun calculateBoardScore(scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>): Double {
 
         //weights
-        val arrowDensityWeight = 1
-        val disFreedomWeight = 1
-        val interferenceWeight = 1
+        val arrowDensityWeight = 1 //concentration of discs pointing to a particular position
+        val disFreedomWeight = 1 //potential amount of discs that could de freed
+        val interferenceWeight = 1 // how much the placement of one element can interfere with the placement of other elements in adjacent positions
 
         var totalArrowDensityScore = 0.0
         var totalDiscFreedomScore = 0.0
@@ -199,7 +208,7 @@ class KIService(private val rootService: RootService) {
                 totalInteferenceScore += interferenceScore
             }
         }
-
+        //calculation of the total score of the game board
         return arrowDensityWeight * totalArrowDensityScore + disFreedomWeight * totalDiscFreedomScore + interferenceWeight * totalInteferenceScore
     }
 
@@ -212,6 +221,10 @@ class KIService(private val rootService: RootService) {
         }
     }
 
+    /**
+     * [getLowestGameDistanceFromNeighbours]is used to determine the smallest game distance
+     * among adjacent positions of a given position on the game board
+     */
     private fun getLowestGameDistanceFromNeighbours(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
         var lowestGameDistance = Int.MAX_VALUE
         for (direction in Direction.values()) {
@@ -224,7 +237,10 @@ class KIService(private val rootService: RootService) {
     }
 
 
-
+    /**
+     * [fillScoreMap] is used to fill the score Map for the player in definite range
+     * This information can be used to evaluate positions and make decisions in the game
+     */
     fun fillScoreMap(player: Player, range: Int): MutableMap<Pair<Int, Int>, CoordinateInformation> {
         val scoreMap = mutableMapOf<Pair<Int, Int>, CoordinateInformation>()
         val queue: Queue<Pair<Int, Int>> = LinkedList()
@@ -253,8 +269,6 @@ class KIService(private val rootService: RootService) {
                 }
             }
         }
-
         return scoreMap
     }
-
 }
