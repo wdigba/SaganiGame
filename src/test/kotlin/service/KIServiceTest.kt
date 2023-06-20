@@ -4,6 +4,12 @@ import entity.*
 import kotlin.test.*
 
 class KIServiceTest {
+
+    @BeforeTest
+    fun doSomething(){
+
+    }
+
     @Test
     fun testCalculateBoardScore() {
         val service = KIService(RootService())
