@@ -50,22 +50,25 @@ class KIServiceTest {
         // Set up the arrows
 
 
-        tile1.arrows.forEach({
+        tile1.arrows.forEach {
             when (it.element) {
                 Element.FIRE -> {
                     it.disc.add(tile1.discs.last())
                 }
+
                 Element.EARTH -> {
                     it.disc.add(tile1.discs.last())
-                } else -> {}
-            }
-        })
+                }
 
-        tile3.arrows.forEach({
+                else -> {}
+            }
+        }
+
+        tile3.arrows.forEach {
             if (it.element == Element.EARTH && it.direction == Direction.RIGHT) {
                 it.disc.add(tile3.discs.last())
             }
-        })
+        }
 
         player.board = board
     }
@@ -209,7 +212,7 @@ class KIServiceTest {
             Arrow(Element.EARTH, Direction.UP),
             Arrow(Element.EARTH, Direction.UP_LEFT)))
 
-        repeat(3) {
+        repeat(2) {
             tile.discs.add(player.discs.last())
         }
 
@@ -220,5 +223,124 @@ class KIServiceTest {
 
         assertEquals(Pair(Pair(1, 1), Direction.LEFT), highestScore?.key)
 
+    }
+    @Test
+    fun placeTileBiggerScoreMap() {
+        val rootService = RootService()
+        kiService = KIService(rootService)
+        player = Player("Alice", Color.WHITE)
+
+        val tile1 = Tile(1, points = 3, Element.WATER, listOf(
+            Arrow(Element.FIRE, Direction.RIGHT),
+            Arrow(Element.WATER, Direction.DOWN)))
+
+        val tile2 = Tile(2, points = 3, Element.FIRE, listOf(
+            Arrow(Element.WATER, Direction.DOWN_LEFT),
+            Arrow(Element.AIR, Direction.UP)))
+
+        val tile3 = Tile(3, points = 3, Element.EARTH, listOf(
+            Arrow(Element.AIR, Direction.UP_LEFT),
+            Arrow(Element.EARTH, Direction.UP_RIGHT)))
+
+        val tile4 = Tile(4, points = 6, Element.EARTH, listOf(
+            Arrow(Element.FIRE, Direction.DOWN_RIGHT),
+            Arrow(Element.WATER, Direction.LEFT),
+            Arrow(Element.EARTH, Direction.UP)))
+
+        val tile5 = Tile(5, points = 3, Element.AIR, listOf(
+            Arrow(Element.EARTH, Direction.LEFT),
+            Arrow(Element.FIRE, Direction.DOWN)))
+
+        val tile6 = Tile(6, points = 1, Element.FIRE, listOf(
+            Arrow(Element.WATER, Direction.DOWN)))
+
+        val board = mutableMapOf(
+            Pair(0, 0) to tile1,
+            Pair(1, 0) to tile2,
+            Pair(2, 0) to tile3,
+            Pair(0, 1) to tile4,
+            Pair(1, 1) to tile5,
+            Pair(0, 2) to tile6
+        )
+
+        repeat(2) {
+            tile1.discs.add(player.discs.last())
+        }
+        repeat(2) {
+            tile2.discs.add(player.discs.last())
+        }
+        repeat(2) {
+            tile3.discs.add(player.discs.last())
+        }
+        repeat(3) {
+            tile4.discs.add(player.discs.last())
+        }
+        repeat(2) {
+            tile5.discs.add(player.discs.last())
+        }
+        repeat(1) {
+            tile6.discs.add(player.discs.last())
+        }
+
+        tile1.arrows.forEach {
+            when (it.element) {
+                Element.FIRE -> {
+                    it.disc.add(tile1.discs.last())
+                }
+                else -> {}
+            }
+        }
+
+        tile2.arrows.forEach{
+            when (it.element) {
+                Element.AIR -> it.disc.add(tile2.discs.last())
+                else -> {}
+            }
+        }
+
+        tile3.arrows.forEach {
+            if (it.element == Element.AIR && it.direction == Direction.UP_LEFT) {
+                it.disc.add(tile3.discs.last())
+            }
+        }
+
+        tile4.arrows.forEach {
+            if (it.element == Element.FIRE && it.direction == Direction.DOWN_RIGHT) {
+                it.disc.add(tile4.discs.last())
+            }
+        }
+
+        tile5.arrows.forEach(){
+            when (it.element) {
+                Element.FIRE -> {
+                    it.disc.add(tile5.discs.last())
+                }
+                Element.EARTH -> it.disc.add(tile5.discs.last())
+                else -> {}
+            }
+        }
+
+        tile6.arrows.forEach {
+            if (it.element == Element.WATER && it.direction == Direction.DOWN) {
+                it.disc.add(tile6.discs.last())
+            }
+        }
+        player.board = board
+
+        val scoreMap = kiService.buildScoreMap(player, 1)
+        print(scoreMap)
+
+        val tile = Tile(7, points = 6, Element.AIR, listOf(
+            Arrow(Element.EARTH, Direction.UP_RIGHT),
+            Arrow(Element.FIRE, Direction.UP),
+            Arrow(Element.WATER, Direction.UP_LEFT)))
+
+        repeat(2) {
+            tile.discs.add(player.discs.last())
+        }
+
+        val potentialPlacements = kiService.calculatePotentialTilePlacements(tile, scoreMap, player)
+        val highestScore = potentialPlacements.maxByOrNull { it.value }
+        assertEquals(Pair(Pair(-1, 0), Direction.DOWN), highestScore?.key)
     }
 }
