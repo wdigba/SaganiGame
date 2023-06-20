@@ -4,6 +4,7 @@ import service.RootService
 import tools.aqua.bgw.components.uicomponents.*
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.MenuScene
+import tools.aqua.bgw.observable.properties.StringProperty
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
@@ -48,18 +49,45 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 230,
         posY = 160,
         width = 50,
-        text = "I am",
+        text = " ",
         alignment = Alignment.CENTER,
         isWrapText = true
     )
     private val comboBox1 =
-        ComboBox<Double>(posX = 230, posY = 160, width = 50, prompt = "Select an option!")
+        ComboBox<String>(posX = 230, posY = 160, width = 70, prompt = " ")
+
+    private val outputLabel2 = Label(
+        posX = 230,
+        posY = 240,
+        width = 50,
+        text = " ",
+        alignment = Alignment.CENTER,
+        isWrapText = true
+    )
     private val comboBox2 =
-        ComboBox<Double>(posX = 230, posY = 240, width = 50, prompt = "Select an option!")
+        ComboBox<String>(posX = 230, posY = 240, width = 70, prompt = " ")
+
+    private val outputLabel3 = Label(
+        posX = 230,
+        posY = 320,
+        width = 50,
+        text = " ",
+        alignment = Alignment.CENTER,
+        isWrapText = true
+    )
+
     private val comboBox3 =
-        ComboBox<Double>(posX = 230, posY = 320, width = 50, prompt = "Select an option!")
+        ComboBox<String>(posX = 230, posY = 320, width = 70, prompt = " ")
+    private val outputLabel4 = Label(
+        posX = 230,
+        posY = 400,
+        width = 50,
+        text = " ",
+        alignment = Alignment.CENTER,
+        isWrapText = true
+    )
     private val comboBox4 =
-        ComboBox<String>(posX = 230, posY = 400, width = 50, prompt = "Select an option!")
+        ComboBox<String>(posX = 230, posY = 400, width = 70, prompt = " ")
 
 
     private val player2Label = Label(
@@ -236,33 +264,25 @@ class PlayerConfigScene(private val rootService: RootService) :
         comboBox3.isVisible = false
         comboBox4.isVisible = false
 
-        comboBox1.formatFunction = {
-            "${it.toString()}"
-        }
-        comboBox1.items = mutableListOf(0.0, 0.1, 0.4, 0.2)
+        comboBox1.items = mutableListOf("Red ", "Blue", "Green ", "White")
         comboBox1.selectedItemProperty.addListener { _, newValue ->
-            outputLabel.text = "Combo box selection is : $newValue"
+            outputLabel.text = "$newValue"
         }
-        comboBox2.formatFunction = {
-            "${it.toString()}"
-        }
-        comboBox2.items = mutableListOf(0.0, 0.1, 0.4, 0.2)
+
+
+        comboBox2.items = mutableListOf("Red ", "Blue", "Green ", "White")
         comboBox2.selectedItemProperty.addListener { _, newValue ->
-            outputLabel.text = "Combo box selection is : $newValue"
+            outputLabel2.text = "$newValue"
         }
-        comboBox3.formatFunction = {
-            "${it.toString()}"
-        }
-        comboBox3.items = mutableListOf(0.0, 0.1, 0.4, 0.2)
+
+        comboBox3.items = mutableListOf("Red ", "Blue", "Green ", "White")
         comboBox3.selectedItemProperty.addListener { _, newValue ->
-            outputLabel.text = "Combo box selection is : $newValue"
+            outputLabel3.text = "$newValue"
         }
-        comboBox4.formatFunction = {
-            "${it.toString()}"
-        }
-        comboBox4.items = mutableListOf("Schwarz", "Blau", "Pink", "Weiß")
+
+        comboBox4.items = mutableListOf("Red ", "Blue", "Green ", "White")
         comboBox4.selectedItemProperty.addListener { _, newValue ->
-            outputLabel.text = "Combo box selection is : $newValue"
+            outputLabel4.text = "$newValue"
         }
 
         opacity = 1.0
@@ -273,6 +293,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player3Label, player3Input, color3Label, comboBox3,
             player4Label, player4Input, color4Label, comboBox4,
             startButton, backButton, plusButton, minusButton, outputLabel,
+            outputLabel2,outputLabel3,outputLabel4,
             randomNamesButton
         )
     }
