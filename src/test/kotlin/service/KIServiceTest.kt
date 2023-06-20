@@ -4,10 +4,70 @@ import entity.*
 import kotlin.test.*
 
 class KIServiceTest {
-
+    lateinit var player: Player
+    lateinit var kiService: KIService
     @BeforeTest
     fun doSomething(){
+        // Given
+        val rootService = RootService() // Initialize with appropriate data
+        kiService = KIService(rootService)
+        // Prepare a player with a specific game state
+        player = Player("Alice", Color.WHITE)
 
+        // Create tiles and place them on the board
+        val tile1 = Tile(1, points = 6, Element.EARTH, listOf(
+            Arrow(Element.FIRE, Direction.UP_LEFT),
+            Arrow(Element.EARTH, Direction.UP),
+            Arrow(Element.WATER, Direction.UP_RIGHT)))
+        //add tile to player.board
+
+
+        val tile2 = Tile(2, points = 3, Element.EARTH, listOf(
+            Arrow(Element.FIRE, Direction.UP_LEFT),
+            Arrow(Element.FIRE, Direction.UP)))
+
+        val tile3 = Tile(3, points = 6, Element.FIRE, listOf(
+            Arrow(Element.FIRE, Direction.UP),
+            Arrow(Element.EARTH, Direction.RIGHT),
+            Arrow(Element.EARTH, Direction.DOWN)))
+
+        val board = mutableMapOf(
+            Pair(0, 0) to tile1,
+            Pair(0, 1) to tile2,
+            Pair(-1, 1) to tile3
+        )
+
+        repeat(3) {
+            tile1.discs.add(player.discs.last())
+        }
+        repeat(2) {
+            tile2.discs.add(player.discs.last())
+        }
+        repeat(3) {
+            tile3.discs.add(player.discs.last())
+        }
+
+        tile1.arrows.forEach({
+            when (it.element) {
+                Element.FIRE -> {
+                    it.disc.add(tile1.discs.last())
+                }
+                Element.EARTH -> {
+                    it.disc.add(tile1.discs.last())
+                } else -> {}
+            }
+        })
+
+        tile3.arrows.forEach({
+            when (it.element) {
+                Element.EARTH -> {
+                    it.disc.add(tile3.discs.last())
+                } else -> {}
+            }
+        })
+
+
+        player.board = board
     }
 
     @Test
@@ -125,9 +185,45 @@ class KIServiceTest {
             Pair(2, 1) to 3.0
         )  // Expected placements and their scores based on the sample data
 
-        val actualPlacements = service.calculatePotentialTilePlacements(tile, scoreMap)
+        val player = Player("test", Color.BLACK)
+
+        val actualPlacements = service.calculatePotentialTilePlacements(tile, scoreMap, player )
 
         assertEquals(expectedPlacements, actualPlacements)
     }
 
+    @Test
+    fun testBuildScoreMap() {
+
+
+        // When
+        val scoreMap = kiService.buildScoreMap(player, 1)
+
+        print(scoreMap)
+
+        // Then
+        // Add your assertions to check if scoreMap has been built correctly
+    }
+
+    @Test
+    fun testPlaceTile(){
+        val scoreMap = kiService.buildScoreMap(player, 1)
+
+
+        val tile = Tile(4, points = 3, Element.FIRE, listOf(
+            Arrow(Element.EARTH, Direction.UP),
+            Arrow(Element.EARTH, Direction.UP_LEFT)))
+
+        repeat(3) {
+            tile.discs.add(player.discs.last())
+        }
+
+        val potentialPlacements = kiService.calculatePotentialTilePlacements(tile, scoreMap, player)
+
+        // check if the score on (1,1) is the highest compared to all others
+        val highestScore = potentialPlacements.maxByOrNull { it.value }
+
+        assertEquals(Pair(1, 1), highestScore?.key)
+
+    }
 }

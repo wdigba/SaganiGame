@@ -62,7 +62,10 @@ class KIService(private val rootService: RootService) {
             Direction.DOWN -> Pair(pos.first, pos.second - 1)
             Direction.LEFT -> Pair(pos.first - 1, pos.second)
             Direction.RIGHT -> Pair(pos.first + 1, pos.second)
-            else -> throw Exception("Unsupported direction")
+            Direction.UP_LEFT -> Pair(pos.first - 1, pos.second + 1)
+            Direction.UP_RIGHT -> Pair(pos.first + 1, pos.second + 1)
+            Direction.DOWN_LEFT -> Pair(pos.first - 1, pos.second - 1)
+            Direction.DOWN_RIGHT -> Pair(pos.first + 1, pos.second - 1)
         }
     }
 
@@ -77,7 +80,7 @@ class KIService(private val rootService: RootService) {
         return unsatisfiedCount == 1 && currentArrow.disc.size == 0
     }
 
-    private fun deepCopyScoreMap(scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
+    private fun deepCopyScoreMap(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
         val newScoreMap = mutableMapOf<Pair<Int, Int>, CoordinateInformation>()
         for ((position, info) in scoreMap) {
             newScoreMap[position] = info.copy()
@@ -89,7 +92,7 @@ class KIService(private val rootService: RootService) {
      * [calculatePotentialTilePlacements] calculates potential estimates of tile placement
      * based on information about the coordinates and distances on the game board
      */
-    fun calculatePotentialTilePlacements(tile: Tile, scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>): Map<Pair<Int, Int>, Double> {
+    fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): Map<Pair<Int, Int>, Double> {
         val potentialScores = mutableMapOf<Pair<Int, Int>, Double>()
 
         for ((position, coordinateInfo) in scoreMap) {
@@ -99,6 +102,8 @@ class KIService(private val rootService: RootService) {
 
             for (rotation in Direction.tileDirection()) {
                 tile.rotate(rotation)
+
+                calculateSatisfiedArrows(player, tile, position)
                 val updatedScoreMap = getNewScoreMapForTile(scoreMap, tile, position)
                 val score = calculateBoardScore(updatedScoreMap)
                 potentialScores[position] = score
@@ -156,7 +161,7 @@ class KIService(private val rootService: RootService) {
     /**
      * [getNewScoreMapForTile] used to get a new copy of the scoreMap with updated values based on the placement of the tile at a specific position
      */
-    private fun getNewScoreMapForTile(scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>, tile: Tile, position: Pair<Int, Int>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
+    private fun getNewScoreMapForTile(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, tile: Tile, position: Pair<Int, Int>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
         val newScoreMap = deepCopyScoreMap(scoreMap)
         val tileInfo = newScoreMap[position] ?: CoordinateInformation()
         tileInfo.occupied = true
@@ -212,6 +217,26 @@ class KIService(private val rootService: RootService) {
         return arrowDensityWeight * totalArrowDensityScore + disFreedomWeight * totalDiscFreedomScore + interferenceWeight * totalInteferenceScore
     }
 
+    fun calculateSatisfiedArrows(player: Player, tile: Tile, position: Pair<Int, Int>): Int {
+        var satisfiedArrows = 0
+
+        for (arrow in tile.arrows) {
+            var adjacentPosition = calculateAdjacentPosition(position, arrow.direction)
+
+            // Keep moving in the arrow direction until we reach the end of the board or find a tile with matching element
+            while (player.board.containsKey(adjacentPosition)) {
+                if (player.board[adjacentPosition]?.element == arrow.element) {
+                    satisfiedArrows++
+                    arrow.disc.add(tile.discs.last())
+                    break
+                }
+                adjacentPosition = calculateAdjacentPosition(adjacentPosition, arrow.direction)
+            }
+        }
+
+        return satisfiedArrows
+    }
+
 
 
 
@@ -227,7 +252,7 @@ class KIService(private val rootService: RootService) {
      */
     private fun getLowestGameDistanceFromNeighbours(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
         var lowestGameDistance = Int.MAX_VALUE
-        for (direction in Direction.values()) {
+        for (direction in Direction.tileDirection()) {
             val neighbourPos = calculateAdjacentPosition(position, direction)
             if (scoreMap.containsKey(neighbourPos) && scoreMap[neighbourPos]!!.gameDistance < lowestGameDistance) {
                 lowestGameDistance = scoreMap[neighbourPos]!!.gameDistance
@@ -257,7 +282,7 @@ class KIService(private val rootService: RootService) {
         // Expand from each tile on the board until the game distance exceeds range
         while (queue.isNotEmpty()) {
             val position = queue.poll()
-            for (direction in Direction.values()) {
+            for (direction in Direction.tileDirection()) {
                 val adjacentPos = calculateAdjacentPosition(position, direction)
                 if (!scoreMap.containsKey(adjacentPos)) {
                     val info = CoordinateInformation()
