@@ -92,8 +92,11 @@ class KIService(private val rootService: RootService) {
      * [calculatePotentialTilePlacements] calculates potential estimates of tile placement
      * based on information about the coordinates and distances on the game board
      */
-    fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): Map<Pair<Int, Int>, Double> {
-        val potentialScores = mutableMapOf<Pair<Int, Int>, Double>()
+    fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): Map<Pair<Pair<Int, Int>, Direction>, Double> {
+
+        val arrowWeight = 2.0
+
+        val potentialScores = mutableMapOf<Pair<Pair<Int, Int>, Direction>, Double>()
 
         for ((position, coordinateInfo) in scoreMap) {
             if (coordinateInfo.occupied || coordinateInfo.gameDistance != 0) {
@@ -103,10 +106,15 @@ class KIService(private val rootService: RootService) {
             for (rotation in Direction.tileDirection()) {
                 tile.rotate(rotation)
 
-                calculateSatisfiedArrows(player, tile, position)
+                val satisfiedArrowsMetrics = calculateSatisfiedArrows(player, tile, position)
                 val updatedScoreMap = getNewScoreMapForTile(scoreMap, tile, position)
                 val score = calculateBoardScore(updatedScoreMap)
-                potentialScores[position] = score
+
+                potentialScores[Pair(position, rotation)] = score + arrowWeight * satisfiedArrowsMetrics
+
+                for(arrow in tile.arrows){
+                    tile.discs.addAll(arrow.disc)
+                }
             }
 
         }
@@ -214,7 +222,7 @@ class KIService(private val rootService: RootService) {
             }
         }
         //calculation of the total score of the game board
-        return arrowDensityWeight * totalArrowDensityScore + disFreedomWeight * totalDiscFreedomScore + interferenceWeight * totalInteferenceScore
+        return arrowDensityWeight * totalArrowDensityScore + disFreedomWeight * totalDiscFreedomScore - interferenceWeight * totalInteferenceScore
     }
 
     fun calculateSatisfiedArrows(player: Player, tile: Tile, position: Pair<Int, Int>): Int {
@@ -234,7 +242,7 @@ class KIService(private val rootService: RootService) {
             }
         }
 
-        return satisfiedArrows
+        return satisfiedArrows + (satisfiedArrows /tile.arrows.size)*2
     }
 
 
