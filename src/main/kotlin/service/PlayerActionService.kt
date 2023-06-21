@@ -1,9 +1,7 @@
 package service
 
-import entity.Arrow
-import entity.Direction
-import entity.Disc
-import entity.Tile
+import Location
+import entity.*
 
 /**
  * [PlayerActionService] provides player functions for the game.
@@ -16,7 +14,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * Discs are relocated to arrows with the same element that points to the new card. Player may get points and discs.
      * New tile gets discs and its discs get relocated if possible.
      */
-    fun placeTile(tile: Tile, direction: Direction, location: Pair<Int, Int>) {
+    fun placeTile(tile: Tile, direction: Direction, location: Location) {
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -61,7 +59,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         player.board[location] = tile
 
         // relocate discs, flip solved tiles and get points (other tiles)
-        relocateDiscs(tile, location)
+        relocateDiscs(player, tile, location, currentGame.turnCount)
 
         // place discs if confirmed and use cacophony discs if necessary
         repeat(tile.arrows.size) {
@@ -91,7 +89,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
         // refresh GUI
-        onAllRefreshables { refreshAfterPlaceTile() }
+        onAllRefreshables { refreshAfterPlaceTile(player, tile, location) }
 
         // change to next player
         rootService.gameService.changeToNextPlayer()
@@ -100,8 +98,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     /**
      * [validLocation] returns all valid locations for the given board
      */
-    fun validLocation(board: MutableMap<Pair<Int, Int>, Tile>): Set<Pair<Int, Int>> {
-        val validLocation = mutableSetOf(Pair(0, 0))
+    fun validLocation(board: MutableMap<Location, Tile>): Set<Location> {
+        if (board.isEmpty()) {
+            return mutableSetOf(Pair(0,0))
+        }
+        val validLocation: MutableSet<Location> = mutableSetOf()
         // add all location adjacent to given tiles
         board.keys.forEach {
             validLocation.add(Pair(it.first - 1, it.second))
@@ -114,18 +115,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         return validLocation
     }
 
-    private fun relocateDiscs(tile: Tile, location: Pair<Int, Int>) {
-        // check if game exists
-        val currentGame = rootService.currentGame
-        checkNotNull(currentGame) { "There is no game." }
-
-        // identify player
-        val player = if (currentGame.intermezzo) {
-            currentGame.intermezzoPlayers[0]
-        } else {
-            currentGame.actPlayer
-        }
-
+    private fun relocateDiscs(player: Player, tile: Tile, location: Location, turnCount: Int) {
         // relocate discs to fulfilled arrows
         for (direction in Direction.values()) {
             var filteredBoard = filterInDirection(player.board, direction, location)
@@ -147,7 +137,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                     it.arrows.forEach { arrow ->
                         player.discs.add(arrow.disc.removeFirst())
                     }
-                    player.points = Pair(player.points.first + it.points, currentGame.turnCount)
+                    player.points = Pair(player.points.first + it.points, turnCount)
                     it.flipped = true
                 }
             }
@@ -158,10 +148,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * [filterInDirection] returns a filtered Map of all tiles in the given direction from the given tile
      */
     fun filterInDirection(
-        board: MutableMap<Pair<Int, Int>, Tile>,
+        board: MutableMap<Location, Tile>,
         direction: Direction,
-        location: Pair<Int, Int>
-    ): Map<Pair<Int, Int>, Tile> {
+        location: Location
+    ): Map<Location, Tile> {
         return when (direction) {
             Direction.UP -> board.filterKeys {
                 it.first == location.first && it.second > location.second

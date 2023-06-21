@@ -28,6 +28,10 @@ class PlaceTileTest {
         val game = rootService.currentGame
         assertNotNull(game)
         game.offerDisplay.add(tile)
+        game.players[0].discs.clear()
+        repeat(24) {
+            game.players[0].discs.add(Disc.SOUND)
+        }
         // before function call
         assertEquals(Direction.UP, tile.direction)
         assert(location !in game.players[0].board.keys)
@@ -40,7 +44,7 @@ class PlaceTileTest {
         // tile has given direction
         assertEquals(direction, tile.direction)
         // tile is placed in given location
-        assert(game.players[0].board[location] == tile)
+        assertEquals(game.players[0].board[location], tile)
         // disc placed
         assertEquals(1, tile.discs.size)
         // player used a disc
@@ -51,17 +55,21 @@ class PlaceTileTest {
         refreshable.reset()
 
         // testData intermezzo
-        tile = Tile(1, 1, Element.FIRE, listOf(Arrow(Element.FIRE, Direction.UP_RIGHT)))
+        tile = Tile(
+            10, 3, Element.FIRE, listOf(
+                Arrow(Element.FIRE, Direction.UP),
+                Arrow(Element.WATER, Direction.UP_RIGHT)
+            )
+        )
         val previousTile = game.players[0].board[Pair(0, 0)]
         assertNotNull(previousTile)
-        direction = Direction.LEFT
+        direction = Direction.UP
         location = Pair(0, -1)
         game.intermezzoPlayers.addAll(game.players)
         assertEquals(game.intermezzoPlayers, game.players)
         game.intermezzoStorage.add(tile)
         game.intermezzo = true
         // before function call
-        assertEquals(Direction.UP, tile.direction)
         assert(location !in game.players[0].board.keys)
         assertEquals(0, tile.discs.size)
         assertFalse(previousTile.flipped)
@@ -74,18 +82,87 @@ class PlaceTileTest {
         // tile has given direction
         assertEquals(direction, tile.direction)
         // tile is placed in given location
-        assert(game.players[0].board[location] == tile)
+        assertEquals(game.players[0].board[location], tile)
         // disc placed
         assertEquals(1, tile.discs.size)
+        assertEquals(1, tile.arrows[0].disc.size)
         // firstTile flipped
         assert(previousTile.flipped)
         assertEquals(1, game.players[0].points.first)
-        // player gets 1 disc back and uses 1 disc
-        assertEquals(23, game.players[0].discs.size)
+        // player gets 1 disc back and uses 2 discs
+        assertEquals(22, game.players[0].discs.size)
         // refreshAfterPlaceTile() was called
         assert(refreshable.refreshAfterPlaceTileCalled)
         // reset refreshable
         refreshable.reset()
+
+        // testData tile from stacks without discs
+        tile = Tile(
+            37, 1, Element.WATER, listOf(Arrow(Element.WATER, Direction.UP_RIGHT))
+        )
+        direction = Direction.DOWN
+        location = Pair(0, 1)
+        game.intermezzo = false
+        game.actPlayer = game.players[0]
+        game.offerDisplay.clear()
+        game.stacks.add(0, tile)
+        game.actPlayer.discs.clear()
+        // before function call
+        assert(location !in game.players[0].board.keys)
+        assertEquals(0, tile.discs.size)
+        assertEquals(0, game.players[0].discs.size)
+        assertEquals(1, game.players[0].points.first)
+        assertFalse(refreshable.refreshAfterPlaceTileCalled)
+        // function call
+        rootService.playerActionService.placeTile(tile, direction, location)
+        // tests
+        // tile has given direction
+        assertEquals(direction, tile.direction)
+        // tile is placed in given location
+        assertEquals(game.players[0].board[location], tile)
+        // disc placed
+        assertEquals(1, tile.discs.size)
+        // player buys cacophony disc and uses it
+        assertEquals(0, game.players[0].discs.size)
+        // player loses 2 points for cacophony disc
+        assertEquals(-1, game.players[0].points.first)
+        // refreshAfterPlaceTile() was called
+        assert(refreshable.refreshAfterPlaceTileCalled)
+        // reset refreshable
+        refreshable.reset()
+
+        // testData flip new disc
+        tile = Tile(
+            40, 3, Element.WATER, listOf(
+                Arrow(Element.FIRE, Direction.UP_RIGHT),
+                Arrow(Element.WATER, Direction.UP_LEFT)
+            )
+        )
+        direction = Direction.RIGHT
+        location = Pair(-1, 0)
+        game.actPlayer = game.players[0]
+        game.offerDisplay.add(tile)
+        // before function call
+        assert(location !in game.players[0].board.keys)
+        assertFalse(tile.flipped)
+        assertEquals(0, game.players[0].discs.size)
+        assertEquals(-1, game.players[0].points.first)
+        assertFalse(refreshable.refreshAfterPlaceTileCalled)
+        // function call
+        rootService.playerActionService.placeTile(tile, direction, location)
+        // tests
+        // tile has given direction
+        assertEquals(direction, tile.direction)
+        // tile is placed in given location
+        assertEquals(game.players[0].board[location], tile)
+        // tile flipped
+        assert(tile.flipped)
+        // player get 1 disc back, buys a cacophony disc, uses 2 discs and get them back
+        assertEquals(2, game.players[0].discs.size)
+        // player gets 4 points for flipped tiles and loses 2 points for cacophony disc
+        assertEquals(1, game.players[0].points.first)
+        // refreshAfterPlaceTile() was called
+        assert(refreshable.refreshAfterPlaceTileCalled)
     }
 
     /**

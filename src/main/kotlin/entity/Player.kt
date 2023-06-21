@@ -1,5 +1,7 @@
 package entity
 
+import Location
+
 /**
  * [Player] plays the game
  * @property name of the player
@@ -12,7 +14,7 @@ package entity
 data class Player(val name: String, val color: Color, val playerType: PlayerType = PlayerType.HUMAN) {
     var points: Pair<Int, Int> = Pair(0, 0)
     val discs: MutableList<Disc> = mutableListOf()
-    val board: MutableMap<Pair<Int, Int>, Tile> = mutableMapOf()
+    val board: MutableMap<Location, Tile> = mutableMapOf()
 
     init {
         // each player starts with 24 sound discs
