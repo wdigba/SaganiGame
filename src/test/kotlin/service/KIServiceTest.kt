@@ -220,6 +220,7 @@ class KIServiceTest {
 
         // check if the score on (1,1) is the highest compared to all others
         val highestScore = potentialPlacements.maxByOrNull { it.value }
+        val highestScores = potentialPlacements.toList().sortedByDescending { (_, value) -> value }.take(10)
 
         assertEquals(Pair(Pair(1, 1), Direction.LEFT), highestScore?.key)
 
@@ -340,6 +341,10 @@ class KIServiceTest {
         }
 
         val potentialPlacements = kiService.calculatePotentialTilePlacements(tile, scoreMap, player)
+
+        // get a list of top 10 placements
+        val highestScores = potentialPlacements.toList().sortedByDescending { (_, value) -> value }.take(10)
+
         val highestScore = potentialPlacements.maxByOrNull { it.value }
         assertEquals(Pair(Pair(-1, 0), Direction.DOWN), highestScore?.key)
     }

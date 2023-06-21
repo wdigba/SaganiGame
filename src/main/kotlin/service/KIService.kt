@@ -94,7 +94,7 @@ class KIService(private val rootService: RootService) {
      */
     fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): Map<Pair<Pair<Int, Int>, Direction>, Double> {
 
-        val arrowWeight = 2.0
+        val arrowWeight = 1.0
 
         val potentialScores = mutableMapOf<Pair<Pair<Int, Int>, Direction>, Double>()
 
@@ -106,11 +106,20 @@ class KIService(private val rootService: RootService) {
             for (rotation in Direction.tileDirection()) {
                 tile.rotate(rotation)
 
+                if (position == Pair(1, -1) && rotation == Direction.UP) {
+                   print("breakpoint")
+                }
+
                 val satisfiedArrowsMetrics = calculateSatisfiedArrows(player, tile, position)
                 val updatedScoreMap = getNewScoreMapForTile(scoreMap, tile, position)
-                val score = calculateBoardScore(updatedScoreMap)
+                val score = calculateBoardScore2(updatedScoreMap)
 
                 potentialScores[Pair(position, rotation)] = score + arrowWeight * satisfiedArrowsMetrics
+
+                if (position == Pair(1, -1) && rotation == Direction.UP) {
+                    println("Score: $score")
+                    println("Satisfied Arrows: $satisfiedArrowsMetrics")
+                }
 
                 for(arrow in tile.arrows){
                     tile.discs.addAll(arrow.disc)
@@ -218,6 +227,14 @@ class KIService(private val rootService: RootService) {
                     ((info.airCount * info.earthCount + info.airCount * info.waterCount + info.airCount * info.fireCount
                             + info.earthCount * info.waterCount + info.earthCount * info.fireCount
                             + info.waterCount * info.fireCount) / (info.gameDistance + 1.0))
+
+
+                println("arrowDensityScore: $arrowDensityScore")
+                println("discFreedomScore: $discFreedomScore")
+                println("interferenceScore: $interferenceScore")
+                println("----------------------------------------")
+
+
                 totalInteferenceScore += interferenceScore
             }
         }
@@ -225,8 +242,110 @@ class KIService(private val rootService: RootService) {
         return arrowDensityWeight * totalArrowDensityScore + disFreedomWeight * totalDiscFreedomScore - interferenceWeight * totalInteferenceScore
     }
 
-    fun calculateSatisfiedArrows(player: Player, tile: Tile, position: Pair<Int, Int>): Int {
-        var satisfiedArrows = 0
+
+
+    fun calculateBoardScore2(scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>): Double {
+
+        //weights
+        val arrowDensityWeight = 1 //concentration of discs pointing to a particular position
+        val disFreedomWeight = 1 //potential amount of discs that could de freed
+        val interferenceWeight = 1 // how much the placement of one element can interfere with the placement of other elements in adjacent positions
+
+        var countForAirArrow = 0.0
+        var countForEarthArrow = 0.0
+        var countForWaterArrow = 0.0
+        var countForFireArrow = 0.0
+
+        var countPositionsWithAirArrows = 0.0
+        var countPositionsWithEarthArrows = 0.0
+        var countPositionsWithWaterArrows = 0.0
+        var countPositionsWithFireArrows = 0.0
+
+        //same for discs freed
+        var countForAirDiscs = 0.0
+        var countForEarthDiscs = 0.0
+        var countForWaterDiscs = 0.0
+        var countForFireDiscs = 0.0
+
+        var countPositionsWithAirDiscs = 0.0
+        var countPositionsWithEarthDiscs = 0.0
+        var countPositionsWithWaterDiscs = 0.0
+        var countPositionsWithFireDiscs = 0.0
+
+
+        for (info in scoreMap.values) {
+            if (!info.occupied) {
+
+                countForAirArrow += info.airCount / (info.gameDistance + 1)
+                countForEarthArrow += info.earthCount / (info.gameDistance + 1)
+                countForWaterArrow += info.waterCount / (info.gameDistance + 1)
+                countForFireArrow += info.fireCount / (info.gameDistance + 1)
+
+                if (info.airCount > 0) {
+                    countPositionsWithAirArrows += (1.0 / (info.gameDistance + 1))
+                }
+                if (info.earthCount > 0) {
+                    countPositionsWithEarthArrows += (1.0 / (info.gameDistance + 1))
+                }
+                if (info.waterCount > 0) {
+                    countPositionsWithWaterArrows += (1.0 / (info.gameDistance + 1))
+                }
+                if (info.fireCount > 0) {
+                    countPositionsWithFireArrows += (1.0 / (info.gameDistance + 1))
+                }
+
+
+                //discs
+                countForAirDiscs += info.discsIfAirPlaced / (info.gameDistance + 1)
+                countForEarthDiscs += info.discsIfEarthPlaced / (info.gameDistance + 1)
+                countForWaterDiscs += info.discsIfWaterPlaced / (info.gameDistance + 1)
+                countForFireDiscs += info.discsIfFirePlaced / (info.gameDistance + 1)
+
+                if (info.discsIfAirPlaced > 0) {
+                    countPositionsWithAirDiscs += (1.0 / (info.gameDistance + 1))
+                }
+                if (info.discsIfEarthPlaced > 0) {
+                    countPositionsWithEarthDiscs += (1.0 / (info.gameDistance + 1))
+                }
+                if (info.discsIfWaterPlaced > 0) {
+                    countPositionsWithWaterDiscs += (1.0 / (info.gameDistance + 1))
+                }
+                if (info.discsIfFirePlaced > 0) {
+                    countPositionsWithFireDiscs += (1.0 / (info.gameDistance + 1))
+                }
+
+            }
+
+
+
+
+        }
+
+        val airArrowCount = 1 - (countPositionsWithAirArrows /( countForAirArrow + 1))
+        val earthArrowCount = 1 - (countPositionsWithEarthArrows / (countForEarthArrow + 1))
+        val waterArrowCount = 1 - (countPositionsWithWaterArrows / (countForWaterArrow + 1))
+        val fireArrowCount = 1 - (countPositionsWithFireArrows / (countForFireArrow + 1))
+
+        val totalArrowDensityScore = (airArrowCount + earthArrowCount + waterArrowCount + fireArrowCount) / 4.0
+
+        //discs
+        val airDiscCount = 1 - (countPositionsWithAirDiscs / (countForAirDiscs + 1))
+        val earthDiscCount = 1 - (countPositionsWithEarthDiscs / (countForEarthDiscs + 1))
+        val waterDiscCount = 1 - (countPositionsWithWaterDiscs / (countForWaterDiscs + 1))
+        val fireDiscCount = 1 - (countPositionsWithFireDiscs / (countForFireDiscs + 1))
+
+        val totalDiscFreedomScore = (airDiscCount + earthDiscCount + waterDiscCount + fireDiscCount) / 4.0
+
+
+        //calculation of the total score of the game board
+        return (arrowDensityWeight * totalArrowDensityScore + disFreedomWeight * totalDiscFreedomScore) / 2.0
+    }
+
+
+
+
+    fun calculateSatisfiedArrows(player: Player, tile: Tile, position: Pair<Int, Int>): Double {
+        var satisfiedArrows = 0.0
 
         for (arrow in tile.arrows) {
             var adjacentPosition = calculateAdjacentPosition(position, arrow.direction)
@@ -242,7 +361,7 @@ class KIService(private val rootService: RootService) {
             }
         }
 
-        return satisfiedArrows + (satisfiedArrows /tile.arrows.size)*2
+        return (satisfiedArrows + (satisfiedArrows /tile.arrows.size)*2.0) / 6.0
     }
 
 
