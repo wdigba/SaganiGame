@@ -69,11 +69,12 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
      */
 
     private val cardStack = CardStack<CardView>(
-        width = 140,
-        height = 140,
         posX = 160,
         posY = 160,
-        visual = ColorVisual(255, 255, 255, 50)
+        width = 140,
+        height = 140,
+        visual = ColorVisual(255,255,255,50)
+
     )
     private val smallcardStack = CardStack<CardView>(
         width = 120,
