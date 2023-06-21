@@ -1,5 +1,7 @@
 package entity
 
+import kotlinx.serialization.Serializable
+
 /**
  * [Sagani] is the game
  * @property lastTurn: the game state the turn before / to undo a turn
@@ -14,6 +16,7 @@ package entity
  * @property offerDisplay: tiles player can choose from during their turn
  * @property intermezzoStorage: tile player can choose from during an intermezzo
  */
+@Serializable
 data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
     var lastTurn: Sagani? = null
     var nextTurn: Sagani? = null
@@ -38,8 +41,7 @@ data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
             require(it.color !in colors) { "Each player has to have a unique color." }
             colors.add(it.color)
         }
-        // stacks contains all 72 Tiles
-        require(stacks.size == 72) { "There have to be 72 tiles total to play this game." }
+
         // unique tiles
         val tileIDs: MutableList<Int> = mutableListOf()
         stacks.forEach {
@@ -48,9 +50,6 @@ data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
             tileIDs.add(it.id)
         }
 
-        // fill offerDisplay with 5 tiles
-        repeat(5) {
-            offerDisplay.add(stacks.removeFirst())
-        }
     }
+
 }
