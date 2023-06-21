@@ -40,7 +40,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
 
         // refresh GUI
-        onAllRefreshables { refreshAfterStartNewGame() }
+        onAllRefreshables {
+            refreshAfterStartNewGame(
+                game.players[0],
+                setOf(Pair(0, 0)),
+                false
+            )
+        }
     }
 
     /**
@@ -78,6 +84,14 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         return stacks
     }
 
+    /**
+     * [changeToNextPlayer] is called after each player's turn.
+     * Checks if an intermezzo has to start or to end.
+     * Refills empty offerDisplay and checks if it is the lastRound.
+     * Determines next player.
+     * Increases turnCount and copies game state.
+     * Checks if the game has to end.
+     */
     fun changeToNextPlayer() {
         var nextPlayer: Player? = null
         val validLocation: Set<Location>
@@ -146,7 +160,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             calculateWinner()
         } else {
             validLocation = rootService.playerActionService.validLocation(nextPlayer.board)
-            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocation) }
+            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocation, currentGame.intermezzo) }
         }
     }
 

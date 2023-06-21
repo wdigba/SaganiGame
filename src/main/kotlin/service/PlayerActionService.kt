@@ -15,6 +15,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * New tile gets discs and its discs get relocated if possible.
      */
     fun placeTile(tile: Tile, direction: Direction, location: Location) {
+        var tileFrom: String
+
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -38,17 +40,21 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 "You can't take this tile. It is not part of the intermezzo storage."
             }
             currentGame.intermezzoStorage.remove(tile)
+            tileFrom = "intermezzoStorage"
         } else if (currentGame.offerDisplay.size > 1) {
             check(tile in currentGame.offerDisplay) {
                 "You can't take this tile. It is not part of the offer display."
             }
             currentGame.offerDisplay.remove(tile)
+            tileFrom = "offerDisplay"
         } else {
             check(tile in currentGame.offerDisplay || tile == currentGame.stacks[0]) {
                 "You can't take this tile. It is not part of the offer display or the top card of the stacks."
             }
+            tileFrom = "offerDisplay"
             if (!currentGame.offerDisplay.remove(tile)) {
                 currentGame.stacks.removeFirst()
+                tileFrom = "stacks"
             }
         }
 
