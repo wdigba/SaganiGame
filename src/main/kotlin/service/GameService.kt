@@ -1,9 +1,10 @@
 package service
 
+import Location
 import entity.*
-import java.io.File
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
@@ -77,7 +78,79 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         return stacks
     }
 
-    fun changeToNextPlayer() {}
+    fun changeToNextPlayer() {
+        var nextPlayer: Player? = null
+        val validLocation: Set<Location>
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame)
+
+        // check if intermezzo has to start/end
+        if (currentGame.intermezzo) {
+            // remove first player who had their intermezzo turn already
+            currentGame.intermezzoPlayers.removeFirst()
+            if (currentGame.intermezzoPlayers.isNotEmpty()) {
+                nextPlayer = currentGame.intermezzoPlayers[0]
+            } else {
+                currentGame.intermezzo = false
+                if (currentGame.intermezzoStorage.size == 4) {
+                    currentGame.intermezzoStorage.clear()
+                }
+            }
+        } else {
+            if (currentGame.intermezzoStorage.size == 4) {
+                currentGame.intermezzo = true
+                currentGame.intermezzoPlayers.addAll(currentGame.players)
+                currentGame.intermezzoPlayers.sortByDescending { it.points.second }
+                currentGame.intermezzoPlayers.sortBy { it.points.first }
+                nextPlayer = currentGame.intermezzoPlayers[0]
+            }
+        }
+
+        // if no intermezzo
+        if (!currentGame.intermezzo) {
+            // check if offerDisplay has to be refilled
+            if (currentGame.offerDisplay.isEmpty()) {
+                repeat(5) {
+                    currentGame.offerDisplay.add(currentGame.stacks.removeFirst())
+                }
+                if (currentGame.stacks.size < 5) {
+                    currentGame.lastRound = true
+                }
+            }
+            // check if player has needed amount of points to end the game
+            currentGame.players.forEach {
+                if (it.points.first >= 15 * currentGame.players.size + 15) {
+                    currentGame.lastRound = true
+                }
+            }
+        }
+
+        // determine next player
+        if (nextPlayer == null) {
+            nextPlayer = currentGame.players[
+                (currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size
+            ]
+        }
+
+        // increase turnCount
+        currentGame.turnCount++
+        // copy game
+        gameCopy()
+
+        // check if game has to end
+        if (
+            currentGame.lastRound &&
+            currentGame.players.indexOf(currentGame.actPlayer) == 0 &&
+            !currentGame.intermezzo
+        ) {
+            calculateWinner()
+        } else {
+            validLocation = rootService.playerActionService.validLocation(nextPlayer.board)
+            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocation) }
+        }
+    }
+
+    fun calculateWinner() {}
 
     /**
      * [gameCopy] creates a deep copy of the entity layer and adds to currentGame.nextTurn
@@ -92,7 +165,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // convert game to JSON string
         val gameAsJson = Json.encodeToString(game)
 
-        // recreate game from JSON string. This results in a equal but not same object
+        // recreate game from JSON string. This results in an equal but not same object
         // i.e. the new object will be a different instance
         val gameFromJson = Json.decodeFromString<Sagani>(gameAsJson)
 
