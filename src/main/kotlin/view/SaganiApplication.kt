@@ -27,7 +27,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
     }
-    private val saganiGameScene: SaganiGameScene = SaganiGameScene(rootService)
+    private val saganiGameScene: GridPaneVersuch = GridPaneVersuch(rootService)
     private val ruleScene: RuleScene = RuleScene(rootService)
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene(rootService).apply {
         kIButton.onMouseClicked = {
