@@ -6,6 +6,7 @@ plugins {
     jacoco
     id("io.gitlab.arturbosch.detekt") version "1.18.0-RC3"
     id("org.jetbrains.dokka") version "1.4.32"
+    kotlin("plugin.serialization") version "1.8.21"
 }
 
 group = "edu.udo.cs.sopra"
@@ -22,9 +23,12 @@ application {
 
 dependencies {
     testImplementation(kotlin("test-junit5"))
+
     implementation(group = "tools.aqua", name = "bgw-gui", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
     implementation(group = "tools.aqua", name = "bgw-net-common", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
     implementation(group = "tools.aqua", name = "bgw-net-client", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
 }
 
 tasks.distZip {
