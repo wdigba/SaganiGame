@@ -10,7 +10,7 @@ class KIServiceTest {
     fun initialize(){
         // Given
         val rootService = RootService() // Initialize with appropriate data
-        kiService = KIService(rootService)
+        kiService = KIService(rootService, 10)
         // Prepare a player with a specific game state
         player = Player("Alice", Color.WHITE)
 
@@ -75,7 +75,7 @@ class KIServiceTest {
 
     @Test
     fun testCalculateBoardScore() {
-        val service = KIService(RootService())
+        val service = KIService(RootService(), 10)
         val scoreMap = mutableMapOf<Pair<Int, Int>, KIService.CoordinateInformation>()
 
         // Set up the score map with some sample data
@@ -103,7 +103,7 @@ class KIServiceTest {
     }
     @Test
     fun testCalculateBoardScore2 () {
-        val service = KIService(RootService())
+        val service = KIService(RootService(), 10)
         val scoreMap = mutableMapOf(
             Pair(0, 0) to KIService.CoordinateInformation().apply {
                 airCount = 2
@@ -140,7 +140,7 @@ class KIServiceTest {
 
     @Test
     fun testCalculatePotentialTilePlacements() {
-        val service = KIService(RootService())
+        val service = KIService(RootService(), 10)
         val arrows = listOf(
             Arrow(Element.WATER, Direction.UP),
             Arrow(Element.AIR, Direction.RIGHT),
@@ -198,14 +198,14 @@ class KIServiceTest {
     @Test
     fun testBuildScoreMap() {
 
-        val scoreMap = kiService.buildScoreMap(player, 1)
+        val scoreMap = kiService.buildScoreMap(player.board)
 
         print(scoreMap)
     }
 
     @Test
     fun testPlaceTile(){
-        val scoreMap = kiService.buildScoreMap(player, 1)
+        val scoreMap = kiService.buildScoreMap(player.board)
 
 
         val tile = Tile(4, points = 3, Element.WATER, listOf(
@@ -228,7 +228,7 @@ class KIServiceTest {
     @Test
     fun placeTileBiggerScoreMap() {
         val rootService = RootService()
-        kiService = KIService(rootService)
+        kiService = KIService(rootService, 10)
         player = Player("Alice", Color.WHITE)
 
         val tile1 = Tile(1, points = 3, Element.WATER, listOf(
@@ -328,7 +328,7 @@ class KIServiceTest {
         }
         player.board = board
 
-        val scoreMap = kiService.buildScoreMap(player, 1)
+        val scoreMap = kiService.buildScoreMap(player.board)
         print(scoreMap)
 
         val tile = Tile(7, points = 6, Element.AIR, listOf(
@@ -340,7 +340,14 @@ class KIServiceTest {
             tile.discs.add(player.discs.last())
         }
 
+        // save timestamp
+        val start = System.currentTimeMillis()
+
         val potentialPlacements = kiService.calculatePotentialTilePlacements(tile, scoreMap, player)
+
+        // get timestamp after calculation
+        val end = System.currentTimeMillis()
+        val differneceInSeconds = (end - start) / 1000.0
 
         // get a list of top 10 placements
         val highestScores = potentialPlacements.toList().sortedByDescending { (_, value) -> value }.take(10)
