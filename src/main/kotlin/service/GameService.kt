@@ -28,9 +28,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
     /**
      * [createStacks] reads .csv-file, creates all tiles und returns them as a list
      */
-    fun createStacks(fileName: String = "/tiles_colornames_v2.csv"): MutableList<Tile> {
+    fun createStacks(): MutableList<Tile> {
         // read each line of .csv-file
-        val lines = File(GameService::class.java.getResource(fileName)!!.path).readLines()
+        val lines = File(GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path).readLines()
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
         lines.forEach { line -> tiles.add(line.split(",")) }
