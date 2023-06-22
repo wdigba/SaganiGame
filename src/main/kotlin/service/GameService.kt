@@ -96,7 +96,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         var nextPlayer: Player? = null
         val validLocation: Set<Location>
         val currentGame = rootService.currentGame
-        checkNotNull(currentGame)
+        checkNotNull(currentGame) { "There is no game." }
 
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
@@ -144,12 +144,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             nextPlayer = currentGame.players[
                 (currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size
             ]
+            currentGame.actPlayer = nextPlayer
         }
 
         // increase turnCount
         currentGame.turnCount++
         // copy game
-        gameCopy()
+        //gameCopy()
 
         // check if game has to end
         if (
@@ -164,7 +165,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
     }
 
-    fun calculateWinner() {}
+    private fun calculateWinner() {}
 
     /**
      * [gameCopy] creates a deep copy of the entity layer and adds to currentGame.nextTurn
