@@ -6,11 +6,16 @@ import entity.*
 import java.util.*
 
 /**
- * [KIService] is responsible for executing the AI strategies
+ * [KIService] is responsible for executing the smart AI strategy
  */
-class KIService(private val rootService: RootService, val range: Int) {
-    class CoordinateInformation {
+class KIService(private val rootService: RootService) {
+    // depth of searching for the tile placement
+    private val range = 3
 
+    /**
+     * [CoordinateInformation] general information about possible tile placement
+     */
+    class CoordinateInformation {
         // variables to count how many open arrows show on this coordinate
         var airCount = 0
         var earthCount = 0
@@ -23,7 +28,7 @@ class KIService(private val rootService: RootService, val range: Int) {
         var discsIfWaterPlaced  = 0
         var discsIfFirePlaced   = 0
 
-        // this variable represents the number of steps after which a tile could be places
+        // this variable represents the number of steps after which a tile could be placed
         var gameDistance = 0
 
         // is the position occupied by a tile already
@@ -45,17 +50,21 @@ class KIService(private val rootService: RootService, val range: Int) {
         }
     }
 
-    fun checkArrowAlignmentMetrix(player: Player){
-        val scoreMap = buildScoreMap(player.board)
-    }
-
-    fun buildScoreMap(borad: Map<Pair<Int, Int>, Tile>) : Map<Pair<Int, Int>, CoordinateInformation>{
-        val scoreMap = fillScoreMap(borad)
-        updateScoreMapForArrows(borad, scoreMap)
+    /**
+     * [buildScoreMap] creates score map, fills it with tiles and updates with additional information
+     * @param board is the current player´s board without additional information
+     * @return updated board
+     */
+    fun buildScoreMap(board: Map<Pair<Int, Int>, Tile>) : Map<Pair<Int, Int>, CoordinateInformation>{
+        val scoreMap = fillScoreMap(board)
+        updateScoreMapForArrows(board, scoreMap)
         return scoreMap
     }
 
-    // determining the appropriate position depending on the given direction
+    /**
+     * determining the appropriate positions depending on the given direction
+     * @return new position
+     */
     private fun calculateAdjacentPosition(pos: Pair<Int, Int>, direction: Direction): Pair<Int, Int> {
         return when (direction) {
             Direction.UP -> Pair(pos.first, pos.second + 1)
@@ -69,7 +78,10 @@ class KIService(private val rootService: RootService, val range: Int) {
         }
     }
 
-    // whether the specified arrow is the only unsatisfied arrow in the given tile
+    /**
+     * whenever the specified arrow is the only one unsatisfied arrow of the given tile
+     * @return true if only one arrow is without disc on it
+     */
     private fun isOnlyUnsatisfiedArrow(currentArrow: Arrow, tile: Tile): Boolean {
         var unsatisfiedCount = 0
         for (arrow in tile.arrows) {
@@ -80,6 +92,10 @@ class KIService(private val rootService: RootService, val range: Int) {
         return unsatisfiedCount == 1 && currentArrow.disc.size == 0
     }
 
+    /**
+     * [deepCopyScoreMap] creates copy of a current score map with all additional information
+     * @return copied map
+     */
     private fun deepCopyScoreMap(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
         val newScoreMap = mutableMapOf<Pair<Int, Int>, CoordinateInformation>()
         for ((position, info) in scoreMap) {
@@ -91,6 +107,10 @@ class KIService(private val rootService: RootService, val range: Int) {
     /**
      * [calculatePotentialTilePlacements] calculates potential estimates of tile placement
      * based on information about the coordinates and distances on the game board
+     * @param tile that we want to place
+     * @param scoreMap full score map with additional information about potential placements
+     * @param player current player
+     * @return calculated position for the tile, its rotation and placement´s score
      */
     fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): Map<Pair<Pair<Int, Int>, Direction>, Double> {
 
@@ -99,29 +119,30 @@ class KIService(private val rootService: RootService, val range: Int) {
         val potentialScores = mutableMapOf<Pair<Pair<Int, Int>, Direction>, Double>()
 
         for ((position, coordinateInfo) in scoreMap) {
+            // do not calculate for all already placed tiles
             if (coordinateInfo.occupied || coordinateInfo.gameDistance != 0) {
                 continue
             }
-
+            // rotate each tile in 4 directions
             for (rotation in Direction.tileDirection()) {
                 tile.rotate(rotation)
 
                 if (position == Pair(1, -1) && rotation == Direction.UP) {
                    print("breakpoint")
                 }
+                // calculate metrics for each position
                 val positionMetrics = getMetricsForPosition(position, scoreMap, tile)
-
                 val satisfiedArrowsMetrics = calculateSatisfiedArrowsFromTileInHand(player, tile, position)
 
                 // get a Map with the same values as player.board
                 val newPlayerBoard = player.board.toMutableMap()
                 // add the tile to the new board
                 newPlayerBoard[position] = tile
-
+                // get new board
                 val updatedScoreMap = buildScoreMap(newPlayerBoard)
-
+                // calculate the whole score for the board
                 val score = calculateBoardScore(updatedScoreMap)
-
+                // get potential scores based on metrics
                 potentialScores[Pair(position, rotation)] = score + arrowWeight * satisfiedArrowsMetrics + positionMetrics
 
                 if (position == Pair(1, -1) && rotation == Direction.UP) {
@@ -133,17 +154,17 @@ class KIService(private val rootService: RootService, val range: Int) {
                     tile.discs.addAll(arrow.disc)
                 }
             }
-
         }
-
         return potentialScores
     }
 
-    // returns the maximum number of arrows that can be satisfied by placing an element on the given position based on the scoremap
+    /**
+     * [getMaximumNumberOfArrowsThatCanBeSatisfied] calculates how many arrows of one element
+     * could be satisfied by placing tile on the chosen position
+     * @return the maximum number of satisfied arrows
+     */
     private fun getMaximumNumberOfArrowsThatCanBeSatisfied(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
-
         var maxCount = 0
-
         //for all positions
         for ((position, coordinateInfo) in scoreMap) {
             // if the position is occupied or the game distance is not 0
@@ -152,7 +173,6 @@ class KIService(private val rootService: RootService, val range: Int) {
             }
 
             // if any count is bigger than maxCount replace maxCount by it
-
             if (coordinateInfo.airCount > maxCount) {
                 maxCount = coordinateInfo.airCount
             }
@@ -169,11 +189,12 @@ class KIService(private val rootService: RootService, val range: Int) {
         return maxCount
     }
 
-
+    /**
+     * [getMaximumNumberOfFreedDiscs] calculates how many discs of on element could be freed after placing a tile
+     * @return maximum amount of discs
+     */
     private fun getMaximumNumberOfFreedDiscs(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
-
         var maxCount = 0
-
         //for all positions
         for ((position, coordinateInfo) in scoreMap) {
             // if the position is occupied or the game distance is not 0
@@ -182,7 +203,6 @@ class KIService(private val rootService: RootService, val range: Int) {
             }
 
             // if any count is bigger than maxCount replace maxCount by it
-
             if (coordinateInfo.discsIfAirPlaced > maxCount) {
                 maxCount = coordinateInfo.discsIfAirPlaced
             }
@@ -199,6 +219,10 @@ class KIService(private val rootService: RootService, val range: Int) {
         return maxCount
     }
 
+    /**
+     * [getArrowCountForElement] calculates the total count of arrows for a given position in a scoreMap
+     * @return total amount of arrows
+     */
     private fun getArrowCountForElement(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>) : Int{
         var arrowCount = 0
         if (scoreMap[position]!!.airCount > 0) {
@@ -216,6 +240,10 @@ class KIService(private val rootService: RootService, val range: Int) {
         return arrowCount
     }
 
+    /**
+     * [getDiscCountForElement] calculates the total count of discs would be freed for a given position in a scoreMap
+     * @return total amount of discs
+     */
     private fun getDiscCountForElement(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>) : Int{
         var discCount = 0
         if (scoreMap[position]!!.airCount > 0) {
@@ -233,8 +261,13 @@ class KIService(private val rootService: RootService, val range: Int) {
         return discCount
     }
 
-
-
+    /**
+     * [getMetricsForPosition] calculates metrics for placing tile on a specific position
+     * @param position probable placement
+     * @param scoreMap map with all additional information
+     * @param tile chosen tile which is about to be placed
+     * @return placement´s probability (the higher, the better)
+     */
     private fun getMetricsForPosition(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, tile: Tile): Double {
 
         val element = tile.element
@@ -242,10 +275,10 @@ class KIService(private val rootService: RootService, val range: Int) {
         var arrowsThatWouldBeSatisfiedByElement = getArrowCountForElement(position, scoreMap)
 
         val maxNumberOfSatisfiedArrows = getMaximumNumberOfArrowsThatCanBeSatisfied(scoreMap)
-
+        // arrows´ satisfaction metrics
         val arrowSatisfiedMetrics = arrowsThatWouldBeSatisfiedByElement.toDouble() / maxNumberOfSatisfiedArrows
-
-        val arrowsBlockedMetrix = doubleArrayOf(0.0, 0.0, 0.0)
+        // how many arrows would be blocked by this decision
+        val arrowsBlockedMetrics = doubleArrayOf(0.0, 0.0, 0.0)
 
         // looking ad how many arrows would be blocked by the element
         var i = 0
@@ -254,19 +287,19 @@ class KIService(private val rootService: RootService, val range: Int) {
                 continue
             }
             val arrowMetrics = getArrowCountForElement(position, scoreMap) / maxNumberOfSatisfiedArrows.toDouble()
-            arrowsBlockedMetrix[i] = arrowMetrics
-
+            arrowsBlockedMetrics[i] = arrowMetrics
             i++
         }
 
 
         //the same for discs
         val discsThatWouldBeFreedByElement = scoreMap[position]!!.discsIfAirPlaced
+
         val maxNumberOfFreedDiscs = getMaximumNumberOfFreedDiscs(scoreMap)
 
         val discsFreedMetrics = discsThatWouldBeFreedByElement.toDouble() / maxNumberOfFreedDiscs
 
-        val discsBlockedMetrix = doubleArrayOf(0.0, 0.0, 0.0)
+        val discsBlockedMetrics = doubleArrayOf(0.0, 0.0, 0.0)
 
         // looking ad how many discs would be blocked by the element
         i = 0
@@ -275,30 +308,30 @@ class KIService(private val rootService: RootService, val range: Int) {
                 continue
             }
             val discMetrics = getDiscCountForElement(position, scoreMap) / maxNumberOfFreedDiscs.toDouble()
-            discsBlockedMetrix[i] = discMetrics
+            discsBlockedMetrics[i] = discMetrics
 
             i++
         }
 
+        // influence rating of each parameter
         val arrowWeight = 0.8
         val discWeight = 1.0
 
         val arrowBlockedWeight = 0.4
         val discBlockedWeight = 0.7
 
-        val resultMetrics = arrowSatisfiedMetrics * arrowWeight - arrowBlockedWeight * (arrowsBlockedMetrix.sum()/3) + discsFreedMetrics * discWeight - discBlockedWeight * (discsBlockedMetrix.sum()/3)
-
-
-
-
+        // total calculation based on satisfied metrics
+        val resultMetrics = arrowSatisfiedMetrics * arrowWeight - arrowBlockedWeight * (arrowsBlockedMetrics.sum()/3) + discsFreedMetrics * discWeight - discBlockedWeight * (discsBlockedMetrics.sum()/3)
         return resultMetrics
     }
 
 
     /**
-     * [updatePosition] updates the information about a specific position in newScoreMap
-     * depending on the type of arrow and tile, incrementing the corresponding counters and the number of discs
-     * if the given arrow is the only unsatisfied arrow.
+     * [updatePosition] updates the information about a specific position
+     * @param newScoreMap current score map
+     * @param positionToUpdate exact position
+     * @param arrow checking for each arrow
+     * @param tile current tile
      */
     private fun updatePosition(
         newScoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>,
@@ -308,6 +341,7 @@ class KIService(private val rootService: RootService, val range: Int) {
     ) {
         val info = newScoreMap[positionToUpdate]!!
         val isTheOnlyUnsatisfiedArrow = isOnlyUnsatisfiedArrow(arrow, tile)
+        //checking for the singe unsatisfied arrows, which could free the discs
         when (arrow.element) {
             AIR -> {
                 info.airCount++
@@ -315,21 +349,18 @@ class KIService(private val rootService: RootService, val range: Int) {
                     info.discsIfAirPlaced += tile.discs.size
                 }
             }
-
             EARTH -> {
                 info.earthCount++
                 if (isTheOnlyUnsatisfiedArrow) {
                     info.discsIfEarthPlaced += tile.discs.size
                 }
             }
-
             WATER -> {
                 info.waterCount++
                 if (isTheOnlyUnsatisfiedArrow) {
                     info.discsIfWaterPlaced += tile.discs.size
                 }
             }
-
             FIRE -> {
                 info.fireCount++
                 if (isTheOnlyUnsatisfiedArrow) {
@@ -340,7 +371,11 @@ class KIService(private val rootService: RootService, val range: Int) {
     }
 
     /**
-     * [getNewScoreMapForTile] used to get a new copy of the scoreMap with updated values based on the placement of the tile at a specific position
+     * [getNewScoreMapForTile] adds new tile to an existing score map
+     * @param scoreMap current map
+     * @param tile to place on the map
+     * @param position position on the map
+     * @return updated map
      */
     private fun getNewScoreMapForTile(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, tile: Tile, position: Pair<Int, Int>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
         val newScoreMap = deepCopyScoreMap(scoreMap)
@@ -361,16 +396,18 @@ class KIService(private val rootService: RootService, val range: Int) {
     }
 
     /**
-     * [calculateBoardScore] used to calculate the overall score of the game board based on the information contained in the scoreMap
+     * [calculateBoardScore] calculates the total score for the whole board
+     * contains main calculating information
      */
-
     fun calculateBoardScore(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Double {
 
         //weights
         val arrowDensityWeight = 1 //concentration of discs pointing to a particular position
         val disFreedomWeight = 1 //potential amount of discs that could de freed
-        val interferenceWeight = 1 // how much the placement of one element can interfere with the placement of other elements in adjacent positions
+        // how much the placement of one element can interfere with the placement of other elements in adjacent positions
+        val interferenceWeight = 1
 
+        // general count variables for each element of arrows
         var countForAirArrow = 0.0
         var countForEarthArrow = 0.0
         var countForWaterArrow = 0.0
@@ -381,7 +418,7 @@ class KIService(private val rootService: RootService, val range: Int) {
         var countPositionsWithWaterArrows = 0.0
         var countPositionsWithFireArrows = 0.0
 
-        //same for discs freed
+        // general count variables for each element of freed discs
         var countForAirDiscs = 0.0
         var countForEarthDiscs = 0.0
         var countForWaterDiscs = 0.0
@@ -395,12 +432,13 @@ class KIService(private val rootService: RootService, val range: Int) {
 
         for (info in scoreMap.values) {
             if (!info.occupied) {
-
+                // the closer placement, the better
                 countForAirArrow += info.airCount / (info.gameDistance + 1)
                 countForEarthArrow += info.earthCount / (info.gameDistance + 1)
                 countForWaterArrow += info.waterCount / (info.gameDistance + 1)
                 countForFireArrow += info.fireCount / (info.gameDistance + 1)
 
+                // calculating positions based on arrows
                 if (info.airCount > 0) {
                     countPositionsWithAirArrows += (1.0 / (info.gameDistance + 1))
                 }
@@ -414,13 +452,13 @@ class KIService(private val rootService: RootService, val range: Int) {
                     countPositionsWithFireArrows += (1.0 / (info.gameDistance + 1))
                 }
 
-
-                //discs
+                //same for discs
                 countForAirDiscs += info.discsIfAirPlaced / (info.gameDistance + 1)
                 countForEarthDiscs += info.discsIfEarthPlaced / (info.gameDistance + 1)
                 countForWaterDiscs += info.discsIfWaterPlaced / (info.gameDistance + 1)
                 countForFireDiscs += info.discsIfFirePlaced / (info.gameDistance + 1)
 
+                // calculating positions based on discs
                 if (info.discsIfAirPlaced > 0) {
                     countPositionsWithAirDiscs += (1.0 / (info.gameDistance + 1))
                 }
@@ -433,14 +471,9 @@ class KIService(private val rootService: RootService, val range: Int) {
                 if (info.discsIfFirePlaced > 0) {
                     countPositionsWithFireDiscs += (1.0 / (info.gameDistance + 1))
                 }
-
             }
-
-
-
-
         }
-
+        // calculation for comparable results for arrows
         val airArrowCount = 1 - (countPositionsWithAirArrows /( countForAirArrow + 1))
         val earthArrowCount = 1 - (countPositionsWithEarthArrows / (countForEarthArrow + 1))
         val waterArrowCount = 1 - (countPositionsWithWaterArrows / (countForWaterArrow + 1))
@@ -448,7 +481,7 @@ class KIService(private val rootService: RootService, val range: Int) {
 
         val totalArrowDensityScore = (airArrowCount + earthArrowCount + waterArrowCount + fireArrowCount) / 4.0
 
-        //discs
+        // calculation for comparable results for discs
         val airDiscCount = 1 - (countPositionsWithAirDiscs / (countForAirDiscs + 1))
         val earthDiscCount = 1 - (countPositionsWithEarthDiscs / (countForEarthDiscs + 1))
         val waterDiscCount = 1 - (countPositionsWithWaterDiscs / (countForWaterDiscs + 1))
@@ -456,21 +489,23 @@ class KIService(private val rootService: RootService, val range: Int) {
 
         val totalDiscFreedomScore = (airDiscCount + earthDiscCount + waterDiscCount + fireDiscCount) / 4.0
 
-
         //calculation of the total score of the game board
         return (arrowDensityWeight * totalArrowDensityScore + disFreedomWeight * totalDiscFreedomScore) / 2.0
     }
 
-
-
-
+    /**
+     * [calculateSatisfiedArrowsFromTileInHand]  calculates the satisfaction level of arrows
+     * from a tile placed on a player's board at a given position
+     * @return satisfaction level for arrows of the tile
+     */
     fun calculateSatisfiedArrowsFromTileInHand(player: Player, tile: Tile, position: Pair<Int, Int>): Double {
+        //number of satisfied arrows
         var satisfiedArrows = 0.0
 
         for (arrow in tile.arrows) {
             var adjacentPosition = calculateAdjacentPosition(position, arrow.direction)
 
-            // Keep moving in the arrow direction until we reach the end of the board or find a tile with matching element
+            // keep moving in the arrow direction until we reach the end of the board or find a tile with matching element
             while (player.board.containsKey(adjacentPosition)) {
                 if (player.board[adjacentPosition]?.element == arrow.element) {
                     satisfiedArrows++
@@ -480,13 +515,13 @@ class KIService(private val rootService: RootService, val range: Int) {
                 adjacentPosition = calculateAdjacentPosition(adjacentPosition, arrow.direction)
             }
         }
-
+        // maximum level is 1
         return (satisfiedArrows + (satisfiedArrows /tile.arrows.size)*2.0) / 6.0
     }
 
-
-
-
+    /**
+     * [updateScoreMapForArrows] puts all tiles in all position to the score map
+     */
     private fun updateScoreMapForArrows(board: Map<Pair<Int, Int>, Tile>, scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>) {
         for ((position, tile) in board) {
             scoreMap.putAll(getNewScoreMapForTile(scoreMap, tile, position))
@@ -496,6 +531,7 @@ class KIService(private val rootService: RootService, val range: Int) {
     /**
      * [getLowestGameDistanceFromNeighbours]is used to determine the smallest game distance
      * among adjacent positions of a given position on the game board
+     * @return position number
      */
     private fun getLowestGameDistanceFromNeighbours(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
         var lowestGameDistance = Int.MAX_VALUE
@@ -505,12 +541,13 @@ class KIService(private val rootService: RootService, val range: Int) {
                 lowestGameDistance = scoreMap[neighbourPos]!!.gameDistance
             }
         }
+        // the lowest position is normally 0
         return lowestGameDistance
     }
 
 
     /**
-     * [fillScoreMap] is used to fill the score Map for the player in definite range
+     * [fillScoreMap] is used to fill the score Map for the player in definite range (till definite number).
      * This information can be used to evaluate positions and make decisions in the game
      */
     fun fillScoreMap(board: Map<Pair<Int, Int>, Tile>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
