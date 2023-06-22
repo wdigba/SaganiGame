@@ -105,6 +105,7 @@ class PlaceTileTest {
         game.intermezzo = false
         game.actPlayer = game.players[0]
         game.offerDisplay.clear()
+        game.offerDisplay.add(previousTile)
         game.stacks.add(0, tile)
         game.actPlayer.discs.clear()
         // before function call

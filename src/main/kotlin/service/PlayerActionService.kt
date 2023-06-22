@@ -55,6 +55,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             if (!currentGame.offerDisplay.remove(tile)) {
                 currentGame.stacks.removeFirst()
                 tileFrom = "stacks"
+                currentGame.intermezzoStorage.add(currentGame.offerDisplay.removeFirst())
             }
         }
 

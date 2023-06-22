@@ -43,14 +43,14 @@ class TestRefreshable : Refreshable {
     /**
      * Tests can check if refreshAfterStartNewGame was called
      */
-    override fun refreshAfterStartNewGame() {
+    override fun refreshAfterStartNewGame(player: Player, validLocation: Set<Location>, intermezzo: Boolean) {
         refreshAfterStartNewGameCalled = true
     }
 
     /**
      * Tests can check if refreshAfterChangeToNextPlayer was called
      */
-    override fun refreshAfterChangeToNextPlayer(player: Player, validLocation: Set<Location>) {
+    override fun refreshAfterChangeToNextPlayer(player: Player, validLocation: Set<Location>, intermezzo: Boolean) {
         refreshAfterChangeToNextPlayerCalled = true
     }
 
