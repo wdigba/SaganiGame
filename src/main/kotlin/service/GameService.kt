@@ -31,6 +31,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // create new game
         rootService.currentGame = Sagani(players, stacks)
 
+        // send game init to network players
+        rootService.networkService.client?.sendGameInit()
+
         // fill offer display of created game
         val game = rootService.currentGame
         checkNotNull(game)

@@ -7,7 +7,7 @@ import view.Refreshable
 /**
  * The service that handles anything related to the network.
  */
-class NetworkService(val rootService: RootService) : AbstractRefreshingService(), Refreshable {
+class NetworkService(val rootService: RootService) : AbstractRefreshingService() {
 
     companion object {
         /**
@@ -47,9 +47,6 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
      */
     var client: SaganiNetworkClient? = null
         private set
-
-    private var placedTile: Tile? = null
-    private var location: Pair<Int, Int>? = null
 
     /**
      * Connect to the server and joins a game session as a guest player.
@@ -128,17 +125,5 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
         }
         if (DEBUG) println("[Debug] $name: Could not connect to server")
         return false
-    }
-
-    override fun refreshAfterStartNewGame() {
-        // TODO: Send message to server
-    }
-
-    override fun refreshAfterPlaceTile() {
-        // TODO: Get Tile Information
-    }
-
-    override fun refreshAfterChangeToNextPlayer() {
-        // TODO: Send message to server
     }
 }

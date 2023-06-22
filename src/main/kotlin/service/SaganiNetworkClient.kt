@@ -1,11 +1,19 @@
 package service
 
+import Location
 import edu.udo.cs.sopra.ntf.ConnectionState
 import edu.udo.cs.sopra.ntf.GameInitMessage
 import edu.udo.cs.sopra.ntf.MoveType
 import edu.udo.cs.sopra.ntf.Orientation
+import edu.udo.cs.sopra.ntf.TilePlacement
+import edu.udo.cs.sopra.ntf.TurnChecksum
 import edu.udo.cs.sopra.ntf.TurnMessage
+import entity.Color
 import entity.Direction
+import entity.Player
+import entity.PlayerType
+import entity.Sagani
+import entity.Tile
 import tools.aqua.bgw.core.BoardGameApplication
 import tools.aqua.bgw.net.client.BoardGameClient
 import tools.aqua.bgw.net.common.annotations.GameActionReceiver
@@ -35,7 +43,28 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     /**
      * The names of the other players in the session.
      */
-    var otherPlayers = listOf<String>()
+    private var otherPlayers = listOf<String>()
+
+    /**
+     * The type of player this client is.
+     */
+    var playerType = PlayerType.HUMAN
+
+    /**
+     * The type of move the player performed.
+     */
+    var moveType: MoveType? = null
+
+    /**
+     * The tile that got placed on the board.
+     */
+    var tile: Tile? = null
+
+    /**
+     * The location the player placed the tile at.
+     */
+    var location: Location? = null
+
 
     /**
      * Handles a [CreateGameResponse] sent by the BGW net server. Will await the guest players when its status is
@@ -145,6 +174,68 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     }
 
     /**
+     * Sends a [TurnMessage] to the BGW net server. The message will only be sent when it's the player's turn.
+     *
+     * @param player The player that is sending the turn message
+     */
+    fun sendTurnMessage(player: Player) {
+        require(networkService.connectionState == ConnectionState.PLAYING_MY_TURN) { "Cannot send a turn message." }
+        val game = networkService.rootService.currentGame
+        checkNotNull(game) { "Can not send a turn message while the game hasn't started yet." }
+        val type = moveType
+        checkNotNull(type) { "Can not send a turn message without a move type." }
+
+        // Check if the intermezzo or last round started this turn
+        val intermezzoStart = !(game.lastTurn?.intermezzo ?: false) && game.intermezzo
+        val lastRoundStart = !(game.lastTurn?.lastRound ?: false) && game.lastRound
+
+        val checksum = TurnChecksum(player.points.first, player.discs.size, intermezzoStart, lastRoundStart)
+
+        // Determine the tile placement object to send. If the move type is skip, the placement is null.
+        val placement = if (type == MoveType.SKIP) {
+            null
+        } else {
+            val tile = this.tile
+            checkNotNull(tile) { "Can not send a turn message without a tile." }
+            val location = this.location
+            checkNotNull(location) { "Can not send a turn message without a location." }
+
+            TilePlacement(tile.id, location.first, location.second, tile.direction.toOrientation())
+        }
+
+        sendGameActionMessage(TurnMessage(type, placement, checksum))
+        resetVariables()
+    }
+
+    /**
+     * Sends a [GameInitMessage] to the BGW net server. This message will only be sent when the game has started.
+     */
+    fun sendGameInit() {
+        val game = networkService.rootService.currentGame
+        checkNotNull(game) { "Can not send a game init message while the game hasn't started yet." }
+        check(game.stacks.size == 72) { "Stack size is not 72" }
+        // name: String, color: Color
+        val players = game.players.map { edu.udo.cs.sopra.ntf.Player(it.name, it.color.toNTFColor()) }
+        val stack = game.stacks.map { it.id }
+        sendGameActionMessage(GameInitMessage(players, stack))
+
+        if (players.first().name == playerName) {
+            networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+        } else {
+            networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
+        }
+    }
+
+    /**
+     * Resets the variables used to send a [TurnMessage]. Should be called after a turn message has been sent.
+     */
+    private fun resetVariables() {
+        moveType = null
+        tile = null
+        location = null
+    }
+
+    /**
      * Handles a [TurnMessage] sent by the BGW net server. Will handle the turn message when the connection state is
      * [ConnectionState.WAITING_FOR_OPPONENTS].
      *
@@ -176,12 +267,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 ?: error("Received a turn message with an unknown tile.")
 
             val position = Pair(tilePlacement.posX, tilePlacement.posY)
-            val direction = when (tilePlacement.orientation) {
-                Orientation.NORTH -> Direction.UP
-                Orientation.EAST -> Direction.RIGHT
-                Orientation.SOUTH -> Direction.DOWN
-                Orientation.WEST -> Direction.LEFT
-            }
+            val direction = tilePlacement.orientation.toDirection()
 
             if (NetworkService.DEBUG) {
                 println("[Debug] $playerName: Incoming Turn Message: ${tile.id} at $position in direction $direction.")
@@ -205,8 +291,29 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             }
 
             if (NetworkService.DEBUG) println("[Debug] $playerName: Received a game init message.")
+            val players = message.players.map {
+                Player(
+                    it.name,
+                    it.color.toEntityColor(),
+                    if (it.name == playerName) playerType else PlayerType.NETWORK_PLAYER
+                )
+            }
 
-            // TODO: Start a new game
+            val totalDeck = networkService.rootService.gameService.createStacks()
+            val stacks = message.drawPile.map { totalDeck.find { tile -> tile.id == it } ?: error("Tile not found") }
+                .toMutableList()
+
+            val game = Sagani(players, stacks)
+            repeat(5) {
+                game.offerDisplay.add(game.stacks.removeFirst())
+            }
+
+            networkService.rootService.currentGame = game
+
+            // refresh GUI
+            networkService.onAllRefreshables {
+                refreshAfterStartNewGame()
+            }
         }
     }
 
@@ -216,5 +323,34 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     private fun disconnectAndError(message: Any) {
         networkService.disconnect()
         error(message)
+    }
+
+    private fun Direction.toOrientation(): Orientation = when (this) {
+        Direction.UP -> Orientation.NORTH
+        Direction.RIGHT -> Orientation.EAST
+        Direction.DOWN -> Orientation.SOUTH
+        Direction.LEFT -> Orientation.WEST
+        else -> error("Invalid direction.")
+    }
+
+    private fun Orientation.toDirection(): Direction = when (this) {
+        Orientation.NORTH -> Direction.UP
+        Orientation.EAST -> Direction.RIGHT
+        Orientation.SOUTH -> Direction.DOWN
+        Orientation.WEST -> Direction.LEFT
+    }
+
+    private fun Color.toNTFColor(): edu.udo.cs.sopra.ntf.Color = when (this) {
+        Color.BLACK -> edu.udo.cs.sopra.ntf.Color.BLACK
+        Color.GREY -> edu.udo.cs.sopra.ntf.Color.GREY
+        Color.BROWN -> edu.udo.cs.sopra.ntf.Color.BROWN
+        Color.WHITE -> edu.udo.cs.sopra.ntf.Color.WHITE
+    }
+
+    private fun edu.udo.cs.sopra.ntf.Color.toEntityColor(): Color = when (this) {
+        edu.udo.cs.sopra.ntf.Color.BLACK -> Color.BLACK
+        edu.udo.cs.sopra.ntf.Color.GREY -> Color.GREY
+        edu.udo.cs.sopra.ntf.Color.BROWN -> Color.BROWN
+        edu.udo.cs.sopra.ntf.Color.WHITE -> Color.WHITE
     }
 }

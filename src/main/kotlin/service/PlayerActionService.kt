@@ -1,6 +1,7 @@
 package service
 
 import Location
+import edu.udo.cs.sopra.ntf.MoveType
 import entity.*
 
 /**
@@ -37,17 +38,20 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             check(tile in currentGame.intermezzoStorage) {
                 "You can't take this tile. It is not part of the intermezzo storage."
             }
+            rootService.networkService.client?.moveType = MoveType.INTERMEZZO
             currentGame.intermezzoStorage.remove(tile)
         } else if (currentGame.offerDisplay.size > 1) {
             check(tile in currentGame.offerDisplay) {
                 "You can't take this tile. It is not part of the offer display."
             }
+            rootService.networkService.client?.moveType = MoveType.OFFER_DISPLAY
             currentGame.offerDisplay.remove(tile)
         } else {
             check(tile in currentGame.offerDisplay || tile == currentGame.stacks[0]) {
                 "You can't take this tile. It is not part of the offer display or the top card of the stacks."
             }
             if (!currentGame.offerDisplay.remove(tile)) {
+                rootService.networkService.client?.moveType = MoveType.DRAW_PILE
                 currentGame.stacks.removeFirst()
             }
         }
@@ -88,6 +92,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             tile.flipped = true
         }
 
+        rootService.networkService.client?.tile = tile
+        rootService.networkService.client?.location = location
+        rootService.networkService.client?.sendTurnMessage(player)
+
         // refresh GUI
         onAllRefreshables { refreshAfterPlaceTile(player, tile, location) }
 
@@ -100,7 +108,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      */
     fun validLocation(board: MutableMap<Location, Tile>): Set<Location> {
         if (board.isEmpty()) {
-            return mutableSetOf(Pair(0,0))
+            return mutableSetOf(Pair(0, 0))
         }
         val validLocation: MutableSet<Location> = mutableSetOf()
         // add all location adjacent to given tiles
