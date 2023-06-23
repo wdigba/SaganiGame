@@ -174,9 +174,10 @@ class KIService(private val rootService: RootService) {
             if (coordinateInfo.occupied || coordinateInfo.gameDistance != 0) {
                 continue
             }
-            if (position == Pair(-1, -2)){
+            /*if (position == Pair(-1, -2)){
                 println("test")
             }
+             */
 
             // if any count is bigger than maxCount replace maxCount by it
             if (coordinateInfo.airCount > maxCount) {
@@ -526,10 +527,11 @@ class KIService(private val rootService: RootService) {
                 adjacentPosition = calculateAdjacentPosition(adjacentPosition, arrow.direction)
             }
         }
-        if (position == Pair(2, -1) && tile.direction == Direction.UP) {
+        /* if (position == Pair(2, -1) && tile.direction == Direction.UP) {
             println("Score: ")
             println("Satisfied Arrows: ")
         }
+         */
         // maximum level is 1
         return (satisfiedArrows + (satisfiedArrows /tile.arrows.size)*2.0) / 6.0
     }

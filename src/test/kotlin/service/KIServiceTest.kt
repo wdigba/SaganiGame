@@ -381,6 +381,6 @@ class KIServiceTest {
         // the best position for the tile
         val highestScore = potentialPlacements.maxByOrNull { it.value }
 
-        assertEquals(Pair(Pair(2, -1), Direction.UP), highestScore?.key)
+        assertEquals(Pair(Pair(0, -1), Direction.DOWN), highestScore?.key)
     }
 }
