@@ -126,7 +126,7 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
         innerGridPane.set(2,0,rightPane)
 
 
-        background = ColorVisual(Color.chaletGreen)
+        background = ColorVisual(GameColor.chaletGreen)
         addComponents(outerGridPane)
     }
 
