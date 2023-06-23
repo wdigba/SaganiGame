@@ -18,30 +18,22 @@ class NewGameMenuScene(private val rootService: RootService) :
     val kIButton = StandardButton(
         posX = 100, posY = 200,
         text = "Play with KI",
-    ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
-    }
+    )
 
     val standardButton = StandardButton(
         posX = 100, posY = 300,
         text = "Play with others",
-    ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
-    }
+    )
 
     val ruleButton = StandardButton(
         posX = 100, posY = 400,
         text = "Rules",
-    ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
-    }
+    )
 
     val quitButton = StandardButton(
         posX = 100, posY = 500,
         text = "Quit",
-    ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
-    }
+    )
 
     init {
         opacity = 1.0

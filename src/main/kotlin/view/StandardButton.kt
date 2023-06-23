@@ -10,8 +10,6 @@ import tools.aqua.bgw.visual.Visual
  * Custum Button class that extends [Button]
  */
 
-// TODO: Add componentStyle to Button
-// componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
 class StandardButton(
     posX: Number = 0,
     posY: Number = 0,
@@ -33,5 +31,9 @@ class StandardButton(
         alignment = alignment,
         isWrapText = isWrapText,
         visual = visual,
-)
+) {
+        init {
+            componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
+        }
+    }
 //    , UIComponent()

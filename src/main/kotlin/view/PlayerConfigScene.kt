@@ -4,14 +4,11 @@ import service.RootService
 import tools.aqua.bgw.components.uicomponents.*
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.MenuScene
-import tools.aqua.bgw.observable.properties.StringProperty
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
 /**
- * TODO:
- * - Random Farben
- * - Random Namen ( Tutoren Name) *
+ * TODO: Random Farben - Nils*
  */
 
 class PlayerConfigScene(private val rootService: RootService) :
@@ -41,11 +38,11 @@ class PlayerConfigScene(private val rootService: RootService) :
     ).apply {
         componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
-            startButton.isDisabled = checkIfStartIsAvailable()
+            startButton.isDisabled = !startIsAvailable()
         }
     }
 
-    private val outputLabel = Label(
+    private val outputLabel1 = Label(
         posX = 230,
         posY = 160,
         width = 50,
@@ -53,8 +50,11 @@ class PlayerConfigScene(private val rootService: RootService) :
         alignment = Alignment.CENTER,
         isWrapText = true
     )
+
+    val comboBoxColors = mutableListOf("", "White", "Grey", "Brown", "Black")
+
     private val comboBox1 =
-        ComboBox<String>(posX = 230, posY = 160, width = 70, prompt = " ")
+        ComboBox<String>(posX = 230, posY = 160, width = 70)
 
     private val outputLabel2 = Label(
         posX = 230,
@@ -107,7 +107,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     ).apply {
         componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
-            startButton.isDisabled = checkIfStartIsAvailable()
+            startButton.isDisabled = !startIsAvailable()
         }
     }
 
@@ -128,7 +128,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     ).apply {
         componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
-            startButton.isDisabled = checkIfStartIsAvailable()
+            startButton.isDisabled = !startIsAvailable()
         }
     }
 
@@ -149,7 +149,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     ).apply {
         componentStyle = "-fx-background-color: #C8CAA7"
         onKeyTyped = {
-            startButton.isDisabled = checkIfStartIsAvailable()
+            startButton.isDisabled = !startIsAvailable()
         }
     }
 
@@ -168,7 +168,6 @@ class PlayerConfigScene(private val rootService: RootService) :
         width = 140,
         text = "Go Back",
     ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
         onMouseClicked = {
             for (input in playerInputs) {
                 input.text = ""
@@ -185,7 +184,6 @@ class PlayerConfigScene(private val rootService: RootService) :
         width = 140,
         text = "Start",
     ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
         onMouseClicked = {
             val playerNames = mutableListOf<String>()
             for (input in playerInputs) {
@@ -231,7 +229,6 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 50, posY = 520,
         text = "Random Names"
     ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
         onMouseClicked = {
             val randomNames = mutableListOf(
                 "Till", "Marc", "Luka", "Sven", "Nick", "Friedemann", "Moritz", "Stefan", "Kai", "Vadym",
@@ -247,7 +244,7 @@ class PlayerConfigScene(private val rootService: RootService) :
 
                 input.text = randomAdjectives.removeFirst() + " " + randomNames.removeFirst()
             }
-            startButton.isDisabled = checkIfStartIsAvailable()
+            startButton.isDisabled = !startIsAvailable()
         }
     }
 
@@ -264,25 +261,32 @@ class PlayerConfigScene(private val rootService: RootService) :
         comboBox3.isVisible = false
         comboBox4.isVisible = false
 
-        comboBox1.items = mutableListOf("Red ", "Blue", "Green ", "White")
+        comboBox1.items = comboBoxColors
         comboBox1.selectedItemProperty.addListener { _, newValue ->
-            outputLabel.text = "$newValue"
+            outputLabel1.text = "$newValue"
+//            refreshComboBoxColor(comboBox1)
+            startButton.isDisabled = !startIsAvailable()
         }
 
-
-        comboBox2.items = mutableListOf("Red ", "Blue", "Green ", "White")
+        comboBox2.items = comboBoxColors
         comboBox2.selectedItemProperty.addListener { _, newValue ->
             outputLabel2.text = "$newValue"
+//            refreshComboBoxColor(comboBox2)
+            startButton.isDisabled = !startIsAvailable()
         }
 
-        comboBox3.items = mutableListOf("Red ", "Blue", "Green ", "White")
+        comboBox3.items = comboBoxColors
         comboBox3.selectedItemProperty.addListener { _, newValue ->
             outputLabel3.text = "$newValue"
+//            refreshComboBoxColor(comboBox3)
+            startButton.isDisabled = !startIsAvailable()
         }
 
-        comboBox4.items = mutableListOf("Red ", "Blue", "Green ", "White")
+        comboBox4.items = comboBoxColors
         comboBox4.selectedItemProperty.addListener { _, newValue ->
             outputLabel4.text = "$newValue"
+//            refreshComboBoxColor(comboBox4)
+            startButton.isDisabled = !startIsAvailable()
         }
 
         opacity = 1.0
@@ -292,8 +296,8 @@ class PlayerConfigScene(private val rootService: RootService) :
             player2Label, player2Input, color2Label, comboBox2,
             player3Label, player3Input, color3Label, comboBox3,
             player4Label, player4Input, color4Label, comboBox4,
-            startButton, backButton, plusButton, minusButton, outputLabel,
-            outputLabel2,outputLabel3,outputLabel4,
+            startButton, backButton, plusButton, minusButton, outputLabel1,
+            outputLabel2, outputLabel3, outputLabel4,
             randomNamesButton
         )
     }
@@ -326,6 +330,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         if (player4Label.isVisible) {
             player4Label.isVisible = false
             player4Input.text = ""
+            outputLabel4.text = ""
             player4Input.isVisible = false
             color4Label.isVisible = false
             comboBox4.isVisible = false
@@ -336,6 +341,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         } else if (player3Label.isVisible) {
             player3Label.isVisible = false
             player3Input.text = ""
+            outputLabel3.text = ""
             player3Input.isVisible = false
             color3Label.isVisible = false
             comboBox3.isVisible = false
@@ -350,13 +356,55 @@ class PlayerConfigScene(private val rootService: RootService) :
      * checks if one of the player inputs are empty. If so, the startbutton stays disabled.
      * If none of the player inputs is empty, the start button is enabled.
      */
-    private fun checkIfStartIsAvailable(): Boolean {
+    private fun startIsAvailable(): Boolean {
+        // Player Names not empty
         for (input in playerInputs) {
             if (input.text == "") {
-                return true
+                return false
             }
         }
-        return false
+        // If player has name color must not be empty
+        val playerColors = listOf(
+            Pair(player1Input, outputLabel1),
+            Pair(player2Input, outputLabel2),
+            Pair(player3Input, outputLabel3),
+            Pair(player4Input, outputLabel4)
+        )
+        for (playerColor in playerColors) {
+            if (playerColor.first.text.trim() != "") {
+                if (playerColor.second.text.trim() == "")
+                    return false
+            }
+        }
+        // Player Colors all different
+        val colors = arrayListOf<String>()
+        for (outputLabel in playerColors.map { it.second }) {
+            if (outputLabel.text.trim() != "") {
+                colors.add(outputLabel.text)
+            }
+        }
+        return colors.size == colors.distinct().size
     }
+
+
+//    private fun refreshComboBoxColor(comboBox: ComboBox<String>) {
+//        val comboBoxes = mutableListOf(comboBox2, comboBox3, comboBox4)
+//        val outputLabels =  mutableListOf(outputLabel1, outputLabel2, outputLabel3, outputLabel4)
+//        val colors = comboBoxColors.toMutableList()
+//        // Can not refresh comboBox while being active
+//        comboBoxes.remove(comboBox)
+//
+//        for (outputLabel in outputLabels) {
+//            if (outputLabel.text.trim() != "") {
+//                colors.remove(outputLabel.text)
+//            }
+//        }
+//        for (comboBox in comboBoxes) {
+//            println(comboBox.widthProperty)
+//            println(comboBox.items)
+//            comboBox.items = colors
+//            println(colors)
+//        }
+//    }
 
 }

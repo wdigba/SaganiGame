@@ -11,7 +11,7 @@ import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
 
-class SaganiGameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable{
+class SaganiGameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
     private val headlineLabel = Label(
         width = 300, height = 50, posX = 50, posY = 50,
         text = "GameScene - Comming Soon, Maybe not",
@@ -20,39 +20,33 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
 
     private val undoButton = StandardButton(
         posX = 50, posY = 980,
-        width =100, height = 50,
+        width = 100, height = 50,
         text = "UNDO"
-    ).apply {
-    }
+    )
+
     private val redoButton = StandardButton(
         posX = 200, posY = 980,
-        width =100,height =50,
+        width = 100, height = 50,
         text = "REDO"
-    ).apply {
-    }
+    )
 
     private val scoreButton = StandardButton(
         posX = 350, posY = 980,
-        width =100,height =50,
+        width = 100, height = 50,
         text = "SCORE"
-    ).apply {
-    }
+    )
 
     private val rotateButton = StandardButton(
-        posX = 500, posY= 980,
-        width=50, height =50,
+        posX = 500, posY = 980,
+        width = 50, height = 50,
         text = "rotate"
-    ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 50%"
-    }
+    )
 
     private val confirmButton = StandardButton(
-        posX = 800, posY= 980,
-        width=50, height =50,
+        posX = 800, posY = 980,
+        width = 50, height = 50,
         text = "Conf"
-    ).apply {
-        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 50%"
-    }
+    )
 
     //defines an exact zone where midCards are displayed
     private val midCardsView: LinearLayout<CardView> = LinearLayout(
@@ -64,6 +58,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         alignment = Alignment.CENTER,
         visual = ColorVisual(255, 255, 255, 50)
     )
+
     /**
      * defines cardStack
      */
@@ -76,6 +71,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         visual = ColorVisual(255,255,255,50)
 
     )
+
     private val smallcardStack = CardStack<CardView>(
         width = 120,
         height = 120,
@@ -83,6 +79,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         posY = 320,
         visual = ColorVisual(255, 255, 255, 50)
     )
+
     private val smallcardStack2 = CardStack<CardView>(
         width = 120,
         height = 120,
@@ -92,15 +89,15 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
     )
 
 
-
-
     init {
 
-        background = ColorVisual( Color.chaletGreen)
-        addComponents(headlineLabel,
-            undoButton,redoButton,
-            midCardsView,cardStack, smallcardStack, smallcardStack2,
-            rotateButton, scoreButton,confirmButton)
+        background = ColorVisual(Color.chaletGreen)
+        addComponents(
+            headlineLabel,
+            undoButton, redoButton,
+            midCardsView, cardStack, smallcardStack, smallcardStack2,
+            rotateButton, scoreButton, confirmButton
+        )
     }
 
 }
