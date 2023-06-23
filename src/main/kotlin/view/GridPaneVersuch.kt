@@ -90,9 +90,6 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
         visual = ColorVisual(255, 255, 255, 50)
     )
 
-
-
-
     init {
 
         background = ColorVisual( Color.chaletGreen)
