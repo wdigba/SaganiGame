@@ -3,7 +3,6 @@ package view
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
-import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
@@ -17,7 +16,7 @@ class RuleScene(private val rootService: RootService) :
     )
 
         init {
-            background = ColorVisual( Color.chaletGreen)
+            background = ColorVisual( GameColor.chaletGreen)
             addComponents(headlineLabel)
         }
 }

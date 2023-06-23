@@ -5,12 +5,13 @@ import java.awt.Color
 /**
  * Enum of colors used in the gui
  */
-class Color(r: Int, g: Int, b: Int) : Color(r, g, b) {
+class GameColor(r: Int, g: Int, b: Int) : Color(r, g, b) {
 
     companion object {
         val chaletGreen = Color(96, 108, 56)
         val cornSilk = Color(254, 250, 224)
         val paleLeaf = Color(200, 202, 167)
+        val brown = Color(165, 42, 42)
 
         /**
          * The color white.  In the default sRGB space.

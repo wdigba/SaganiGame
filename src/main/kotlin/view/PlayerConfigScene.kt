@@ -28,7 +28,7 @@ class PlayerConfigScene(private val rootService: RootService) :
 
     private val color1Label = Label(
         width = 100, height = 35,
-        posX = 230, posY = 125,
+        posX = 200, posY = 125,
         text = "Color:"
     )
 
@@ -42,53 +42,19 @@ class PlayerConfigScene(private val rootService: RootService) :
         }
     }
 
-    private val outputLabel1 = Label(
-        posX = 230,
-        posY = 160,
-        width = 50,
-        text = " ",
-        alignment = Alignment.CENTER,
-        isWrapText = true
-    )
-
-    val comboBoxColors = mutableListOf("White", "Grey", "Brown", "Black")
+    val comboBoxColors = mutableListOf("White", "Gray", "Brown", "Black")
 
     private val comboBox1 =
         ComboBox<String>(posX = 230, posY = 160, width = 70)
 
-    private val outputLabel2 = Label(
-        posX = 230,
-        posY = 240,
-        width = 50,
-        text = " ",
-        alignment = Alignment.CENTER,
-        isWrapText = true
-    )
     private val comboBox2 =
-        ComboBox<String>(posX = 230, posY = 240, width = 70, prompt = " ")
-
-    private val outputLabel3 = Label(
-        posX = 230,
-        posY = 320,
-        width = 50,
-        text = " ",
-        alignment = Alignment.CENTER,
-        isWrapText = true
-    )
+        ComboBox<String>(posX = 230, posY = 240, width = 70)
 
     private val comboBox3 =
-        ComboBox<String>(posX = 230, posY = 320, width = 70, prompt = " ")
-    private val outputLabel4 = Label(
-        posX = 230,
-        posY = 400,
-        width = 50,
-        text = " ",
-        alignment = Alignment.CENTER,
-        isWrapText = true
-    )
-    private val comboBox4 =
-        ComboBox<String>(posX = 230, posY = 400, width = 70, prompt = " ")
+        ComboBox<String>(posX = 230, posY = 320, width = 70)
 
+    private val comboBox4 =
+        ComboBox<String>(posX = 230, posY = 400, width = 70)
 
     private val player2Label = Label(
         width = 100, height = 35,
@@ -97,7 +63,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     )
     private val color2Label = Label(
         width = 100, height = 35,
-        posX = 230, posY = 205,
+        posX = 200, posY = 205,
         text = "Color:"
     )
 
@@ -118,7 +84,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     )
     private val color3Label = Label(
         width = 100, height = 35,
-        posX = 230, posY = 285,
+        posX = 200, posY = 285,
         text = "Color:"
     )
 
@@ -139,7 +105,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     )
     private val color4Label = Label(
         width = 100, height = 35,
-        posX = 230, posY = 365,
+        posX = 200, posY = 365,
         text = "Color:"
     )
 
@@ -157,7 +123,7 @@ class PlayerConfigScene(private val rootService: RootService) :
      * List contains player inputs. If a player is added/removed in GUI the input is added/removed to the list accordingly.
      * This happens in [repositionButtonsMinus]/[repositionButtonsPlus].
      */
-    private val playerInputs = mutableListOf(Pair(player1Input, outputLabel1), Pair(player2Input, outputLabel2))
+    private val playerInputs = mutableListOf(Pair(player1Input, comboBox1), Pair(player2Input, comboBox2))
 
     /**
      * Button leads to the previous MenuScene.
@@ -202,7 +168,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 320, posY = 240,
         text = "+", font = Font(size = 14), alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(Color.paleLeaf)
+        visual = ColorVisual(GameColor.paleLeaf)
         onMouseClicked = {
             repositionButtonsPlus()
         }
@@ -213,7 +179,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         posX = 360, posY = 320,
         text = "-", font = Font(size = 20), alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(Color.paleLeaf)
+        visual = ColorVisual(GameColor.paleLeaf)
         onMouseClicked = {
             repositionButtonsMinus()
         }
@@ -247,7 +213,7 @@ class PlayerConfigScene(private val rootService: RootService) :
                 // Names
                 input.first.text = randomAdjectives.removeFirst() + " " + randomNames.removeFirst()
                 // Colors
-                input.second.text = colors.removeFirst()
+                input.second.selectedItem = colors.removeFirst()
 
             }
             startButton.isDisabled = !startIsAvailable()
@@ -255,7 +221,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     }
 
     init {
-        background = ColorVisual(Color.cornSilk)
+        background = ColorVisual(GameColor.cornSilk)
         player3Label.isVisible = false
         player3Input.isVisible = false
         player4Input.isVisible = false
@@ -269,25 +235,26 @@ class PlayerConfigScene(private val rootService: RootService) :
 
         comboBox1.items = comboBoxColors
         comboBox1.selectedItemProperty.addListener { _, newValue ->
-            outputLabel1.text = "$newValue"
+            comboBox1.visual = returnColorfromString(newValue)
             startButton.isDisabled = !startIsAvailable()
         }
 
+
         comboBox2.items = comboBoxColors
         comboBox2.selectedItemProperty.addListener { _, newValue ->
-            outputLabel2.text = "$newValue"
+            comboBox2.visual = returnColorfromString(newValue)
             startButton.isDisabled = !startIsAvailable()
         }
 
         comboBox3.items = comboBoxColors
         comboBox3.selectedItemProperty.addListener { _, newValue ->
-            outputLabel3.text = "$newValue"
+            comboBox3.visual = returnColorfromString(newValue)
             startButton.isDisabled = !startIsAvailable()
         }
 
         comboBox4.items = comboBoxColors
         comboBox4.selectedItemProperty.addListener { _, newValue ->
-            outputLabel4.text = "$newValue"
+            comboBox4.visual = returnColorfromString(newValue)
             startButton.isDisabled = !startIsAvailable()
         }
 
@@ -298,8 +265,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player2Label, player2Input, color2Label, comboBox2,
             player3Label, player3Input, color3Label, comboBox3,
             player4Label, player4Input, color4Label, comboBox4,
-            startButton, backButton, plusButton, minusButton, outputLabel1,
-            outputLabel2, outputLabel3, outputLabel4,
+            startButton, backButton, plusButton, minusButton,
             randomNamesButton
         )
     }
@@ -313,7 +279,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player3Input.isVisible = true
             color3Label.isVisible = true
             comboBox3.isVisible = true
-            playerInputs.add(Pair(player3Input, outputLabel3))
+            playerInputs.add(Pair(player3Input, comboBox3))
             startButton.isDisabled = !startIsAvailable()
 
         } else if (!player4Label.isVisible) {
@@ -323,7 +289,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             color4Label.isVisible = true
             comboBox4.isVisible = true
             plusButton.isVisible = false
-            playerInputs.add(Pair(player4Input, outputLabel4))
+            playerInputs.add(Pair(player4Input, comboBox4))
             startButton.isDisabled = !startIsAvailable()
         }
     }
@@ -334,11 +300,10 @@ class PlayerConfigScene(private val rootService: RootService) :
         if (player4Label.isVisible) {
             player4Label.isVisible = false
             player4Input.text = ""
-            outputLabel4.text = ""
             player4Input.isVisible = false
             color4Label.isVisible = false
             comboBox4.isVisible = false
-            playerInputs.remove(Pair(player4Input, outputLabel4))
+            playerInputs.remove(Pair(player4Input, comboBox4))
             minusButton.reposition(360, 320)
             plusButton.reposition(320, 320)
             plusButton.isVisible = true
@@ -346,11 +311,10 @@ class PlayerConfigScene(private val rootService: RootService) :
         } else if (player3Label.isVisible) {
             player3Label.isVisible = false
             player3Input.text = ""
-            outputLabel3.text = ""
             player3Input.isVisible = false
             color3Label.isVisible = false
             comboBox3.isVisible = false
-            playerInputs.remove(Pair(player3Input, outputLabel3))
+            playerInputs.remove(Pair(player3Input, comboBox3))
             minusButton.isVisible = false
             plusButton.reposition(320, 240)
             plusButton.isVisible = true
@@ -372,17 +336,30 @@ class PlayerConfigScene(private val rootService: RootService) :
         // If player has name color must not be empty
         for (input in playerInputs) {
             if (input.first.text.trim() != "") {
-                if (input.second.text.trim() == "")
+                if (input.second.selectedItem == null)
                     return false
             }
         }
         // Player Colors all different
         val colors = arrayListOf<String>()
-        for (outputLabel in playerInputs.map { it.second }) {
-            if (outputLabel.text.trim() != "") {
-                colors.add(outputLabel.text)
+        for (comboBox in playerInputs.map { it.second }) {
+            if (comboBox.selectedItem != null) {
+                colors.add(comboBox.selectedItem!!)
             }
         }
         return colors.size == colors.distinct().size
+    }
+
+    private fun returnColorfromString(color: String?): ColorVisual {
+        checkNotNull(color)
+        when (color) {
+            "White" -> return ColorVisual(GameColor.white)
+            "Gray" -> return ColorVisual(GameColor.gray)
+            "Brown" -> return ColorVisual(GameColor.brown)
+            "Black" -> return ColorVisual(GameColor.black)
+            else -> {
+                return ColorVisual(GameColor.white)
+            }
+        }
     }
 }

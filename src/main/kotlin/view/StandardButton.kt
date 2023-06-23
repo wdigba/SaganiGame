@@ -16,7 +16,7 @@ class StandardButton(
     width: Number = 200,
     height: Number = 35,
     text: String = "",
-    font: Font = Font(size = 18, color = Color.cornSilk),
+    font: Font = Font(size = 18, color = GameColor.cornSilk),
     alignment: Alignment = Alignment.CENTER,
     isWrapText: Boolean = false,
     visual: Visual = ColorVisual.TRANSPARENT,

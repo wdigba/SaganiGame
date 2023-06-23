@@ -91,7 +91,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
 
     init {
 
-        background = ColorVisual(Color.chaletGreen)
+        background = ColorVisual(GameColor.chaletGreen)
         addComponents(
             headlineLabel,
             undoButton, redoButton,

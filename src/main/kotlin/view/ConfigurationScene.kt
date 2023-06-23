@@ -32,7 +32,7 @@ class ConfigurationScene(private val rootService: RootService) :
 
     init {
         opacity = 1.0
-        background = ColorVisual(Color.cornSilk)
+        background = ColorVisual(GameColor.cornSilk)
         addComponents(
             headlineLabel,
             networkButton, playersButton, backButton
