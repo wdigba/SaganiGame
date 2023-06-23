@@ -14,7 +14,7 @@ import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
 
-class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable{
+class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
     private val headlineLabel = Label(
         width = 300, height = 50, posX = 50, posY = 50,
         text = "GameScene - Comming Soon, Maybe not",
@@ -23,35 +23,35 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
 
     private val undoButton = StandardButton(
         posX = 50, posY = 980,
-        width =100, height = 50,
+        width = 100, height = 50,
         text = "UNDO"
     ).apply {
     }
     private val redoButton = StandardButton(
         posX = 200, posY = 980,
-        width =100,height =50,
+        width = 100, height = 50,
         text = "REDO"
     ).apply {
     }
 
     private val scoreButton = StandardButton(
         posX = 350, posY = 980,
-        width =100,height =50,
+        width = 100, height = 50,
         text = "SCORE"
     ).apply {
     }
 
     private val rotateButton = StandardButton(
-        posX = 500, posY= 980,
-        width=50, height =50,
+        posX = 500, posY = 980,
+        width = 50, height = 50,
         text = "rotate"
     ).apply {
         componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 50%"
     }
 
     private val confirmButton = StandardButton(
-        posX = 800, posY= 980,
-        width=50, height =50,
+        posX = 800, posY = 980,
+        width = 50, height = 50,
         text = "Conf"
     ).apply {
         componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 50%"
@@ -67,6 +67,7 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
         alignment = Alignment.CENTER,
         visual = ColorVisual(255, 255, 255, 50)
     )
+
     /**
      * defines cardStack
      */
@@ -95,21 +96,38 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
 
 
     private val targetPane = Pane<ComponentView>(width = 1000, height = 1000)
-   //private val cameraPane = CameraPane<ComponentView>(width = 500, height = 500, targetPane)
+    //private val cameraPane = CameraPane<ComponentView>(width = 500, height = 500, targetPane)
 
-    private val outerGridPane = GridPane<ComponentView>(columns = 3, rows = 1)
-    private val innerGridPane = GridPane<ComponentView>(columns = 1, rows = 3)
+    private val outerGridPane = GridPane<ComponentView>(0, 0, columns = 1, rows = 3, layoutFromCenter = false)
+    private val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1, layoutFromCenter = false)
 
+    private val upperPane = Pane<ComponentView>(0, 0, 1920, 162, visual = ColorVisual.CYAN)
+    private val bottomPane = Pane<ComponentView>(0, 0, 1920, 162, visual = ColorVisual.MAGENTA)
+    private val leftPane = Pane<ComponentView>(0, 0, 288, 756, visual = ColorVisual.DARK_GRAY)
+    private val rightPane = Pane<ComponentView>(0, 0, 288, 756, visual = ColorVisual.PINK)
 
+    //1920, 1080
+    //Pane
     init {
-        outerGridPane.set(1,0,innerGridPane)
-        innerGridPane.set(0,1,redoButton)
+        outerGridPane.setRowHeight(0,162)
+        outerGridPane.setRowHeight(1,756)
+        outerGridPane.setRowHeight(2,162)
+
+        outerGridPane.set(0,0,upperPane)
+        outerGridPane.set(0,1,innerGridPane)
+        outerGridPane.set(0,2,bottomPane)
+
+        innerGridPane.setColumnWidth(0,288)
+        innerGridPane.setColumnWidth(1,1344)
+        innerGridPane.setColumnWidth(2,288)
+
+        innerGridPane.set(0,0,leftPane)
+        innerGridPane.set(1,0,targetPane)
+        innerGridPane.set(2,0,rightPane)
 
 
-        background = ColorVisual( Color.chaletGreen)
-        addComponents(
-            outerGridPane
-        )
+        background = ColorVisual(Color.chaletGreen)
+        addComponents(outerGridPane)
     }
 
 }
