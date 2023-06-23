@@ -1,8 +1,12 @@
 package service
 
 import edu.udo.cs.sopra.ntf.ConnectionState
+import entity.Color
+import entity.PlayerType
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 /**
@@ -32,10 +36,58 @@ class NetworkServiceTest {
         guestRootService.waitForState(ConnectionState.WAITING_FOR_INIT)
     }
 
-    @Test
-    fun test() {
-        guestRootService.disconnect()
+    /**
+     * Disconnects both clients from the server.
+     */
+    @AfterTest
+    fun disconnect() {
         hostRootService.disconnect()
+        guestRootService.disconnect()
+    }
+
+    /**
+     * Test if clients can connect to the server and join the same room.
+     */
+    @Test
+    fun `test if clients can connect to the server and join the same room`() {
+        assertEquals(ConnectionState.WAITING_FOR_GUESTS, hostRootService.networkService.connectionState)
+        assertEquals(ConnectionState.WAITING_FOR_INIT, guestRootService.networkService.connectionState)
+    }
+
+    /**
+     * Test if clients can send a game init message and have the same initial state.
+     */
+    @Test
+    fun `test if a game can be initialized and synced correctly`() {
+        val otherPlayers = hostRootService.networkService.client?.otherPlayers
+        assertNotNull(otherPlayers)
+        assertEquals(1, otherPlayers.size)
+        val players = listOf(
+            Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER),
+            Triple(hostRootService.networkService.client!!.playerName, Color.GREY, PlayerType.HUMAN)
+        )
+        hostRootService.gameService.startNewGame(players)
+        guestRootService.waitForState(ConnectionState.PLAYING_MY_TURN)
+        hostRootService.waitForState(ConnectionState.WAITING_FOR_OPPONENTS)
+
+        val guestGame = guestRootService.currentGame
+        assertNotNull(guestGame)
+        val hostGame = hostRootService.currentGame
+        assertNotNull(hostGame)
+
+        // Check if the players are the same across the clients
+        assertEquals(
+            guestGame.players.size, hostGame.players.size
+        )
+        for (i in guestGame.players.indices) {
+            assertEquals(guestGame.players[i].name, hostGame.players[i].name)
+            assertEquals(guestGame.players[i].color, hostGame.players[i].color)
+        }
+
+        // Check if the stacks and current player are the same across the clients
+        assertEquals(guestGame.actPlayer.name, hostGame.actPlayer.name)
+        assertEquals(guestGame.stacks, hostGame.stacks)
+        assertEquals(guestGame.offerDisplay, hostGame.offerDisplay)
     }
 
     /**
@@ -55,8 +107,7 @@ class NetworkServiceTest {
     private fun RootService.waitForState(state: ConnectionState, timeout: Int = 5000) {
         var timePassed = 0
         while (timePassed < timeout) {
-            if (networkService.connectionState == state)
-                return
+            if (networkService.connectionState == state) return
             else {
                 Thread.sleep(100)
                 timePassed += 100

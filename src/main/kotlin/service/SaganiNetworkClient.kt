@@ -43,7 +43,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     /**
      * The names of the other players in the session.
      */
-    private var otherPlayers = listOf<String>()
+    var otherPlayers = listOf<String>()
 
     /**
      * The type of player this client is.
