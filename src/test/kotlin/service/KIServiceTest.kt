@@ -40,23 +40,23 @@ class KIServiceTest {
 
         //adding discs to every tile
         repeat(3) {
-            tile1.discs.add(player.discs.last())
+            tile1.discs.add(popLastElement(player.discs))
         }
         repeat(2) {
-            tile2.discs.add(player.discs.last())
+            tile2.discs.add(popLastElement(player.discs))
         }
         repeat(3) {
-            tile3.discs.add(player.discs.last())
+            tile3.discs.add(popLastElement(player.discs))
         }
 
         // placing discs on the arrows when needed
         tile1.arrows.forEach {
             when (it.element) {
                 Element.FIRE -> {
-                    it.disc.add(tile1.discs.last())
+                    it.disc.add(popLastElement(tile1.discs))
                 }
                 Element.EARTH -> {
-                    it.disc.add(tile1.discs.last())
+                    it.disc.add(popLastElement(tile1.discs))
                 }
                 else -> {}
             }
@@ -64,13 +64,16 @@ class KIServiceTest {
 
         tile3.arrows.forEach {
             if (it.element == Element.EARTH && it.direction == Direction.RIGHT) {
-                it.disc.add(tile3.discs.last())
+                it.disc.add(popLastElement(tile3.discs))
             }
         }
         // fill the board for player
         player.board = board
     }
 
+    fun popLastElement(list: MutableList<Disc>) : Disc {
+        return list.removeAt(list.size-1)
+    }
     /**
      * test for [KIService.calculateBoardScore]
      */
@@ -155,7 +158,7 @@ class KIServiceTest {
             Arrow(Element.EARTH, Direction.UP_LEFT)))
         // filling it with discs
         repeat(2) {
-            tile.discs.add(player.discs.last())
+            tile.discs.add(popLastElement(player.discs))
         }
         // calculate potential placements for this tile
         val potentialPlacements = kiService.calculatePotentialTilePlacements(tile, scoreMap, player)
@@ -235,43 +238,43 @@ class KIServiceTest {
         )
         // filling tiles with discs
         repeat(2) {
-            tile1.discs.add(player.discs.last())
+            tile1.discs.add(popLastElement(player.discs))
         }
         repeat(2) {
-            tile2.discs.add(player.discs.last())
+            tile2.discs.add(popLastElement(player.discs))
         }
         repeat(2) {
-            tile3.discs.add(player.discs.last())
+            tile3.discs.add(popLastElement(player.discs))
         }
         repeat(3) {
-            tile4.discs.add(player.discs.last())
+            tile4.discs.add(popLastElement(player.discs))
         }
         repeat(2) {
-            tile5.discs.add(player.discs.last())
+            tile5.discs.add(popLastElement(player.discs))
         }
         repeat(1) {
-            tile6.discs.add(player.discs.last())
+            tile6.discs.add(popLastElement(player.discs))
         }
         repeat(2) {
-            tile7.discs.add(player.discs.last())
+            tile7.discs.add(popLastElement(player.discs))
         }
         repeat(1) {
-            tile8.discs.add(player.discs.last())
+            tile8.discs.add(popLastElement(player.discs))
         }
         repeat(4) {
-            tile9.discs.add(player.discs.last())
+            tile9.discs.add(popLastElement(player.discs))
         }
         repeat(1) {
-            tile10.discs.add(player.discs.last())
+            tile10.discs.add(popLastElement(player.discs))
         }
         repeat(2) {
-            tile11.discs.add(player.discs.last())
+            tile11.discs.add(popLastElement(player.discs))
         }
         // filling available arrows with discs
         tile1.arrows.forEach {
             when (it.element) {
                 Element.FIRE -> {
-                    it.disc.add(tile1.discs.last())
+                    it.disc.add(popLastElement(tile1.discs))
                 }
                 else -> {}
             }
@@ -279,76 +282,76 @@ class KIServiceTest {
 
         tile2.arrows.forEach{
             when (it.element) {
-                Element.AIR -> it.disc.add(tile2.discs.last())
+                Element.AIR -> it.disc.add(popLastElement(tile2.discs))
                 else -> {}
             }
         }
 
         tile3.arrows.forEach {
             if (it.element == Element.AIR && it.direction == Direction.UP_LEFT) {
-                it.disc.add(tile3.discs.last())
+                it.disc.add(popLastElement(tile3.discs))
             }
         }
 
         tile4.arrows.forEach {
             if (it.element == Element.FIRE && it.direction == Direction.DOWN_RIGHT) {
-                it.disc.add(tile4.discs.last())
+                it.disc.add(popLastElement(tile4.discs))
             }
         }
 
         tile5.arrows.forEach{
             when (it.element) {
                 Element.FIRE -> {
-                    it.disc.add(tile5.discs.last())
+                    it.disc.add(popLastElement(tile5.discs))
                 }
-                Element.EARTH -> it.disc.add(tile5.discs.last())
+                Element.EARTH -> it.disc.add(popLastElement(tile5.discs))
                 else -> {}
             }
         }
 
         tile6.arrows.forEach {
             if (it.element == Element.WATER && it.direction == Direction.DOWN) {
-                it.disc.add(tile6.discs.last())
+                it.disc.add(popLastElement(tile6.discs))
             }
         }
 
         tile7.arrows.forEach{
             when (it.element) {
                 Element.FIRE -> {
-                    it.disc.add(tile7.discs.last())
+                    it.disc.add(popLastElement(tile7.discs))
                 }
-                Element.EARTH -> it.disc.add(tile7.discs.last())
+                Element.EARTH -> it.disc.add(popLastElement(tile7.discs))
                 else -> {}
             }
         }
 
         tile8.arrows.forEach {
             if (it.element == Element.EARTH && it.direction == Direction.UP_RIGHT) {
-                it.disc.add(tile8.discs.last())
+                it.disc.add(popLastElement(tile8.discs))
             }
         }
 
         tile9.arrows.forEach{
             when (it.element) {
-                Element.FIRE -> it.disc.add(tile9.discs.last())
-                Element.EARTH -> it.disc.add(tile9.discs.last())
-                Element.WATER -> it.disc.add(tile9.discs.last())
+                Element.FIRE -> it.disc.add(popLastElement(tile9.discs))
+                Element.EARTH -> it.disc.add(popLastElement(tile9.discs))
+                Element.WATER -> it.disc.add(popLastElement(tile9.discs))
                 else -> {}
             }
         }
 
         tile10.arrows.forEach {
             if (it.element == Element.FIRE && it.direction == Direction.UP) {
-                it.disc.add(tile10.discs.last())
+                it.disc.add(popLastElement(tile10.discs))
             }
         }
 
         tile11.arrows.forEach {
             if (it.element == Element.AIR && it.direction == Direction.UP_LEFT) {
-                it.disc.add(tile11.discs.last())
+                it.disc.add(popLastElement(tile11.discs))
             }
             if (it.element == Element.AIR && it.direction == Direction.DOWN_RIGHT) {
-                it.disc.add(tile11.discs.last())
+                it.disc.add(popLastElement(tile11.discs))
             }
         }
 
@@ -360,8 +363,8 @@ class KIServiceTest {
         val tile12 = Tile(12, points = 1, Element.WATER, listOf(
             Arrow(Element.AIR, Direction.LEFT)))
         // discs for this tile
-        repeat(2) {
-            tile12.discs.add(player.discs.last())
+        repeat(1) {
+            tile12.discs.add(popLastElement(player.discs))
         }
 
         // save timestamp
