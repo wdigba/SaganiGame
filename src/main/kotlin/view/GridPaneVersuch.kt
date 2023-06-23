@@ -99,14 +99,12 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
    //private val cameraPane = CameraPane<ComponentView>(width = 500, height = 500, targetPane)
 
     private val outerGridPane = GridPane<ComponentView>(columns = 3, rows = 1)
-    private val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1)
-
-
+    private val innerGridPane = GridPane<ComponentView>(columns = 1, rows = 3)
 
 
     init {
-        outerGridPane.set(0,1,innerGridPane)
-        innerGridPane.set(0,0,redoButton)
+        outerGridPane.set(1,0,innerGridPane)
+        innerGridPane.set(0,1,redoButton)
 
 
         background = ColorVisual( Color.chaletGreen)
