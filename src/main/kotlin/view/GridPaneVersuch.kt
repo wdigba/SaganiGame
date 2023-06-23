@@ -1,6 +1,5 @@
 package view
 
-import javafx.scene.Camera
 import service.RootService
 import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.CardStack
