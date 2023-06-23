@@ -153,19 +153,11 @@ class PlayerConfigScene(private val rootService: RootService) :
         }
     }
 
-
-    // List with playerInput and related outputLabel
-    private val playerColors = listOf(
-        Pair(player1Input, outputLabel1),
-        Pair(player2Input, outputLabel2),
-        Pair(player3Input, outputLabel3),
-        Pair(player4Input, outputLabel4))
-
     /**
      * List contains player inputs. If a player is added/removed in GUI the input is added/removed to the list accordingly.
      * This happens in [repositionButtonsMinus]/[repositionButtonsPlus].
      */
-    private val playerInputs = mutableListOf(player1Input, player2Input)
+    private val playerInputs = mutableListOf(Pair(player1Input, outputLabel1), Pair(player2Input, outputLabel2))
 
     /**
      * Button leads to the previous MenuScene.
@@ -177,9 +169,8 @@ class PlayerConfigScene(private val rootService: RootService) :
     ).apply {
         onMouseClicked = {
             for (input in playerInputs) {
-                input.text = ""
+                input.first.text = ""
             }
-
         }
     }
 
@@ -194,7 +185,7 @@ class PlayerConfigScene(private val rootService: RootService) :
         onMouseClicked = {
             val playerNames = mutableListOf<String>()
             for (input in playerInputs) {
-                playerNames.add(input.text.trim())
+                playerNames.add(input.first.text.trim())
             }
 
             // leere Werte entfernen
@@ -245,17 +236,19 @@ class PlayerConfigScene(private val rootService: RootService) :
                 "Awesome", "Brilliant", "Clumsy", "Aggressive", "Scary",
                 "Amazing", "Bored", "Weird", "Ambitious"
             )
-            randomAdjectives.shuffle()
-            for (input in playerInputs) {
 
-                input.text = randomAdjectives.removeFirst() + " " + randomNames.removeFirst()
-            }
+            randomAdjectives.shuffle()
+
             val colors = comboBoxColors.toMutableList()
             colors.shuffle()
-            for (playerColor in playerColors) {
-                if (playerColor.first.text.trim() != "") {
-                    playerColor.second.text = colors.removeFirst()
-                }
+
+            for (input in playerInputs) {
+
+                // Names
+                input.first.text = randomAdjectives.removeFirst() + " " + randomNames.removeFirst()
+                // Colors
+                input.second.text = colors.removeFirst()
+
             }
             startButton.isDisabled = !startIsAvailable()
         }
@@ -320,7 +313,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player3Input.isVisible = true
             color3Label.isVisible = true
             comboBox3.isVisible = true
-            playerInputs.add(player3Input)
+            playerInputs.add(Pair(player3Input, outputLabel3))
             startButton.isDisabled = !startIsAvailable()
 
         } else if (!player4Label.isVisible) {
@@ -330,7 +323,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             color4Label.isVisible = true
             comboBox4.isVisible = true
             plusButton.isVisible = false
-            playerInputs.add(player4Input)
+            playerInputs.add(Pair(player4Input, outputLabel4))
             startButton.isDisabled = !startIsAvailable()
         }
     }
@@ -345,7 +338,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player4Input.isVisible = false
             color4Label.isVisible = false
             comboBox4.isVisible = false
-            playerInputs.remove(player4Input)
+            playerInputs.remove(Pair(player4Input, outputLabel4))
             minusButton.reposition(360, 320)
             plusButton.reposition(320, 320)
             plusButton.isVisible = true
@@ -357,7 +350,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             player3Input.isVisible = false
             color3Label.isVisible = false
             comboBox3.isVisible = false
-            playerInputs.remove(player3Input)
+            playerInputs.remove(Pair(player3Input, outputLabel3))
             minusButton.isVisible = false
             plusButton.reposition(320, 240)
             plusButton.isVisible = true
@@ -372,20 +365,20 @@ class PlayerConfigScene(private val rootService: RootService) :
     private fun startIsAvailable(): Boolean {
         // Player Names not empty
         for (input in playerInputs) {
-            if (input.text == "") {
+            if (input.first.text == "") {
                 return false
             }
         }
         // If player has name color must not be empty
-        for (playerColor in playerColors) {
-            if (playerColor.first.text.trim() != "") {
-                if (playerColor.second.text.trim() == "")
+        for (input in playerInputs) {
+            if (input.first.text.trim() != "") {
+                if (input.second.text.trim() == "")
                     return false
             }
         }
         // Player Colors all different
         val colors = arrayListOf<String>()
-        for (outputLabel in playerColors.map { it.second }) {
+        for (outputLabel in playerInputs.map { it.second }) {
             if (outputLabel.text.trim() != "") {
                 colors.add(outputLabel.text)
             }
