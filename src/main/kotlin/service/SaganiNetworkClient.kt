@@ -158,7 +158,8 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     override fun onGameActionResponse(response: GameActionResponse) {
         BoardGameApplication.runOnGUIThread {
             check(
-                networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS || networkService.connectionState == ConnectionState.PLAYING_MY_TURN
+                networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS
+                        || networkService.connectionState == ConnectionState.PLAYING_MY_TURN
             ) {
                 "Received a game action response in an unexpected connection state."
             }
@@ -214,7 +215,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
         val game = networkService.rootService.currentGame
         checkNotNull(game) { "Can not send a game init message while the game hasn't started yet." }
         check(game.stacks.size == 72) { "Stack size is not 72" }
-        // name: String, color: Color
+
         val players = game.players.map { edu.udo.cs.sopra.ntf.Player(it.name, it.color.toNTFColor()) }
         val stack = game.stacks.map { it.id }
         sendGameActionMessage(GameInitMessage(players, stack))
@@ -309,6 +310,12 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             }
 
             networkService.rootService.currentGame = game
+
+            if (players.first().name == playerName) {
+                networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+            } else {
+                networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
+            }
 
             // refresh GUI
             networkService.onAllRefreshables {
