@@ -35,6 +35,7 @@ import tools.aqua.bgw.net.common.response.JoinGameResponseStatus
  */
 class SaganiNetworkClient(playerName: String, host: String, val networkService: NetworkService) :
     BoardGameClient(playerName, host, NetworkService.NETWORK_SECRET) {
+
     /**
      * The unique identifier of the session. Null if there is no session.
      */
@@ -84,7 +85,6 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 CreateGameResponseStatus.SUCCESS -> {
                     networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
                     sessionID = response.sessionID
-                    if (NetworkService.DEBUG) println("[Debug] $playerName: Successfully created game $sessionID.")
                 }
 
                 else -> disconnectAndError(response.status)
@@ -111,7 +111,6 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                     otherPlayers = response.opponents
                     sessionID = response.sessionID
                     networkService.connectionState = ConnectionState.WAITING_FOR_INIT
-                    if (NetworkService.DEBUG) println("[Debug] $playerName: Successfully joined game $sessionID.")
                 }
 
                 else -> disconnectAndError(response.status)
@@ -131,7 +130,6 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 "Received a player joined notification in an unexpected connection state."
             }
 
-            if (NetworkService.DEBUG) println("[Debug] $playerName: Player \"${notification.sender}\" joined")
             otherPlayers += notification.sender
         }
     }
@@ -142,7 +140,6 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
      */
     override fun onPlayerLeft(notification: PlayerLeftNotification) {
         BoardGameApplication.runOnGUIThread {
-            if (NetworkService.DEBUG) println("[Debug] $playerName: Player \"${notification.sender}\" left.")
             otherPlayers -= notification.sender
         }
     }
@@ -165,10 +162,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             }
 
             when (response.status) {
-                GameActionResponseStatus.SUCCESS -> {
-                    if (NetworkService.DEBUG) println("[Debug] $playerName Game action response received.")
-                }
-
+                GameActionResponseStatus.SUCCESS -> {}
                 else -> disconnectAndError(response.status)
             }
         }
@@ -252,7 +246,6 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             val game = networkService.rootService.currentGame
             checkNotNull(game) { "Received a turn message without a current game." }
             if (message.type == MoveType.SKIP) {
-                if (NetworkService.DEBUG) println("[Debug] $playerName: Received a skip turn message.")
                 networkService.rootService.gameService.changeToNextPlayer()
                 return@runOnGUIThread
             }
@@ -269,10 +262,6 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
 
             val position = Pair(tilePlacement.posX, tilePlacement.posY)
             val direction = tilePlacement.orientation.toDirection()
-
-            if (NetworkService.DEBUG) {
-                println("[Debug] $playerName: Incoming Turn Message: ${tile.id} at $position in direction $direction.")
-            }
 
             networkService.rootService.playerActionService.placeTile(
                 tile, direction, position
@@ -291,7 +280,6 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 "Received a game init message in an unexpected connection state."
             }
 
-            if (NetworkService.DEBUG) println("[Debug] $playerName: Received a game init message.")
             val players = message.players.map {
                 Player(
                     it.name,

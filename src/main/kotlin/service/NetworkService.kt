@@ -24,11 +24,6 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
          * The secret for the BGW net server.
          */
         const val NETWORK_SECRET = "23_b_tbd"
-
-        /**
-         * Whether the network should send debug messages.
-         */
-        const val DEBUG = false
     }
 
     /**
@@ -60,7 +55,6 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
         if (!connect(name)) error("Could not connect to server.")
 
         connectionState = ConnectionState.CONNECTED
-        if (DEBUG) println("[Debug] $name: Joining game with session ID $sessionID")
         client?.joinGame(sessionID, "Greetings from Germany!")
         connectionState = ConnectionState.WAITING_FOR_JOIN_CONFIRMATION
     }
@@ -80,10 +74,8 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
         connectionState = ConnectionState.CONNECTED
         if (sessionID.isNullOrBlank()) {
             client?.createGame(GAME_ID, "Greetings from Germany!")
-            if (DEBUG) println("[Debug] $name: Creating game")
         } else {
             client?.createGame(GAME_ID, sessionID, "Greetings from Germany!")
-            if (DEBUG) println("[Debug] $name: Creating game with session ID $sessionID")
         }
         connectionState = ConnectionState.WAITING_FOR_HOST_CONFIRMATION
     }
@@ -94,7 +86,6 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
      */
     fun disconnect() {
         client?.apply {
-            if (DEBUG) println("[Debug] ${this.playerName}: Disconnecting from server")
             if (sessionID != null) leaveGame("Goodbye!")
             if (isOpen) disconnect()
         }
@@ -120,10 +111,8 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
         val client = SaganiNetworkClient(name, SERVER_ADDRESS, this)
         if (client.connect()) {
             this.client = client
-            if (DEBUG) println("[Debug] $name: Connected to server")
             return true
         }
-        if (DEBUG) println("[Debug] $name: Could not connect to server")
         return false
     }
 }
