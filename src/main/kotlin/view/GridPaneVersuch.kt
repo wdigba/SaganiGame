@@ -1,9 +1,13 @@
 package view
 
+import javafx.scene.Camera
 import service.RootService
+import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.container.LinearLayout
 import tools.aqua.bgw.components.gamecomponentviews.CardView
+import tools.aqua.bgw.components.layoutviews.GridPane
+import tools.aqua.bgw.components.layoutviews.Pane
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.BoardGameScene
@@ -91,15 +95,24 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
     )
 
 
+    private val targetPane = Pane<ComponentView>(width = 1000, height = 1000)
+   //private val cameraPane = CameraPane<ComponentView>(width = 500, height = 500, targetPane)
+
+    private val outerGridPane = GridPane<ComponentView>(columns = 3, rows = 1)
+    private val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1)
+
+
 
 
     init {
+        outerGridPane.set(0,1,innerGridPane)
+        innerGridPane.set(0,0,redoButton)
+
 
         background = ColorVisual( Color.chaletGreen)
-        addComponents(headlineLabel,
-            undoButton,redoButton,
-            midCardsView,cardStack, smallcardStack, smallcardStack2,
-            rotateButton, scoreButton,confirmButton)
+        addComponents(
+            outerGridPane
+        )
     }
 
 }
