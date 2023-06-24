@@ -29,15 +29,14 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val stacks = createStacks()
         stacks.shuffle()
 
-        // create new game
-        rootService.currentGame = Sagani(players, stacks)
-
-        // fill offer display of created game
-        val game = rootService.currentGame
-        checkNotNull(game)
+        // fill offer display
+        val game = Sagani(players, stacks)
         repeat(5) {
             game.offerDisplay.add(game.stacks.removeFirst())
         }
+
+        // create new game
+        rootService.currentGame = game
 
         // refresh GUI
         onAllRefreshables {
@@ -150,7 +149,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // increase turnCount
         currentGame.turnCount++
         // copy game
-        //gameCopy()
+        // gameCopy()
 
         // check if game has to end
         if (
@@ -165,7 +164,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
     }
 
-    private fun calculateWinner() {}
+    private fun calculateWinner() {
+        onAllRefreshables { refreshAfterCalculateWinner() }
+    }
 
     /**
      * [gameCopy] creates a deep copy of the entity layer and adds to currentGame.nextTurn
