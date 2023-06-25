@@ -13,6 +13,7 @@ class ChangeToNextPlayerTest {
     private val alice = Triple("Alice", Color.WHITE, PlayerType.HUMAN)
     private val bob = Triple("Bob", Color.BROWN, PlayerType.HUMAN)
     private val playerNames = mutableListOf(alice, bob)
+
     // use TestRefreshable
     private val refreshable = TestRefreshable()
 
@@ -130,18 +131,50 @@ class ChangeToNextPlayerTest {
         assert(refreshable.refreshAfterCalculateWinnerCalled)
     }
 
-    private fun afterTests(game: Sagani): Sagani {
+    private fun afterTests(game: Sagani, intermezzo: Boolean = false): Sagani {
         // currentGame is new Sagani object
         // assertNotSame(rootService.currentGame, game)
         val newGameState = rootService.currentGame
         assertNotNull(newGameState)
-        // next player
-        assertEquals(newGameState.players[1], newGameState.actPlayer)
+        if (intermezzo) {
+            // next intermezzoPlayer
+            assertEquals(newGameState.players[0], newGameState.intermezzoPlayers[0])
+        } else {
+            // next player
+            assertEquals(newGameState.players[1], newGameState.actPlayer)
+        }
+
         // turnCount increased
         assertEquals(1, newGameState.turnCount)
         // refreshAfterChangeToNextPlayer was called
         assert(refreshable.refreshAfterChangeToNextPlayerCalled)
         return newGameState
+    }
+
+    /**
+     * Test start intermezzo
+     */
+    @Test
+    fun intermezzoStartTest() {
+        // testData
+        var game = rootService.currentGame
+        assertNotNull(game)
+        repeat(4) {
+            game!!.intermezzoStorage.add(game!!.stacks.removeFirst())
+        }
+        game.players[1].points = Pair(1, 0)
+        assertFalse(game.intermezzo)
+        game.offerDisplay.clear()
+        assert(game.offerDisplay.isEmpty())
+        // function call
+        rootService.gameService.changeToNextPlayer()
+        // tests
+        game = afterTests(game, true)
+        // intermezzo started
+        assert(game.intermezzo)
+        assertEquals(game.players, game.intermezzoPlayers)
+        // offerDisplay is not refilled
+        assert(game.offerDisplay.isEmpty())
     }
 
     /**
