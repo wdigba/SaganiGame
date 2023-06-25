@@ -82,6 +82,8 @@ class NetworkServiceTest {
         for (i in guestGame.players.indices) {
             assertEquals(guestGame.players[i].name, hostGame.players[i].name)
             assertEquals(guestGame.players[i].color, hostGame.players[i].color)
+            assertEquals(guestGame.players[i].discs, hostGame.players[i].discs)
+            assertEquals(guestGame.players[i].board, hostGame.players[i].board)
         }
 
         // Check if the stacks and current player are the same across the clients

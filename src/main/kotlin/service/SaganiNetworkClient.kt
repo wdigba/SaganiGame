@@ -10,6 +10,7 @@ import edu.udo.cs.sopra.ntf.TurnChecksum
 import edu.udo.cs.sopra.ntf.TurnMessage
 import entity.Color
 import entity.Direction
+import entity.Disc
 import entity.Player
 import entity.PlayerType
 import entity.Sagani
@@ -286,6 +287,10 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                     it.color.toEntityColor(),
                     if (it.name == playerName) playerType else PlayerType.NETWORK_PLAYER
                 )
+            }
+
+            players.forEach { player ->
+                repeat(24) { player.discs.add(Disc.SOUND) }
             }
 
             val totalDeck = networkService.rootService.gameService.createStacks()
