@@ -241,7 +241,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     fun onTurnMessageReceived(message: TurnMessage, sender: String) {
         BoardGameApplication.runOnGUIThread {
             check(networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS) {
-                "Received a turn message in an unexpected connection state."
+                "$sender sent a turn when it's not their turn."
             }
 
             val game = networkService.rootService.currentGame
@@ -251,15 +251,14 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
                 return@runOnGUIThread
             }
 
-            val offerDisplay = game.offerDisplay
-            val drawPile = game.stacks
-            val intermezzoStorage = game.intermezzoStorage
             val tilePlacement = message.tilePlacement ?: error("Received a turn message without a tile placement.")
 
-            val tile =
-                offerDisplay.find { it.id == tilePlacement.tileId } ?: drawPile.find { it.id == tilePlacement.tileId }
-                ?: intermezzoStorage.find { it.id == tilePlacement.tileId }
-                ?: error("Received a turn message with an unknown tile.")
+            val tile = when (message.type) {
+                MoveType.INTERMEZZO -> game.intermezzoStorage.find { it.id == tilePlacement.tileId }
+                MoveType.OFFER_DISPLAY -> game.offerDisplay.find { it.id == tilePlacement.tileId }
+                MoveType.DRAW_PILE -> game.stacks.find { it.id == tilePlacement.tileId }
+                else -> error("Received a turn message with an unknown move type.")
+            } ?: error("Could not find the tile with id ${tilePlacement.tileId} in the ${message.type}.")
 
             val position = Pair(tilePlacement.posX, tilePlacement.posY)
             val direction = tilePlacement.orientation.toDirection()
