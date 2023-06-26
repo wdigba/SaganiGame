@@ -1,18 +1,21 @@
 package service
 
 import entity.*
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class KIServiceTest {
     lateinit var player: Player
     lateinit var kiService: KIService
+    lateinit var rootService: RootService
 
     /**
      * [initialize] creates initial data before testing other functions
      */
     @BeforeTest
     fun initialize(){
-        val rootService = RootService()
+        rootService = RootService()
         kiService = KIService(rootService)
         player = Player("Alice", Color.WHITE)
 
@@ -37,6 +40,9 @@ class KIServiceTest {
             Pair(0, 1) to tile2,
             Pair(-1, 1) to tile3
         )
+        repeat(24) {
+            player.discs.add(Disc.SOUND)
+        }
 
         //adding discs to every tile
         repeat(3) {
@@ -164,10 +170,11 @@ class KIServiceTest {
         val potentialPlacements = kiService.calculatePotentialTilePlacements(tile, scoreMap, player)
 
         // check if the score on (1,1) is the highest compared to all others
-        val highestScore = potentialPlacements.maxByOrNull { it.value }
-        val highestScores = potentialPlacements.toList().sortedByDescending { (_, value) -> value }.take(10)
+        val highestScore = potentialPlacements.maxByOrNull { it.score }
+        val highestScores = potentialPlacements.toList().sortedByDescending { it.score}.take(10)
 
-        assertEquals(Pair(Pair(1, 1), Direction.LEFT), highestScore?.key)
+        assertEquals(Pair(1, 1), highestScore?.location)
+        assertEquals(Direction.LEFT, highestScore?.direction)
 
     }
     /**
@@ -178,6 +185,13 @@ class KIServiceTest {
         val rootService = RootService()
         kiService = KIService(rootService)
         player = Player("Alice", Color.WHITE)
+
+
+        repeat(24) {
+            player.discs.add(Disc.SOUND)
+        }
+
+
         // tiles for player´s board
         val tile1 = Tile(1, points = 3, Element.WATER, listOf(
             Arrow(Element.FIRE, Direction.RIGHT),
@@ -377,10 +391,15 @@ class KIServiceTest {
         val differenceInSeconds = (end - start) / 1000.0
 
         // get a list of top 10 placements
-        val highestScoresTop = potentialPlacements.toList().sortedByDescending { (_, value) -> value }.take(10)
+        val highestScoresTop = potentialPlacements.toList().sortedByDescending { it.score }.take(10)
         // the best position for the tile
-        val highestScore = potentialPlacements.maxByOrNull { it.value }
+        val highestScore = potentialPlacements.maxByOrNull { it.score }
 
-        assertEquals(Pair(Pair(0, -1), Direction.DOWN), highestScore?.key)
+        potentialPlacements.forEach {
+            assert(this.rootService.playerActionService.validLocation(player.board).contains(it.location))
+        }
+
+        assertEquals(Pair(0, -1), highestScore?.location)
+        assertEquals(Direction.DOWN, highestScore?.direction)
     }
 }

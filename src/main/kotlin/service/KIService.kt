@@ -519,47 +519,50 @@ class KIService(private val rootService: RootService) {
 
 
         for (info in scoreMap.values) {
-            if (!info.occupied) {
-                // the closer placement, the better
-                countForAirArrow += info.airCount / (info.gameDistance + 1)
-                countForEarthArrow += info.earthCount / (info.gameDistance + 1)
-                countForWaterArrow += info.waterCount / (info.gameDistance + 1)
-                countForFireArrow += info.fireCount / (info.gameDistance + 1)
-
-                // calculating positions based on arrows
-                if (info.airCount > 0) {
-                    countPositionsWithAirArrows += (1.0 / (info.gameDistance + 1))
-                }
-                if (info.earthCount > 0) {
-                    countPositionsWithEarthArrows += (1.0 / (info.gameDistance + 1))
-                }
-                if (info.waterCount > 0) {
-                    countPositionsWithWaterArrows += (1.0 / (info.gameDistance + 1))
-                }
-                if (info.fireCount > 0) {
-                    countPositionsWithFireArrows += (1.0 / (info.gameDistance + 1))
-                }
-
-                //same for discs
-                countForAirDiscs += info.discsIfAirPlaced / (info.gameDistance + 1)
-                countForEarthDiscs += info.discsIfEarthPlaced / (info.gameDistance + 1)
-                countForWaterDiscs += info.discsIfWaterPlaced / (info.gameDistance + 1)
-                countForFireDiscs += info.discsIfFirePlaced / (info.gameDistance + 1)
-
-                // calculating positions based on discs
-                if (info.discsIfAirPlaced > 0) {
-                    countPositionsWithAirDiscs += (1.0 / (info.gameDistance + 1))
-                }
-                if (info.discsIfEarthPlaced > 0) {
-                    countPositionsWithEarthDiscs += (1.0 / (info.gameDistance + 1))
-                }
-                if (info.discsIfWaterPlaced > 0) {
-                    countPositionsWithWaterDiscs += (1.0 / (info.gameDistance + 1))
-                }
-                if (info.discsIfFirePlaced > 0) {
-                    countPositionsWithFireDiscs += (1.0 / (info.gameDistance + 1))
-                }
+            if (info.occupied || info.gameDistance < 0) {
+                continue
             }
+
+            // the closer placement, the better
+            countForAirArrow += info.airCount / (info.gameDistance + 1)
+            countForEarthArrow += info.earthCount / (info.gameDistance + 1)
+            countForWaterArrow += info.waterCount / (info.gameDistance + 1)
+            countForFireArrow += info.fireCount / (info.gameDistance + 1)
+
+            // calculating positions based on arrows
+            if (info.airCount > 0) {
+                countPositionsWithAirArrows += (1.0 / (info.gameDistance + 1))
+            }
+            if (info.earthCount > 0) {
+                countPositionsWithEarthArrows += (1.0 / (info.gameDistance + 1))
+            }
+            if (info.waterCount > 0) {
+                countPositionsWithWaterArrows += (1.0 / (info.gameDistance + 1))
+            }
+            if (info.fireCount > 0) {
+                countPositionsWithFireArrows += (1.0 / (info.gameDistance + 1))
+            }
+
+            //same for discs
+            countForAirDiscs += info.discsIfAirPlaced / (info.gameDistance + 1)
+            countForEarthDiscs += info.discsIfEarthPlaced / (info.gameDistance + 1)
+            countForWaterDiscs += info.discsIfWaterPlaced / (info.gameDistance + 1)
+            countForFireDiscs += info.discsIfFirePlaced / (info.gameDistance + 1)
+
+            // calculating positions based on discs
+            if (info.discsIfAirPlaced > 0) {
+                countPositionsWithAirDiscs += (1.0 / (info.gameDistance + 1))
+            }
+            if (info.discsIfEarthPlaced > 0) {
+                countPositionsWithEarthDiscs += (1.0 / (info.gameDistance + 1))
+            }
+            if (info.discsIfWaterPlaced > 0) {
+                countPositionsWithWaterDiscs += (1.0 / (info.gameDistance + 1))
+            }
+            if (info.discsIfFirePlaced > 0) {
+                countPositionsWithFireDiscs += (1.0 / (info.gameDistance + 1))
+            }
+
         }
         // calculation for comparable results for arrows
         val airArrowCount = 1 - (countPositionsWithAirArrows /( countForAirArrow + 1))
@@ -661,14 +664,17 @@ class KIService(private val rootService: RootService) {
             val position = queue.poll()
             for (direction in Direction.tileDirection()) {
                 val adjacentPos = calculateAdjacentPosition(position, direction)
-                if (!scoreMap.containsKey(adjacentPos)) {
-                    val info = CoordinateInformation()
-                    info.gameDistance = getLowestGameDistanceFromNeighbours(adjacentPos, scoreMap) + 1
-                    if (info.gameDistance <= range) {
-                        scoreMap[adjacentPos] = info
-                        queue.offer(adjacentPos)
-                    }
+                if (scoreMap.containsKey(adjacentPos)) { // already visited
+                    continue
                 }
+
+                val info = CoordinateInformation()
+                info.gameDistance = getLowestGameDistanceFromNeighbours(adjacentPos, scoreMap) + 1
+                if (info.gameDistance <= range) {
+                    scoreMap[adjacentPos] = info
+                    queue.offer(adjacentPos)
+                }
+
             }
         }
         return scoreMap
