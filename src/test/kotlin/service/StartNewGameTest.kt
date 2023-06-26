@@ -5,7 +5,7 @@ import entity.PlayerType
 import kotlin.test.*
 
 /**
- * [StartNewGameTest] tests [GameService].startNewGame() and [GameService].createStacks()
+ * [StartNewGameTest] tests [GameService].startNewGame()
  */
 class StartNewGameTest {
     private val rootService = RootService()

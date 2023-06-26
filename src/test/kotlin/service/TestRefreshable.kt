@@ -1,5 +1,8 @@
 package service
 
+import Location
+import entity.Player
+import entity.Tile
 import view.Refreshable
 
 /**
@@ -12,17 +15,15 @@ class TestRefreshable : Refreshable {
         private set
     var refreshAfterCalculateWinnerCalled: Boolean = false
         private set
-    var refreshAfterCalculatePointsCalled: Boolean = false
-        private set
     var refreshAfterSaveGameCalled: Boolean = false
         private set
     var refreshAfterLoadGameCalled: Boolean = false
         private set
     var refreshAfterPlaceTileCalled: Boolean = false
         private set
-    var refreshAfterRotateTileCalled: Boolean = false
+    var refreshAfterUndoCalled: Boolean = false
         private set
-    var refreshAfterrefreshAfterUndoCalled: Boolean = false
+    var refreshAfterRedoCalled: Boolean = false
         private set
 
     /**
@@ -32,12 +33,11 @@ class TestRefreshable : Refreshable {
         refreshAfterStartNewGameCalled = false
         refreshAfterChangeToNextPlayerCalled = false
         refreshAfterCalculateWinnerCalled = false
-        refreshAfterCalculatePointsCalled = false
         refreshAfterSaveGameCalled = false
         refreshAfterLoadGameCalled = false
         refreshAfterPlaceTileCalled = false
-        refreshAfterRotateTileCalled = false
-        refreshAfterrefreshAfterUndoCalled = false
+        refreshAfterUndoCalled = false
+        refreshAfterRedoCalled = false
     }
 
     /**
@@ -50,7 +50,7 @@ class TestRefreshable : Refreshable {
     /**
      * Tests can check if refreshAfterChangeToNextPlayer was called
      */
-    override fun refreshAfterChangeToNextPlayer() {
+    override fun refreshAfterChangeToNextPlayer(player: Player, validLocation: Set<Location>) {
         refreshAfterChangeToNextPlayerCalled = true
     }
 
@@ -59,13 +59,6 @@ class TestRefreshable : Refreshable {
      */
     override fun refreshAfterCalculateWinner() {
         refreshAfterCalculateWinnerCalled = true
-    }
-
-    /**
-     * Tests can check if refreshAfterCalculatePoints was called
-     */
-    override fun refreshAfterCalculatePoints() {
-        refreshAfterCalculatePointsCalled = true
     }
 
     /**
@@ -85,18 +78,21 @@ class TestRefreshable : Refreshable {
     /**
      * Tests can check if refreshAfterPlaceTile was called
      */
-    override fun refreshAfterPlaceTile() {
+    override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
         refreshAfterPlaceTileCalled = true
     }
 
     /**
-     * Tests can check if refreshAfterRotateTile was called
+     * Tests can check if refreshAfterUndo was called
      */
-    override fun refreshAfterRotateTile() {
-        refreshAfterRotateTileCalled = true
+    override fun refreshAfterUndo() {
+        refreshAfterUndoCalled = true
     }
 
-    override fun refreshAfterUndo() {
-        refreshAfterrefreshAfterUndoCalled = true
+    /**
+     * Tests can check if refreshAfterRedo was called
+     */
+    override fun refreshAfterRedo() {
+        refreshAfterRedoCalled = true
     }
 }

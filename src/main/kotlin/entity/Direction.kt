@@ -1,11 +1,13 @@
 package entity
 
+import kotlinx.serialization.Serializable
 import java.util.*
 
 /**
  * Enum to distinguish between the eight direction an arrow can point to
  * tileDirection contains only the four directions a tile can have
  */
+@Serializable
 enum class Direction {
     UP,
     UP_RIGHT,

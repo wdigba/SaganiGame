@@ -1,6 +1,6 @@
 package entity
 
-import kotlin.random.Random.Default.nextInt
+import kotlinx.serialization.Serializable
 
 /**
  * [Sagani] is the game
@@ -9,7 +9,6 @@ import kotlin.random.Random.Default.nextInt
  * @property turnCount: time stamp for calculating points
  * @property intermezzo: true if the game is in an intermezzo
  * @property lastRound: true if a condition to end the game is met / game ends if the next player would be the startPlayer
- * @property startPlayer: starts the game
  * @property players: List of the players in turn order
  * @property actPlayer: the player whose turn it is
  * @property intermezzoPlayers: empty if there is no intermezzo / contains the players in turn order during an intermezzo
@@ -17,14 +16,14 @@ import kotlin.random.Random.Default.nextInt
  * @property offerDisplay: tiles player can choose from during their turn
  * @property intermezzoStorage: tile player can choose from during an intermezzo
  */
+@Serializable
 data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
     var lastTurn: Sagani? = null
     var nextTurn: Sagani? = null
     var turnCount: Int = 0
     var intermezzo: Boolean = false
     var lastRound: Boolean = false
-    var startPlayer: Int
-    var actPlayer: Player
+    var actPlayer: Player = players[0]
     val intermezzoPlayers: MutableList<Player> = mutableListOf()
     val offerDisplay: MutableList<Tile> = mutableListOf()
     val intermezzoStorage: MutableList<Tile> = mutableListOf()
@@ -42,8 +41,7 @@ data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
             require(it.color !in colors) { "Each player has to have a unique color." }
             colors.add(it.color)
         }
-        // stacks contains all 72 Tiles
-        require(stacks.size == 72) { "There have to be 72 tiles total to play this game." }
+
         // unique tiles
         val tileIDs: MutableList<Int> = mutableListOf()
         stacks.forEach {
@@ -52,15 +50,6 @@ data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
             tileIDs.add(it.id)
         }
 
-        // choose random startPlayer
-        startPlayer = nextInt(players.size)
-        // startPlayer is first actPlayer
-        actPlayer = players[startPlayer]
-        // shuffle tiles
-        stacks.shuffle()
-        // fill offerDisplay with 5 tiles
-        repeat(5) {
-            offerDisplay.add(stacks.removeFirst())
-        }
     }
+
 }

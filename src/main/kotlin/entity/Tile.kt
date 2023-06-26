@@ -1,6 +1,7 @@
 package entity
 
 import entity.Direction.Companion.tileDirection
+import kotlinx.serialization.Serializable
 
 /**
  * Players place [Tile] on their board during the game
@@ -12,6 +13,7 @@ import entity.Direction.Companion.tileDirection
  * @property discs: List of discs that are on the tile but not on an arrow of the tile
  * @property flipped: tile gets flipped when it is solved
  */
+@Serializable
 data class Tile(
     val id: Int,
     val points: Int,
