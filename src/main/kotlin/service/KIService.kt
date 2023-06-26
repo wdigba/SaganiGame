@@ -1,8 +1,7 @@
 package service
 
-import entity.Element.*
-import entity.Direction
 import entity.*
+import entity.Element.*
 import java.util.*
 
 /**
@@ -49,6 +48,82 @@ class KIService(private val rootService: RootService) {
             return copy
         }
     }
+
+    class TilePlacementInformation(
+        var tile: Tile,
+        var direction: Direction,
+        var location: Pair<Int, Int>,
+        var score: Double
+    )
+
+    fun playBestMove(board: Map<Pair<Int, Int>, Tile>, player: Player) {
+
+        val intermezzoScoreThreshold = 0.7
+        val lastMoveThreshhold = 0.8
+
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame) { "There is no game." }
+
+        val scoreMap = buildScoreMap(board)
+        if (currentGame.intermezzo) {
+            val possibleTiles = currentGame.intermezzoStorage
+
+            val highestScoresTop = mutableListOf<TilePlacementInformation>()
+
+            for (tile in possibleTiles) {
+                val potentialPlacements = calculatePotentialTilePlacements(tile, scoreMap, player)
+                // get a list of top 10 placements
+                highestScoresTop.addAll(potentialPlacements.toList().sortedByDescending { it.score }.take(10))
+
+
+            }
+
+            val move = chooseBestMove(highestScoresTop)
+
+            if (move.score >= intermezzoScoreThreshold){ // do move only if it's a good move
+                rootService.playerActionService.placeTile(move.tile, move.direction, move.location)
+            }
+            return
+        }
+
+
+        val possibleTiles = currentGame.offerDisplay
+
+        val highestScoresTop = mutableListOf<TilePlacementInformation>()
+
+        for (tile in possibleTiles) {
+            val potentialPlacements = calculatePotentialTilePlacements(tile, scoreMap, player)
+            // get a list of top 10 placements
+            highestScoresTop.addAll(potentialPlacements.toList().sortedByDescending { it.score }.take(10))
+
+
+        }
+        val move = chooseBestMove(highestScoresTop)
+
+        if ( (possibleTiles.size == 1) && (move.score < lastMoveThreshhold)  ){
+            val tileFromStack = currentGame.stacks.removeAt(currentGame.stacks.size - 1)
+            val potentialPlacements = calculatePotentialTilePlacements(tileFromStack, scoreMap, player)
+            val bestMove = potentialPlacements.maxByOrNull { it.score }
+
+            checkNotNull(bestMove) { "Error best move cannot be empty." }
+
+            rootService.playerActionService.placeTile(tileFromStack, bestMove.direction, bestMove.location)
+        } else {
+            rootService.playerActionService.placeTile(move.tile, move.direction, move.location)
+        }
+
+
+    }
+
+    fun chooseBestMove(listOfMoves: List<TilePlacementInformation>) : TilePlacementInformation {
+        if (listOfMoves.isEmpty()) {
+            throw IllegalArgumentException("There is no best move.")
+        }
+        // get best move by geting the maximum score
+        val bestMove = listOfMoves.maxByOrNull { it.score }
+        return bestMove!!
+    }
+
 
     /**
      * [buildScoreMap] creates score map, fills it with tiles and updates with additional information
@@ -112,11 +187,11 @@ class KIService(private val rootService: RootService) {
      * @param player current player
      * @return calculated position for the tile, its rotation and placement´s score
      */
-    fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): Map<Pair<Pair<Int, Int>, Direction>, Double> {
+    fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): MutableList<TilePlacementInformation> {
 
         val arrowWeight = 0.5
 
-        val potentialScores = mutableMapOf<Pair<Pair<Int, Int>, Direction>, Double>()
+        val potentialScores = mutableListOf<TilePlacementInformation>()
 
         for ((position, coordinateInfo) in scoreMap) {
             // do not calculate for all already placed tiles
@@ -143,7 +218,9 @@ class KIService(private val rootService: RootService) {
                 // calculate the whole score for the board
                 val score = calculateBoardScore(updatedScoreMap)
                 // get potential scores based on metrics
-                potentialScores[Pair(position, rotation)] = score + arrowWeight * satisfiedArrowsMetrics + positionMetrics
+
+                val positionScore = score + arrowWeight * satisfiedArrowsMetrics + positionMetrics
+                potentialScores.add(TilePlacementInformation(tile, rotation, position, positionScore))
 
                 if (position == Pair(2, -1) && rotation == Direction.UP) {
                     println("Score: $score")
@@ -169,7 +246,7 @@ class KIService(private val rootService: RootService) {
     private fun getMaximumNumberOfArrowsThatCanBeSatisfied(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
         var maxCount = 0
         //for all positions
-        for ((position, coordinateInfo) in scoreMap) {
+        for ((_, coordinateInfo) in scoreMap) {
             // if the position is occupied or the game distance is not 0
             if (coordinateInfo.occupied || coordinateInfo.gameDistance != 0) {
                 continue
@@ -203,7 +280,7 @@ class KIService(private val rootService: RootService) {
     private fun getMaximumNumberOfFreedDiscs(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
         var maxCount = 0
         //for all positions
-        for ((position, coordinateInfo) in scoreMap) {
+        for ((_, coordinateInfo) in scoreMap) {
             // if the position is occupied or the game distance is not 0
             if (coordinateInfo.occupied || coordinateInfo.gameDistance != 0) {
                 continue
@@ -417,7 +494,6 @@ class KIService(private val rootService: RootService) {
         val arrowDensityWeight = 1 //concentration of discs pointing to a particular position
         val disFreedomWeight = 1 //potential amount of discs that could de freed
         // how much the placement of one element can interfere with the placement of other elements in adjacent positions
-        val interferenceWeight = 1
 
         // general count variables for each element of arrows
         var countForAirArrow = 0.0
