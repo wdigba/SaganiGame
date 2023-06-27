@@ -329,7 +329,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     private fun startIsAvailable(): Boolean {
         // Player Names not empty
         for (input in playerInputs) {
-            if (input.first.text == "") {
+            if (input.first.text.trim() == "") {
                 return false
             }
         }
