@@ -211,7 +211,7 @@ class PlayerConfigScene(private val rootService: RootService) :
             for (input in playerInputs) {
 
                 // Names
-                input.first.text = randomAdjectives.removeFirst() + " " + randomNames.removeFirst()
+                input.first.text = "${randomAdjectives.removeFirst()} ${randomNames.removeFirst()}"
                 // Colors
                 input.second.selectedItem = colors.removeFirst()
 
