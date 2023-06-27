@@ -25,21 +25,19 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
         posX = 50, posY = 980,
         width = 100, height = 50,
         text = "UNDO"
-    ).apply {
-    }
+    )
+
     private val redoButton = StandardButton(
         posX = 200, posY = 980,
         width = 100, height = 50,
         text = "REDO"
-    ).apply {
-    }
+    )
 
     private val scoreButton = StandardButton(
         posX = 350, posY = 980,
         width = 100, height = 50,
         text = "SCORE"
-    ).apply {
-    }
+    )
 
     private val rotateButton = StandardButton(
         posX = 500, posY = 980,
@@ -109,21 +107,21 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
     //1920, 1080
     //Pane
     init {
-        outerGridPane.setRowHeight(0,162)
-        outerGridPane.setRowHeight(1,756)
-        outerGridPane.setRowHeight(2,162)
+        outerGridPane.setRowHeight(0, 162)
+        outerGridPane.setRowHeight(1, 756)
+        outerGridPane.setRowHeight(2, 162)
 
-        outerGridPane.set(0,0,upperPane)
-        outerGridPane.set(0,1,innerGridPane)
-        outerGridPane.set(0,2,bottomPane)
+        outerGridPane.set(0, 0, upperPane)
+        outerGridPane.set(0, 1, innerGridPane)
+        outerGridPane.set(0, 2, bottomPane)
 
-        innerGridPane.setColumnWidth(0,288)
-        innerGridPane.setColumnWidth(1,1344)
-        innerGridPane.setColumnWidth(2,288)
+        innerGridPane.setColumnWidth(0, 288)
+        innerGridPane.setColumnWidth(1, 1344)
+        innerGridPane.setColumnWidth(2, 288)
 
-        innerGridPane.set(0,0,leftPane)
-        innerGridPane.set(1,0,targetPane)
-        innerGridPane.set(2,0,rightPane)
+        innerGridPane.set(0, 0, leftPane)
+        innerGridPane.set(1, 0, targetPane)
+        innerGridPane.set(2, 0, rightPane)
 
 
         background = ColorVisual(GameColor.chaletGreen)

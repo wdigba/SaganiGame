@@ -351,7 +351,7 @@ class PlayerConfigScene(private val rootService: RootService) :
     }
 
     private fun returnColorfromString(color: String?): ColorVisual {
-        checkNotNull(color)
+        checkNotNull(color){"No color selected."}
         when (color) {
             "White" -> return ColorVisual(GameColor.white)
             "Gray" -> return ColorVisual(GameColor.gray)
@@ -362,4 +362,5 @@ class PlayerConfigScene(private val rootService: RootService) :
             }
         }
     }
+
 }

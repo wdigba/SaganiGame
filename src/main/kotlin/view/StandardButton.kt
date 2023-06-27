@@ -31,9 +31,9 @@ class StandardButton(
         alignment = alignment,
         isWrapText = isWrapText,
         visual = visual,
-) {
-        init {
-            componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
-        }
+    ) {
+    init {
+        componentStyle = "-fx-background-color: #606C38; -fx-background-radius: 15px"
     }
-//    , UIComponent()
+
+}

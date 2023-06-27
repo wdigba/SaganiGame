@@ -156,4 +156,5 @@ class GameColor(r: Int, g: Int, b: Int) : Color(r, g, b) {
          */
         val BLUE = blue
     }
+
 }

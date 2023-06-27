@@ -20,4 +20,5 @@ class NetworkScene(private val rootService: RootService) :
         background = ColorVisual(GameColor.cornSilk)
         addComponents(headlineLabel)
     }
+
 }

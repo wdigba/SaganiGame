@@ -30,11 +30,11 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
     private val saganiGameScene: GridPaneVersuch = GridPaneVersuch(rootService)
     private val ruleScene: RuleScene = RuleScene(rootService)
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene(rootService).apply {
-        kIButton.onMouseClicked = {
+        playWithKIButton.onMouseClicked = {
             hideMenuScene()
             this@SaganiApplication.showGameScene(saganiGameScene)
         }
-        standardButton.onMouseClicked = {
+        playWithOthersButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(configurationScene)
         }
         ruleButton.onMouseClicked = {
@@ -50,7 +50,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
         this.showMenuScene(newGameMenuScene)
         this.showGameScene(saganiGameScene)
     }
-
 
 }
 

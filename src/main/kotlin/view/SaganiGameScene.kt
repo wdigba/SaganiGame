@@ -68,7 +68,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         posY = 160,
         width = 140,
         height = 140,
-        visual = ColorVisual(255,255,255,50)
+        visual = ColorVisual(255, 255, 255, 50)
 
     )
 

@@ -15,8 +15,9 @@ class RuleScene(private val rootService: RootService) :
         font = Font(size = 22)
     )
 
-        init {
-            background = ColorVisual( GameColor.chaletGreen)
-            addComponents(headlineLabel)
-        }
+    init {
+        background = ColorVisual(GameColor.chaletGreen)
+        addComponents(headlineLabel)
+    }
+
 }
