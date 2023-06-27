@@ -1,5 +1,6 @@
 package service
 
+import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.*
 import java.io.File
 import kotlinx.serialization.*
@@ -138,6 +139,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     @OptIn(ExperimentalSerializationApi::class)
     fun loadGame(path: String) {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot load game while connected to server"
+        }
 
         val loadGame = FileInputStream(File(path)).use {
             Json.decodeFromStream<Sagani>(it)
@@ -154,6 +158,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * Sagani.lastTurn. If so set currentGame reference to this object
      */
     fun undo() {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot undo while connected to server"
+        }
 
         val game = rootService.currentGame
         checkNotNull(game) { "undo() was called but currentGame is null" }
@@ -171,6 +178,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * Sagani.nextTurn. If so set currentGame reference to this object
      */
     fun redo() {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot redo while connected to server"
+        }
 
         val game = rootService.currentGame
         checkNotNull(game) { "redo() was called but currentGame is null" }
