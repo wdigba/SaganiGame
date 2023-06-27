@@ -5,8 +5,8 @@ import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.container.LinearLayout
 import tools.aqua.bgw.components.gamecomponentviews.CardView
-import tools.aqua.bgw.components.layoutviews.GridPane
-import tools.aqua.bgw.components.layoutviews.Pane
+
+import tools.aqua.bgw.components.layoutviews.*
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.BoardGameScene
@@ -22,13 +22,13 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
     )
 
     private val undoButton = StandardButton(
-        posX = 50, posY = 980,
+        posX = 50, posY = 50,
         width = 100, height = 50,
         text = "UNDO"
     )
 
     private val redoButton = StandardButton(
-        posX = 200, posY = 980,
+        posX = 150, posY = 50,
         width = 100, height = 50,
         text = "REDO"
     )
@@ -94,7 +94,7 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
 
 
     private val targetPane = Pane<ComponentView>(width = 1000, height = 1000)
-    //private val cameraPane = CameraPane<ComponentView>(width = 500, height = 500, targetPane)
+
 
     private val outerGridPane = GridPane<ComponentView>(0, 0, columns = 1, rows = 3, layoutFromCenter = false)
     private val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1, layoutFromCenter = false)
@@ -107,25 +107,47 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
     //1920, 1080
     //Pane
     init {
+
+        //WIP !
+
+        initViewStructure()
+
+
+        val bottomPaneList = mutableListOf<ComponentView>(redoButton,undoButton,scoreButton,confirmButton,rotateButton)
+
+
+        addComponentsToPane(bottomPane, bottomPaneList)
+
+
+        background = ColorVisual(GameColor.chaletGreen)
+        addComponents(outerGridPane)
+    }
+
+    /**
+     * Properly initializes the rows and columns of the GridPanes and puts the panes together.
+     */
+    private fun initViewStructure(){
         outerGridPane.setRowHeight(0, 162)
         outerGridPane.setRowHeight(1, 756)
         outerGridPane.setRowHeight(2, 162)
 
-        outerGridPane.set(0, 0, upperPane)
-        outerGridPane.set(0, 1, innerGridPane)
-        outerGridPane.set(0, 2, bottomPane)
+        outerGridPane[0, 0] = upperPane
+        outerGridPane[0, 1] = innerGridPane
+        outerGridPane[0, 2] = bottomPane
 
         innerGridPane.setColumnWidth(0, 288)
         innerGridPane.setColumnWidth(1, 1344)
         innerGridPane.setColumnWidth(2, 288)
 
-        innerGridPane.set(0, 0, leftPane)
-        innerGridPane.set(1, 0, targetPane)
-        innerGridPane.set(2, 0, rightPane)
+        innerGridPane[0, 0] = leftPane
+        innerGridPane[1, 0] = targetPane
+        innerGridPane[2, 0] = rightPane
+    }
 
-
-        background = ColorVisual(GameColor.chaletGreen)
-        addComponents(outerGridPane)
+    private fun addComponentsToPane(pane: Pane<ComponentView>, componentList:MutableList<ComponentView>){
+        for (component in componentList){
+            pane.add(component)
+        }
     }
 
 }
