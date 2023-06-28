@@ -103,11 +103,17 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // Check Checksum
         rootService.networkService.client?.lastTurnChecksum?.let {
-            println("${rootService.networkService.client?.playerName}: Testing Checksum")
-            check(it.score == currentGame.actPlayer.points.first) {
+            // identify player
+            val player = if (currentGame.intermezzo) {
+                currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+            } else {
+                currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+            }
+            println("${player.name}: Testing Checksum")
+            check(it.score == player.points.first) {
                 "Checksum: Score did not match. ${it.score} != ${currentGame.actPlayer.points.first}"
             }
-            check(it.availableDiscs == currentGame.actPlayer.discs.size) {
+            check(it.availableDiscs == player.discs.size) {
                 "Checksum: Available discs did not match. ${it.availableDiscs} != ${currentGame.actPlayer.discs.size}"
             }
             val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
@@ -195,6 +201,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
     private fun calculateWinner() {
         onAllRefreshables { refreshAfterCalculateWinner() }
+        rootService.networkService.disconnect()
     }
 
     /**
