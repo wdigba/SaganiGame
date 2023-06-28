@@ -1,7 +1,9 @@
 package service
 
+import Location
 import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Color
+import entity.Direction
 import entity.PlayerType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -76,9 +78,7 @@ class NetworkServiceTest {
         assertNotNull(hostGame)
 
         // Check if the players are the same across the clients
-        assertEquals(
-            guestGame.players.size, hostGame.players.size
-        )
+        assertEquals(guestGame.players.size, hostGame.players.size)
         for (i in guestGame.players.indices) {
             assertEquals(guestGame.players[i].name, hostGame.players[i].name)
             assertEquals(guestGame.players[i].color, hostGame.players[i].color)
@@ -90,6 +90,40 @@ class NetworkServiceTest {
         assertEquals(guestGame.actPlayer.name, hostGame.actPlayer.name)
         assertEquals(guestGame.stacks, hostGame.stacks)
         assertEquals(guestGame.offerDisplay, hostGame.offerDisplay)
+    }
+
+    @Test
+    fun `test if a turn gets sent correctly`() {
+        // Setup game
+        val otherPlayers = hostRootService.networkService.client?.otherPlayers
+        assertNotNull(otherPlayers)
+        assertEquals(1, otherPlayers.size)
+        val players = listOf(
+            Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER),
+            Triple(hostRootService.networkService.client!!.playerName, Color.GREY, PlayerType.HUMAN)
+        )
+
+        // Start game and wait until both clients are in the correct state
+        hostRootService.gameService.startNewGame(players)
+        guestRootService.waitForState(ConnectionState.PLAYING_MY_TURN)
+        hostRootService.waitForState(ConnectionState.WAITING_FOR_OPPONENTS)
+
+        val guestGame = guestRootService.currentGame
+        checkNotNull(guestGame)
+
+        // Place a tile and wait until both clients have received the turn
+        val tile = guestGame.offerDisplay.first()
+        guestRootService.playerActionService.placeTile(tile, Direction.UP, Location(0, 0))
+        hostRootService.waitForState(ConnectionState.PLAYING_MY_TURN)
+        guestRootService.waitForState(ConnectionState.WAITING_FOR_OPPONENTS)
+
+        // Check if the turn was received correctly
+        val hostGame = hostRootService.currentGame
+        checkNotNull(hostGame)
+        val guestPlayerHostSide = hostGame.players.first()
+        val guestPlayerGuestSide = guestGame.players.first()
+
+        assertEquals(guestPlayerHostSide.board, guestPlayerGuestSide.board)
     }
 
     /**

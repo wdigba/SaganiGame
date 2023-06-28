@@ -67,6 +67,11 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
      */
     var location: Location? = null
 
+    /**
+     * The last turn checksum received from the server.
+     */
+    var lastTurnChecksum: TurnChecksum? = null
+        private set
 
     /**
      * Handles a [CreateGameResponse] sent by the BGW net server. Will await the guest players when its status is
@@ -246,8 +251,10 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
 
             val game = networkService.rootService.currentGame
             checkNotNull(game) { "Received a turn message without a current game." }
+            lastTurnChecksum = message.checksum
             if (message.type == MoveType.SKIP) {
                 networkService.rootService.gameService.changeToNextPlayer()
+                lastTurnChecksum = null
                 return@runOnGUIThread
             }
 
@@ -264,8 +271,10 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
             val direction = tilePlacement.orientation.toDirection()
 
             networkService.rootService.playerActionService.placeTile(
-                tile, direction, position
+                tile, direction, position, false
             )
+
+            lastTurnChecksum = null
         }
     }
 
@@ -277,7 +286,7 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
     fun onHostGameInitReceived(message: GameInitMessage, sender: String) {
         BoardGameApplication.runOnGUIThread {
             check(networkService.connectionState == ConnectionState.WAITING_FOR_INIT) {
-                "Received a game init message in an unexpected connection state."
+                "$sender sent a game init message in an invalid state."
             }
 
             val players = message.players.map {
@@ -303,10 +312,10 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
 
             networkService.rootService.currentGame = game
 
-            if (players.first().name == playerName) {
-                networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+            networkService.connectionState = if (players.first().name == playerName) {
+                ConnectionState.PLAYING_MY_TURN
             } else {
-                networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
+                ConnectionState.WAITING_FOR_OPPONENTS
             }
 
             // refresh GUI
@@ -324,6 +333,10 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
         error(message)
     }
 
+    /**
+     * Converts the entity layers [Direction] to the NTF version [Orientation].
+     * @throws IllegalStateException If the [Direction] can not be converted to an [Orientation].
+     */
     private fun Direction.toOrientation(): Orientation = when (this) {
         Direction.UP -> Orientation.NORTH
         Direction.RIGHT -> Orientation.EAST
@@ -332,6 +345,9 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
         else -> error("Invalid direction.")
     }
 
+    /**
+     * Converts the NTF version [Orientation] to the entity layers [Direction].
+     */
     private fun Orientation.toDirection(): Direction = when (this) {
         Orientation.NORTH -> Direction.UP
         Orientation.EAST -> Direction.RIGHT
@@ -339,6 +355,9 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
         Orientation.WEST -> Direction.LEFT
     }
 
+    /**
+     * Converts the entity layers [Color] to the NTF version [edu.udo.cs.sopra.ntf.Color].
+     */
     private fun Color.toNTFColor(): edu.udo.cs.sopra.ntf.Color = when (this) {
         Color.BLACK -> edu.udo.cs.sopra.ntf.Color.BLACK
         Color.GREY -> edu.udo.cs.sopra.ntf.Color.GREY
@@ -346,6 +365,9 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
         Color.WHITE -> edu.udo.cs.sopra.ntf.Color.WHITE
     }
 
+    /**
+     * Converts the NTF version [edu.udo.cs.sopra.ntf.Color] to the entity layers [Color].
+     */
     private fun edu.udo.cs.sopra.ntf.Color.toEntityColor(): Color = when (this) {
         edu.udo.cs.sopra.ntf.Color.BLACK -> Color.BLACK
         edu.udo.cs.sopra.ntf.Color.GREY -> Color.GREY
