@@ -34,7 +34,7 @@ import tools.aqua.bgw.net.common.response.JoinGameResponseStatus
  * @property host The host address of the server.
  * @property networkService The [NetworkService] that created this client.
  */
-class SaganiNetworkClient(playerName: String, host: String, val networkService: NetworkService) :
+class SaganiNetworkClient(playerName: String, host: String, private val networkService: NetworkService) :
     BoardGameClient(playerName, host, NetworkService.NETWORK_SECRET) {
 
     /**
