@@ -202,12 +202,17 @@ class KIServiceTest {
             game.players[0].discs.add(Disc.SOUND)
         }
 
+        // index -1 exception when offer display is not cleaned (but it has to be automatically)
         game.offerDisplay.clear()
+        println(game.offerDisplay)
 
+        // tile to place
         val tile4 = Tile(4, points = 1, Element.WATER, listOf(
+            // index -1 exception when element of arrow AIR or FIRE
             Arrow(Element.EARTH, Direction.UP)))
         game.offerDisplay.add(tile4)
 
+        // placed tiles
         val tile1 = Tile(1, points = 3, Element.AIR, listOf(
             Arrow(Element.FIRE, Direction.DOWN_LEFT),
             Arrow(Element.EARTH, Direction.UP_RIGHT)))
@@ -220,17 +225,18 @@ class KIServiceTest {
         val direction2 = Direction.UP
         val location2 = Pair(1, 0)
 
-        /*val tile3 = Tile(3, points = 1, Element.EARTH, listOf(
+        val tile3 = Tile(3, points = 6, Element.EARTH, listOf(
             Arrow(Element.WATER, Direction.UP),
             Arrow(Element.FIRE, Direction.UP_LEFT),
             Arrow(Element.FIRE, Direction.DOWN)))
         val direction3 = Direction.UP
         val location3 = Pair(1, 1)
 
-         */
+
 
         game.offerDisplay.add(tile1)
         game.offerDisplay.add(tile2)
+        //index -1 exception
         //game.offerDisplay.add(tile3)
 
         rootService.playerActionService.placeTile(tile1, direction1, location1)
@@ -245,10 +251,12 @@ class KIServiceTest {
 
         println(game.actPlayer.board)
         rootService.kIService.playBestMove(game.actPlayer.board, game.actPlayer)
+        rootService.gameService.changeToNextPlayer()
+        println(game.actPlayer.board)
 
         // Intermezzo
 
-        /*val tile5 = Tile(5, points = 1, Element.WATER, listOf(
+        val tile5 = Tile(5, points = 1, Element.WATER, listOf(
             Arrow(Element.WATER, Direction.UP)))
         val direction5 = Direction.UP
         val location5 = Pair(1, 0)
@@ -257,10 +265,10 @@ class KIServiceTest {
         game.intermezzoStorage.add(tile5)
         game.intermezzo = true
 
-        rootService.gameService.changeToNextPlayer()
-        rootService.kIService.playBestMove(game.actPlayer.board, game.actPlayer)
+        // index -1 exception
+        //rootService.kIService.playBestMove(game.actPlayer.board, game.actPlayer)
 
-         */
+
     }
 
     /**
