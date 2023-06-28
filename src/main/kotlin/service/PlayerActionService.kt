@@ -15,7 +15,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * Discs are relocated to arrows with the same element that points to the new card. Player may get points and discs.
      * New tile gets discs and its discs get relocated if possible.
      */
-    fun placeTile(tile: Tile, direction: Direction, location: Location) {
+    fun placeTile(tile: Tile, direction: Direction, location: Location, sendUpdate: Boolean = true) {
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -92,9 +92,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             tile.flipped = true
         }
 
-        rootService.networkService.client?.tile = tile
-        rootService.networkService.client?.location = location
-        rootService.networkService.client?.sendTurnMessage(player)
+        if (sendUpdate) {
+            rootService.networkService.client?.tile = tile
+            rootService.networkService.client?.location = location
+            rootService.networkService.client?.sendTurnMessage(player)
+        }
+
 
         // refresh GUI
         onAllRefreshables { refreshAfterPlaceTile(player, tile, location) }
