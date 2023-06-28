@@ -1,8 +1,6 @@
 package service
 
 import edu.udo.cs.sopra.ntf.ConnectionState
-import entity.Tile
-import view.Refreshable
 
 /**
  * The service that handles anything related to the network.
