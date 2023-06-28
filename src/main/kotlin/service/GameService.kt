@@ -101,6 +101,25 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
+        // Check Checksum
+        rootService.networkService.client?.lastTurnChecksum?.let {
+            println("${rootService.networkService.client?.playerName}: Testing Checksum")
+            check(it.score == currentGame.actPlayer.points.first) {
+                "Checksum: Score did not match. ${it.score} != ${currentGame.actPlayer.points.first}"
+            }
+            check(it.availableDiscs == currentGame.actPlayer.discs.size) {
+                "Checksum: Available discs did not match. ${it.availableDiscs} != ${currentGame.actPlayer.discs.size}"
+            }
+            val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
+            check(it.startedIntermezzo == startedIntermezzo) {
+                "Checksum: Intermezzo did not match. ${it.startedIntermezzo} != $startedIntermezzo"
+            }
+            val initiatedLastRound = (!(currentGame.lastTurn?.lastRound ?: false) && currentGame.lastRound)
+            check(it.initiatedLastRound == initiatedLastRound) {
+                "Checksum: Last round did not match. ${it.initiatedLastRound} != $initiatedLastRound"
+            }
+        }
+
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
             // remove first player who had their intermezzo turn already
@@ -225,19 +244,18 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         var jsonIndex = 0
         var jsonAllGameString = ""
-        var gameAsJson : String
+        var gameAsJson: String
 
         var iterGame = game
         var iterLastGame = game.lastTurn
         var iterNextGame = game.nextTurn
 
         // if both are null there is only one Sagani Game object
-        if ( ( iterLastGame == null ) && ( iterNextGame == null)) {
+        if ((iterLastGame == null) && (iterNextGame == null)) {
 
             jsonAllGameString = jsonBuilder.encodeToString(iterGame)
 
-        }
-        else {
+        } else {
 
             while (iterLastGame != null) {
 
@@ -289,8 +307,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // Sagani strings are separated with ";" during saving
         // List starts with most current game and is descending
-        var iterGame : Sagani? = null
-        var newGame : Sagani
+        var iterGame: Sagani? = null
+        var newGame: Sagani
         for (gameString in loadGame.split(";")) {
 
             newGame = Json.decodeFromString<Sagani>(gameString)
@@ -307,7 +325,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         checkNotNull(iterGame)
         // move back to youngest (i.e. first in list) game
-        while ( iterGame?.nextTurn != null ) {
+        while (iterGame?.nextTurn != null) {
             iterGame = iterGame.nextTurn
         }
 
