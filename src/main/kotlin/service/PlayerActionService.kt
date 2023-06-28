@@ -15,6 +15,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * New tile gets discs and its discs get relocated if possible.
      */
     fun placeTile(tile: Tile, direction: Direction, location: Location) {
+        var tileFrom: String
+
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -30,7 +32,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         require(!player.board.contains(location)) { "Location is already used." }
 
         // check if position is available
-        require(location in validLocation(player.board)) { "Location is not adjacent to another tile." }
+        require(location in validLocations(player.board)) { "Location is not adjacent to another tile." }
 
         // check if tile is legal to choose and remove it
         if (currentGame.intermezzo) {
@@ -38,17 +40,22 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 "You can't take this tile. It is not part of the intermezzo storage."
             }
             currentGame.intermezzoStorage.remove(tile)
+            tileFrom = "intermezzoStorage"
         } else if (currentGame.offerDisplay.size > 1) {
             check(tile in currentGame.offerDisplay) {
                 "You can't take this tile. It is not part of the offer display."
             }
             currentGame.offerDisplay.remove(tile)
+            tileFrom = "offerDisplay"
         } else {
             check(tile in currentGame.offerDisplay || tile == currentGame.stacks[0]) {
                 "You can't take this tile. It is not part of the offer display or the top card of the stacks."
             }
+            tileFrom = "offerDisplay"
             if (!currentGame.offerDisplay.remove(tile)) {
                 currentGame.stacks.removeFirst()
+                tileFrom = "stacks"
+                currentGame.intermezzoStorage.add(currentGame.offerDisplay.removeFirst())
             }
         }
 
@@ -96,9 +103,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
-     * [validLocation] returns all valid locations for the given board
+     * [validLocations] returns all valid locations for the given board
      */
-    fun validLocation(board: MutableMap<Location, Tile>): Set<Location> {
+    fun validLocations(board: MutableMap<Location, Tile>): Set<Location> {
         if (board.isEmpty()) {
             return mutableSetOf(Pair(0,0))
         }

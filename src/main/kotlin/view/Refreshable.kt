@@ -11,14 +11,14 @@ interface Refreshable {
     /**
      * refresh Gui after startNewGame()
      */
-    fun refreshAfterStartNewGame() {}
+    fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {}
 
     /**
      * refresh Gui after ChangeToNextPlayers()
      * @param player: next player to place a tile
-     * @param validLocation: Set of all valid locations for next player's board
+     * @param validLocations: Set of all valid locations for next player's board
      */
-    fun refreshAfterChangeToNextPlayer(player: Player, validLocation: Set<Location>) {}
+    fun refreshAfterChangeToNextPlayer(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {}
 
     /**
      * refresh Gui after CalculateWinner()
