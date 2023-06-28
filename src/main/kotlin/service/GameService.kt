@@ -1,9 +1,10 @@
 package service
 
+import Location
 import entity.*
-import java.io.File
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
@@ -29,17 +30,22 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         stacks.shuffle()
 
         // create new game
-        rootService.currentGame = Sagani(players, stacks)
+        val game = Sagani(players, stacks)
+        rootService.currentGame = game
 
-        // fill offer display of created game
-        val game = rootService.currentGame
-        checkNotNull(game)
+        // fill offer display
         repeat(5) {
             game.offerDisplay.add(game.stacks.removeFirst())
         }
 
         // refresh GUI
-        onAllRefreshables { refreshAfterStartNewGame() }
+        onAllRefreshables {
+            refreshAfterStartNewGame(
+                game.players[0],
+                setOf(Location(0, 0)),
+                false
+            )
+        }
     }
 
     /**
@@ -77,7 +83,90 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         return stacks
     }
 
-    fun changeToNextPlayer() {}
+    /**
+     * [changeToNextPlayer] is called after each player's turn.
+     * Checks if an intermezzo has to start or to end.
+     * Refills empty offerDisplay and checks if it is the lastRound.
+     * Determines next player.
+     * Increases turnCount and copies game state.
+     * Checks if the game has to end.
+     */
+    fun changeToNextPlayer() {
+        var nextPlayer: Player? = null
+        val validLocations: Set<Location>
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame) { "There is no game." }
+
+        // check if intermezzo has to start/end
+        if (currentGame.intermezzo) {
+            // remove first player who had their intermezzo turn already
+            currentGame.intermezzoPlayers.removeFirst()
+            if (currentGame.intermezzoPlayers.isNotEmpty()) {
+                nextPlayer = currentGame.intermezzoPlayers[0]
+            } else {
+                currentGame.intermezzo = false
+                if (currentGame.intermezzoStorage.size == 4) {
+                    currentGame.intermezzoStorage.clear()
+                }
+            }
+        } else {
+            if (currentGame.intermezzoStorage.size == 4) {
+                currentGame.intermezzo = true
+                currentGame.intermezzoPlayers.addAll(currentGame.players)
+                currentGame.intermezzoPlayers.sortByDescending { it.points.second }
+                currentGame.intermezzoPlayers.sortBy { it.points.first }
+                nextPlayer = currentGame.intermezzoPlayers[0]
+            }
+        }
+
+        // if no intermezzo
+        if (!currentGame.intermezzo) {
+            // check if offerDisplay has to be refilled
+            if (currentGame.offerDisplay.isEmpty()) {
+                repeat(5) {
+                    currentGame.offerDisplay.add(currentGame.stacks.removeFirst())
+                }
+                if (currentGame.stacks.size < 5) {
+                    currentGame.lastRound = true
+                }
+            }
+            // check if player has needed amount of points to end the game
+            currentGame.players.forEach {
+                if (it.points.first >= 15 * currentGame.players.size + 15) {
+                    currentGame.lastRound = true
+                }
+            }
+        }
+
+        // determine next player
+        if (nextPlayer == null) {
+            nextPlayer = currentGame.players[
+                (currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size
+            ]
+            currentGame.actPlayer = nextPlayer
+        }
+
+        // increase turnCount
+        currentGame.turnCount++
+        // copy game
+        gameCopy()
+
+        // check if game has to end
+        if (
+            currentGame.lastRound &&
+            currentGame.players.indexOf(currentGame.actPlayer) == 0 &&
+            !currentGame.intermezzo
+        ) {
+            calculateWinner()
+        } else {
+            validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
+            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
+        }
+    }
+
+    private fun calculateWinner() {
+        onAllRefreshables { refreshAfterCalculateWinner() }
+    }
 
     /**
      * [gameCopy] creates a deep copy of the entity layer and adds to currentGame.nextTurn
@@ -99,7 +188,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // convert game to JSON string
         val gameAsJson = jsonBuilder.encodeToString(game)
 
-        // recreate game from JSON string. This results in a equal but not same object
+        // recreate game from JSON string. This results in an equal but not same object
         // i.e. the new object will be a different instance
         val gameFromJson = jsonBuilder.decodeFromString<Sagani>(gameAsJson)
 
