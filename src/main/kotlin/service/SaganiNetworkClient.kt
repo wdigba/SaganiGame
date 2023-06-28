@@ -320,7 +320,9 @@ class SaganiNetworkClient(playerName: String, host: String, val networkService: 
 
             // refresh GUI
             networkService.onAllRefreshables {
-                refreshAfterStartNewGame()
+                refreshAfterStartNewGame(
+                    game.players[0], setOf(Location(0, 0)), false
+                )
             }
         }
     }

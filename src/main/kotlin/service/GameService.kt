@@ -169,6 +169,12 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             currentGame.actPlayer = nextPlayer
         }
 
+        if (nextPlayer.name == rootService.networkService.client?.playerName) {
+            rootService.networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+        } else {
+            rootService.networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
+        }
+
         // increase turnCount
         currentGame.turnCount++
         // copy game
