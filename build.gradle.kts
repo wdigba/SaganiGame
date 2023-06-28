@@ -1,11 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.8.22"
     application
     jacoco
     id("io.gitlab.arturbosch.detekt") version "1.18.0-RC3"
     id("org.jetbrains.dokka") version "1.4.32"
+    kotlin("plugin.serialization") version "1.8.21"
 }
 
 group = "edu.udo.cs.sopra"
@@ -13,6 +14,7 @@ version = "1.0"
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
 }
 
 application {
@@ -21,9 +23,12 @@ application {
 
 dependencies {
     testImplementation(kotlin("test-junit5"))
-    implementation(group = "tools.aqua", name = "bgw-gui", version = "0.7.3")
-    implementation(group = "tools.aqua", name = "bgw-net-common", version = "0.7.3")
-    implementation(group = "tools.aqua", name = "bgw-net-client", version = "0.7.3")
+
+    implementation(group = "tools.aqua", name = "bgw-gui", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
+    implementation(group = "tools.aqua", name = "bgw-net-common", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
+    implementation(group = "tools.aqua", name = "bgw-net-client", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
 }
 
 tasks.distZip {
