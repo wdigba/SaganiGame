@@ -12,7 +12,7 @@ class KIService(private val rootService: RootService) {
     private val range = 3
 
     /**
-     * [CoordinateInformation] general information about possible tile placement
+     * [CoordinateInformation] contains specific information about possible tile placement
      */
     class CoordinateInformation {
         // variables to count how many open arrows show on this coordinate
@@ -49,15 +49,23 @@ class KIService(private val rootService: RootService) {
         }
     }
 
-    class TilePlacementInformation(
+    /**
+     * [TilePlacementInformation] contains general information about tile placement
+     */
+    class TilePlacementInformation (
         var tile: Tile,
         var direction: Direction,
         var location: Pair<Int, Int>,
         var score: Double
     )
 
+    /**
+     * [playBestMove] executes the logic of choosing and executing the best move in the turn
+     * @param board current board of current player
+     * @param player current player
+     */
     fun playBestMove(board: Map<Pair<Int, Int>, Tile>, player: Player) {
-
+        // defining thresholds for estimating progress
         val intermezzoScoreThreshold = 0.7
         val lastMoveThreshhold = 0.8
 
@@ -65,6 +73,7 @@ class KIService(private val rootService: RootService) {
         checkNotNull(currentGame) { "There is no game." }
 
         val scoreMap = buildScoreMap(board)
+        // when the game in intermezzo phase
         if (currentGame.intermezzo) {
             val possibleTiles = currentGame.intermezzoStorage
 
@@ -74,8 +83,6 @@ class KIService(private val rootService: RootService) {
                 val potentialPlacements = calculatePotentialTilePlacements(tile, scoreMap, player)
                 // get a list of top 10 placements
                 highestScoresTop.addAll(potentialPlacements.toList().sortedByDescending { it.score }.take(10))
-
-
             }
 
             val move = chooseBestMove(highestScoresTop)
@@ -86,7 +93,7 @@ class KIService(private val rootService: RootService) {
             return
         }
 
-
+        // when the game is not in intermezzo phase
         val possibleTiles = currentGame.offerDisplay
 
         val highestScoresTop = mutableListOf<TilePlacementInformation>()
@@ -95,8 +102,6 @@ class KIService(private val rootService: RootService) {
             val potentialPlacements = calculatePotentialTilePlacements(tile, scoreMap, player)
             // get a list of top 10 placements
             highestScoresTop.addAll(potentialPlacements.toList().sortedByDescending { it.score }.take(10))
-
-
         }
         val move = chooseBestMove(highestScoresTop)
 
@@ -111,19 +116,20 @@ class KIService(private val rootService: RootService) {
         } else {
             rootService.playerActionService.placeTile(move.tile, move.direction, move.location)
         }
-
-
     }
 
+    /**
+     * [chooseBestMove] chooses the best move among all available
+     * @return best available move
+     */
     fun chooseBestMove(listOfMoves: List<TilePlacementInformation>) : TilePlacementInformation {
         if (listOfMoves.isEmpty()) {
             throw IllegalArgumentException("There is no best move.")
         }
-        // get best move by geting the maximum score
+        // get best move by getting the maximum score
         val bestMove = listOfMoves.maxByOrNull { it.score }
         return bestMove!!
     }
-
 
     /**
      * [buildScoreMap] creates score map, fills it with tiles and updates with additional information
@@ -137,7 +143,7 @@ class KIService(private val rootService: RootService) {
     }
 
     /**
-     * determining the appropriate positions depending on the given direction
+     * [calculateAdjacentPosition] determining the appropriate positions depending on the given direction
      * @return new position
      */
     private fun calculateAdjacentPosition(pos: Pair<Int, Int>, direction: Direction): Pair<Int, Int> {
@@ -154,7 +160,7 @@ class KIService(private val rootService: RootService) {
     }
 
     /**
-     * whenever the specified arrow is the only one unsatisfied arrow of the given tile
+     * [isOnlyUnsatisfiedArrow] whenever the specified arrow is the only one unsatisfied arrow of the given tile
      * @return true if only one arrow is without disc on it
      */
     private fun isOnlyUnsatisfiedArrow(currentArrow: Arrow, tile: Tile): Boolean {
@@ -226,7 +232,6 @@ class KIService(private val rootService: RootService) {
                     println("Score: $score")
                     println("Satisfied Arrows: $satisfiedArrowsMetrics")
                 }
-
 
                 for(arrow in tile.arrows){
                     if (arrow.disc.size!=0) {
@@ -414,7 +419,6 @@ class KIService(private val rootService: RootService) {
         return resultMetrics
     }
 
-
     /**
      * [updatePosition] updates the information about a specific position
      * @param newScoreMap current score map
@@ -517,8 +521,8 @@ class KIService(private val rootService: RootService) {
         var countPositionsWithWaterDiscs = 0.0
         var countPositionsWithFireDiscs = 0.0
 
-
         for (info in scoreMap.values) {
+            // when tile placement is already taken
             if (info.occupied || info.gameDistance < 0) {
                 continue
             }
@@ -612,7 +616,7 @@ class KIService(private val rootService: RootService) {
         }
          */
         // maximum level is 1
-        return (satisfiedArrows + (satisfiedArrows /tile.arrows.size)*2.0) / 6.0
+        return (satisfiedArrows + (satisfiedArrows /tile.arrows.size) * 2.0) / 6.0
     }
 
     /**
@@ -641,7 +645,6 @@ class KIService(private val rootService: RootService) {
         return lowestGameDistance
     }
 
-
     /**
      * [fillScoreMap] is used to fill the score Map for the player in definite range (till definite number).
      * This information can be used to evaluate positions and make decisions in the game
@@ -667,14 +670,13 @@ class KIService(private val rootService: RootService) {
                 if (scoreMap.containsKey(adjacentPos)) { // already visited
                     continue
                 }
-
+                // filling the board with information
                 val info = CoordinateInformation()
                 info.gameDistance = getLowestGameDistanceFromNeighbours(adjacentPos, scoreMap) + 1
                 if (info.gameDistance <= range) {
                     scoreMap[adjacentPos] = info
                     queue.offer(adjacentPos)
                 }
-
             }
         }
         return scoreMap

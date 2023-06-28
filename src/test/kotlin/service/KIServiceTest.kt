@@ -4,6 +4,7 @@ import entity.*
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class KIServiceTest {
     lateinit var player: Player
@@ -77,6 +78,10 @@ class KIServiceTest {
         player.board = board
     }
 
+    /**
+     * [popLastElement] takes the last element fom list of discs
+     * @return last disc from list of discs
+     */
     fun popLastElement(list: MutableList<Disc>) : Disc {
         return list.removeAt(list.size-1)
     }
@@ -177,6 +182,87 @@ class KIServiceTest {
         assertEquals(Direction.LEFT, highestScore?.direction)
 
     }
+
+    /**
+     * test for [KIService.playBestMove] calculates best move based on board
+     */
+    @Test
+    fun playBestMoveTest() {
+        val rootService = RootService()
+        kiService = KIService(rootService)
+
+        val john = Triple("JohnAI", Color.BLACK, PlayerType.BEST_AI)
+        val jo = Triple("JoAI", Color.WHITE, PlayerType.BEST_AI)
+        val players = mutableListOf(john, jo)
+
+        rootService.gameService.startNewGame(players)
+        val game = rootService.currentGame
+        assertNotNull(game)
+        repeat(24) {
+            game.players[0].discs.add(Disc.SOUND)
+        }
+
+        game.offerDisplay.clear()
+
+        val tile4 = Tile(4, points = 1, Element.WATER, listOf(
+            Arrow(Element.EARTH, Direction.UP)))
+        game.offerDisplay.add(tile4)
+
+        val tile1 = Tile(1, points = 3, Element.AIR, listOf(
+            Arrow(Element.FIRE, Direction.DOWN_LEFT),
+            Arrow(Element.EARTH, Direction.UP_RIGHT)))
+        val direction1 = Direction.UP
+        val location1 = Pair(0, 0)
+
+        val tile2 = Tile(2, points = 3, Element.FIRE, listOf(
+            Arrow(Element.AIR, Direction.LEFT),
+            Arrow(Element.WATER, Direction.UP)))
+        val direction2 = Direction.UP
+        val location2 = Pair(1, 0)
+
+        /*val tile3 = Tile(3, points = 1, Element.EARTH, listOf(
+            Arrow(Element.WATER, Direction.UP),
+            Arrow(Element.FIRE, Direction.UP_LEFT),
+            Arrow(Element.FIRE, Direction.DOWN)))
+        val direction3 = Direction.UP
+        val location3 = Pair(1, 1)
+
+         */
+
+        game.offerDisplay.add(tile1)
+        game.offerDisplay.add(tile2)
+        //game.offerDisplay.add(tile3)
+
+        rootService.playerActionService.placeTile(tile1, direction1, location1)
+        rootService.gameService.changeToNextPlayer()
+        rootService.playerActionService.placeTile(tile2, direction2, location2)
+        rootService.gameService.changeToNextPlayer()
+        /*
+        rootService.playerActionService.placeTile(tile3, direction3, location3)
+        rootService.gameService.changeToNextPlayer()
+
+         */
+
+        println(game.actPlayer.board)
+        rootService.kIService.playBestMove(game.actPlayer.board, game.actPlayer)
+
+        // Intermezzo
+
+        /*val tile5 = Tile(5, points = 1, Element.WATER, listOf(
+            Arrow(Element.WATER, Direction.UP)))
+        val direction5 = Direction.UP
+        val location5 = Pair(1, 0)
+
+        game.intermezzoPlayers.addAll(game.players)
+        game.intermezzoStorage.add(tile5)
+        game.intermezzo = true
+
+        rootService.gameService.changeToNextPlayer()
+        rootService.kIService.playBestMove(game.actPlayer.board, game.actPlayer)
+
+         */
+    }
+
     /**
      * test for [KIService.calculatePotentialTilePlacements] for board with 11 placed tiles
      */
@@ -185,7 +271,6 @@ class KIServiceTest {
         val rootService = RootService()
         kiService = KIService(rootService)
         player = Player("Alice", Color.WHITE)
-
 
         repeat(24) {
             player.discs.add(Disc.SOUND)
