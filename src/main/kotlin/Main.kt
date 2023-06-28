@@ -1,8 +1,8 @@
-import view.SopraApplication
+import view.SaganiApplication
 
 typealias Location = Pair<Int, Int>
 
 fun main() {
-    SopraApplication().show()
+    SaganiApplication().show()
     println("Application ended. Goodbye")
 }
