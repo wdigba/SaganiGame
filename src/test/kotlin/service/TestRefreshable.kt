@@ -27,6 +27,7 @@ class TestRefreshable : Refreshable {
     var refreshAfterRedoCalled: Boolean = false
         private set
     var refreshAfterConnectionStateChangeCalled: Boolean = false
+        private set
 
     /**
      * reset all properties
