@@ -89,13 +89,22 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val game = rootService.currentGame
         checkNotNull(game) { "currentGame was null, but gameCopy() was called" }
 
+        // store reference to lastTurn and set to null to prevent infinite loop
+        val lastGame = game.lastTurn
+        game.lastTurn = null
+
+        // allowStructuredMapKeys allows saving with a Pair(Int, Int) as map key
+        val jsonBuilder = Json { allowStructuredMapKeys = true }
+
         // convert game to JSON string
-        val gameAsJson = Json.encodeToString(game)
+        val gameAsJson = jsonBuilder.encodeToString(game)
 
         // recreate game from JSON string. This results in a equal but not same object
         // i.e. the new object will be a different instance
-        val gameFromJson = Json.decodeFromString<Sagani>(gameAsJson)
+        val gameFromJson = jsonBuilder.decodeFromString<Sagani>(gameAsJson)
 
+        // re-establish link from the game that was copied to its lastGame
+        game.lastTurn = lastGame
         // make backlink to game for doubly linked list
         gameFromJson.lastTurn = game
 
@@ -119,10 +128,52 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val game = rootService.currentGame
         checkNotNull(game) { "currentGame was null, but saveGame() was called" }
 
+        val jsonBuilder = Json { allowStructuredMapKeys = true }
+
+        var jsonIndex = 0
+        var jsonAllGameString = ""
+        var gameAsJson : String
+
+        var iterGame = game
+        var iterLastGame = game.lastTurn
+        var iterNextGame = game.nextTurn
+
+        // if both are null there is only one Sagani Game object
+        if ( ( iterLastGame == null ) && ( iterNextGame == null)) {
+
+            jsonAllGameString = jsonBuilder.encodeToString(iterGame)
+
+        }
+        else {
+
+            while (iterLastGame != null) {
+
+                // store references
+                iterLastGame = iterGame?.lastTurn
+                iterNextGame = iterGame?.nextTurn
+                // cut links to prevent infinite loop
+                iterGame?.lastTurn = null
+                iterGame?.nextTurn = null
+                // add iterGame to JSON string
+                gameAsJson = jsonBuilder.encodeToString(iterGame)
+                jsonAllGameString += gameAsJson
+                if (iterLastGame != null) {
+                    jsonAllGameString += ";"
+                }
+
+
+                // re-establish links, move pointer and increase index (key in json
+                iterGame?.nextTurn = iterNextGame
+                iterGame?.lastTurn = iterLastGame
+                iterGame = iterGame?.lastTurn
+                jsonIndex += 1
+
+            }
+        }
 
         // write json encoding of game to file specified by parameter path
         FileOutputStream(File(path)).use {
-            Json.encodeToStream(game, it)
+            jsonBuilder.encodeToStream(jsonAllGameString, it)
         }
 
         // refresh GUI
@@ -137,10 +188,34 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
     fun loadGame(path: String) {
 
         val loadGame = FileInputStream(File(path)).use {
-            Json.decodeFromStream<Sagani>(it)
+            Json.decodeFromStream<String>(it)
         }
 
-        rootService.currentGame = loadGame
+        // Sagani strings are separated with ";" during saving
+        // List starts with most current game and is descending
+        var iterGame : Sagani? = null
+        var newGame : Sagani
+        for (gameString in loadGame.split(";")) {
+
+            newGame = Json.decodeFromString<Sagani>(gameString)
+
+            if (iterGame != null) {
+
+                newGame.nextTurn = iterGame
+                iterGame.lastTurn = newGame
+
+            }
+            iterGame = newGame
+
+        }
+
+        checkNotNull(iterGame)
+        // move back to youngest (i.e. first in list) game
+        while ( iterGame?.nextTurn != null ) {
+            iterGame = iterGame.nextTurn
+        }
+
+        rootService.currentGame = iterGame
 
         // refresh GUI
         onAllRefreshables { refreshAfterLoadGame() }

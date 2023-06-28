@@ -1,6 +1,7 @@
 package service
 
 import entity.*
+import java.lang.IllegalStateException
 import kotlin.test.*
 
 /**
@@ -22,6 +23,21 @@ class CopyGameTest {
         )
 
         rootService.gameService.startNewGame(gameSettings)
+
+    }
+
+    /**
+     * Most methods contain a checkNotNull check on the currentGame object since it is nullable.
+     * This just calls the method with a null game to increase test coverage
+     */
+    @Test
+    fun trivialNullTest() {
+
+        // set currentGame pointer to null
+        rootService.currentGame = null
+
+        // call method and check if it catches the null case
+        assertFailsWith<IllegalStateException> { rootService.gameService.gameCopy() }
 
     }
 
@@ -61,6 +77,11 @@ class CopyGameTest {
         val game = rootService.currentGame
         assertNotNull(game)
 
+        // put tile into player board
+        game.players[0].board[Pair(0,0)] = game.offerDisplay.removeFirst()
+        game.players[1].board[Pair(0,0)] = game.offerDisplay.removeFirst()
+        game.players[2].board[Pair(0,0)] = game.offerDisplay.removeFirst()
+
         // make a copy
         rootService.gameService.gameCopy()
         val copy = rootService.currentGame
@@ -89,8 +110,55 @@ class CopyGameTest {
         assertNotEquals(game, copy)
         assertNotSame(game, copy)
 
+        // make a third copy and check for one Tile if it was copied correctly
+        rootService.gameService.gameCopy()
+        val secondCopy = rootService.currentGame
+        assertNotNull(secondCopy)
+
+        assertEquals(secondCopy.players[0].board[Pair(0,0)], copy.players[0].board[Pair(0,0)])
+
 
     }
 
+    /**
+     * Make two copies. During the second copying the lastTurn property of the [Sagani]
+     * Object is another [Sagani] object which might lead to an infinite loop
+     * In case of an infinite loop there will be a StackOverflowError
+     */
+    @Test
+    fun copyGameTwice() {
+
+        val game = rootService.currentGame
+        assertNotNull(game)
+
+        // make first copy
+        rootService.gameService.gameCopy()
+
+        // make second copy
+        rootService.gameService.gameCopy()
+
+
+    }
+
+    /**
+     * During copying of the game the connection [Sagani] game -> game.lastTurn is temporarily cut
+     * This tests if all objects are reconnected properly.
+     */
+    @Test
+    fun checkIfLinkIsReestablished() {
+
+        //make three copies
+        rootService.gameService.gameCopy()
+        rootService.gameService.gameCopy()
+        rootService.gameService.gameCopy()
+        rootService.gameService.saveGame("42.json")
+
+        val game = rootService.currentGame
+        assertNotNull(game)
+        assertNotNull(game.lastTurn)
+        assertNotNull(game.lastTurn?.lastTurn)
+        assertNotNull(game.lastTurn?.lastTurn?.lastTurn)
+
+    }
 
 }
