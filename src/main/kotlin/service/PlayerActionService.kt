@@ -16,17 +16,15 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * New tile gets discs and its discs get relocated if possible.
      */
     fun placeTile(tile: Tile, direction: Direction, location: Location, sendUpdate: Boolean = true) {
-        var tileFrom: String
-
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
         // identify player
         val player = if (currentGame.intermezzo) {
-            currentGame.intermezzoPlayers[0]
+            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
         } else {
-            currentGame.actPlayer
+            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
         }
 
         // check if position is free
