@@ -96,7 +96,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (sendUpdate) {
             rootService.networkService.client?.tile = tile
             rootService.networkService.client?.location = location
-            rootService.networkService.client?.sendTurnMessage(player)
         }
 
 
