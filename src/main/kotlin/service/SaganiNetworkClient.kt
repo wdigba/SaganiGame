@@ -71,7 +71,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      * The last turn checksum received from the server.
      */
     var lastTurnChecksum: TurnChecksum? = null
-        private set
 
     /**
      * Handles a [CreateGameResponse] sent by the BGW net server. Will await the guest players when its status is
@@ -254,7 +253,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             lastTurnChecksum = message.checksum
             if (message.type == MoveType.SKIP) {
                 networkService.rootService.gameService.changeToNextPlayer()
-                lastTurnChecksum = null
                 return@runOnGUIThread
             }
 
@@ -295,7 +293,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
                     it.color.toEntityColor(),
                     if (it.name == playerName) playerType else PlayerType.NETWORK_PLAYER
                 )
-            }
+            }.toMutableList()
 
             players.forEach { player ->
                 repeat(24) { player.discs.add(Disc.SOUND) }
