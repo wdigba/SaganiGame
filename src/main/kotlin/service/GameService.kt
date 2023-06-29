@@ -164,7 +164,21 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
     }
 
-    private fun calculateWinner() {
+    /**
+     * [calculateWinner] sorts the playerlist by points and the time they reach points
+     * If a player reaches the same point count as another he still has less, because he got there later
+     * This method will only be called when the game ends, since
+     */
+    fun calculateWinner() {
+
+        // get game reference
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        // sort player list by points and turncount they reached point
+        game.players.sortWith(compareBy({ -it.points.first }, { it.points.second }))
+
+        // update GUI
         onAllRefreshables { refreshAfterCalculateWinner() }
     }
 
@@ -343,4 +357,5 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // refresh GUI
         onAllRefreshables { refreshAfterRedo() }
     }
+
 }

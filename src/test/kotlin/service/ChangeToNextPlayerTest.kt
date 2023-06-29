@@ -186,7 +186,7 @@ class ChangeToNextPlayerTest {
         intermezzoStartTest()
         var game = rootService.currentGame
         assertNotNull(game)
-        game.lastRound = true
+        game.players[0].points = Pair(45, game.turnCount)
         assertEquals(2, game.intermezzoPlayers.size)
         assertEquals(game.players[0], game.intermezzoPlayers[0])
         refreshable.reset()
