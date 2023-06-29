@@ -132,7 +132,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
             // check if player has needed amount of points to end the game
             currentGame.players.forEach {
-                if (it.points.first >= 105 - currentGame.players.size * 15) {
+                if (it.points.first >= 15 + currentGame.players.size * 15) {
                     currentGame.lastRound = true
                 }
             }
