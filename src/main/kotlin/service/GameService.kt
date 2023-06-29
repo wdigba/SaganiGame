@@ -101,6 +101,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
+        // identify player
+        val player = if (currentGame.intermezzo) {
+            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+        } else {
+            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+        }
+
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
             // remove first player who had their intermezzo turn already
@@ -140,13 +147,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                     currentGame.lastRound = true
                 }
             }
-        }
-
-        // identify player
-        val player = if (currentGame.intermezzo) {
-            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
-        } else {
-            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
         }
 
 
