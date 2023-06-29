@@ -50,7 +50,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
     /**
      * The type of player this client is.
      */
-    var playerType = PlayerType.HUMAN
+    var playerType = PlayerType.RANDOM_AI
 
     /**
      * The type of move the player performed.
@@ -71,7 +71,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      * The last turn checksum received from the server.
      */
     var lastTurnChecksum: TurnChecksum? = null
-        private set
 
     /**
      * Handles a [CreateGameResponse] sent by the BGW net server. Will await the guest players when its status is
@@ -137,6 +136,12 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             }
 
             otherPlayers += notification.sender
+
+            val players = listOf(
+                Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER),
+                Triple(networkService.client!!.playerName, Color.GREY, PlayerType.RANDOM_AI)
+            )
+            networkService.rootService.gameService.startNewGame(players)
         }
     }
 
@@ -192,6 +197,8 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
         val checksum = TurnChecksum(player.points.first, player.discs.size, intermezzoStart, lastRoundStart)
 
+        println("${player.name} sent a turn message with checksum $checksum.")
+
         // Determine the tile placement object to send. If the move type is skip, the placement is null.
         val placement = if (type == MoveType.SKIP) {
             null
@@ -200,6 +207,8 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             checkNotNull(tile) { "Can not send a turn message without a tile." }
             val location = this.location
             checkNotNull(location) { "Can not send a turn message without a location." }
+
+            println("${player.name} sent a turn message with tile id ${tile.id} at location $location.")
 
             TilePlacement(tile.id, location.first, location.second, tile.direction.toOrientation())
         }
@@ -222,6 +231,8 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
         if (players.first().name == playerName) {
             networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+            Thread.sleep(100)
+            networkService.rootService.kIServiceRandom.calculateRandomMove()
         } else {
             networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
         }
@@ -254,9 +265,10 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             lastTurnChecksum = message.checksum
             if (message.type == MoveType.SKIP) {
                 networkService.rootService.gameService.changeToNextPlayer()
-                lastTurnChecksum = null
                 return@runOnGUIThread
             }
+
+            println("$sender sent a turn message")
 
             val tilePlacement = message.tilePlacement ?: error("Received a turn message without a tile placement.")
 
@@ -273,8 +285,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             networkService.rootService.playerActionService.placeTile(
                 tile, direction, position, false
             )
-
-            lastTurnChecksum = null
         }
     }
 
@@ -323,6 +333,10 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
                 refreshAfterStartNewGame(
                     game.players[0], setOf(Location(0, 0)), false
                 )
+            }
+
+            if (networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
+                networkService.rootService.kIServiceRandom.calculateRandomMove()
             }
         }
     }

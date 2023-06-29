@@ -13,10 +13,14 @@ class KIServiceRandom (private val rootService: RootService) {
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
-        val player = currentGame.actPlayer
+        val player = if (currentGame.intermezzo) {
+            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+        } else {
+            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+        }
 
         // random available location for the tile
-        val randomLocation = rootService.playerActionService.validLocation(player.board).random()
+        val randomLocation = rootService.playerActionService.validLocations(player.board).random()
 
         // random direction for the tile
         val randomDirection = Direction.tileDirection().random()

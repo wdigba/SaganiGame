@@ -27,6 +27,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             currentGame.players.find { it.name == currentGame.actPlayer.name }!!
         }
 
+        println("")
+        println("${player.name} - Before: ${player.points.first} score, ${player.discs.size} discs, ${player.board.size} tiles")
+        println("${player.name} - Placing a tile with ${tile.arrows.size} arrows at $location")
+
         // check if position is free
         require(!player.board.contains(location)) { "Location is already used." }
 
@@ -39,12 +43,14 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 "You can't take this tile. It is not part of the intermezzo storage."
             }
             rootService.networkService.client?.moveType = MoveType.INTERMEZZO
+            println("${player.name} - Drawing a tile from the intermezzo place")
             currentGame.intermezzoStorage.remove(tile)
         } else if (currentGame.offerDisplay.size > 1) {
             check(tile in currentGame.offerDisplay) {
                 "You can't take this tile. It is not part of the offer display."
             }
             rootService.networkService.client?.moveType = MoveType.OFFER_DISPLAY
+            println("${player.name} - Drawing a tile from the offer display")
             currentGame.offerDisplay.remove(tile)
         } else {
             check(tile in currentGame.offerDisplay || tile == currentGame.stacks[0]) {
@@ -52,6 +58,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
             if (!currentGame.offerDisplay.remove(tile)) {
                 rootService.networkService.client?.moveType = MoveType.DRAW_PILE
+                println("${player.name} - Drawing a tile from the draw pile")
                 currentGame.stacks.removeFirst()
                 currentGame.intermezzoStorage.add(currentGame.offerDisplay.removeFirst())
             }
@@ -93,10 +100,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             tile.flipped = true
         }
 
+        println("${player.name} - After: ${player.points.first} score, ${player.discs.size} discs, ${player.board.size} tiles")
+        println("There are ${currentGame.stacks.size} tiles in the stack")
+
         if (sendUpdate) {
             rootService.networkService.client?.tile = tile
             rootService.networkService.client?.location = location
-            rootService.networkService.client?.sendTurnMessage(player)
         }
 
 
