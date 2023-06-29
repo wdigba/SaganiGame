@@ -305,7 +305,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
                     it.color.toEntityColor(),
                     if (it.name == playerName) playerType else PlayerType.NETWORK_PLAYER
                 )
-            }
+            }.toMutableList()
 
             players.forEach { player ->
                 repeat(24) { player.discs.add(Disc.SOUND) }

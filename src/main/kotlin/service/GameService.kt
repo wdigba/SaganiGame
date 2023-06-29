@@ -101,6 +101,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
+        // identify player
+        val player = if (currentGame.intermezzo) {
+            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+        } else {
+            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+        }
+
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
             // remove first player who had their intermezzo turn already
@@ -137,27 +144,19 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
             // check if player has needed amount of points to end the game
             currentGame.players.forEach {
-                if (it.points.first >= 15 * currentGame.players.size + 15) {
+                if (it.points.first >= 15 + currentGame.players.size * 15) {
                     currentGame.lastRound = true
                     println("Triggered last round by points ${it.name} | ${it.points.first}")
                 }
             }
         }
 
-        // identify player
-        val player = if (currentGame.intermezzo) {
-            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
-        } else {
-            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
-        }
 
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
             rootService.networkService.client?.sendTurnMessage(player)
         } else {
             // Check Checksum
             rootService.networkService.client?.lastTurnChecksum?.let {
-
-                println("${player.name}: Testing Checksum")
                 check(it.score == player.points.first) {
                     "Checksum: Score did not match. ${it.score} != ${currentGame.actPlayer.points.first}"
                 }
@@ -213,7 +212,21 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
     }
 
-    private fun calculateWinner() {
+    /**
+     * [calculateWinner] sorts the playerlist by points and the time they reach points
+     * If a player reaches the same point count as another he still has less, because he got there later
+     * This method will only be called when the game ends, since
+     */
+    fun calculateWinner() {
+
+        // get game reference
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        // sort player list by points and turncount they reached point
+        game.players.sortWith(compareBy({ -it.points.first }, { it.points.second }))
+
+        // update GUI
         onAllRefreshables { refreshAfterCalculateWinner() }
         rootService.networkService.disconnect()
         println()
@@ -407,4 +420,5 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // refresh GUI
         onAllRefreshables { refreshAfterRedo() }
     }
+
 }

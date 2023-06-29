@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
  * @property intermezzoStorage: tile player can choose from during an intermezzo
  */
 @Serializable
-data class Sagani(val players: List<Player>, val stacks: MutableList<Tile>) {
+data class Sagani(val players: MutableList<Player>, val stacks: MutableList<Tile>) {
     var lastTurn: Sagani? = null
     var nextTurn: Sagani? = null
     var turnCount: Int = 0
