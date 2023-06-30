@@ -59,6 +59,28 @@ class KIService(private val rootService: RootService) {
         var score: Double
     )
 
+   fun getAverageScoreForTileWith(element: Element, numberOfArrows: Int, player: Player, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Double {
+       val currentGame = rootService.currentGame
+       checkNotNull(currentGame) { "There is no game." }
+
+       val stackOfRemainingCards = currentGame.stacks
+
+       val allPossibleBestScores = mutableListOf<Double>()
+
+       for (tile in stackOfRemainingCards){
+           if (tile.element == element && tile.arrows.size == numberOfArrows){
+                //get best 3 scores for this tile
+                val potentialPlacements = calculatePotentialTilePlacements(tile, scoreMap, player)
+                val bestPlacements = potentialPlacements.sortedByDescending { it.score }.take(1)
+
+                //get average score of these placements
+                val averageScore = bestPlacements.map { it.score }.average()
+                allPossibleBestScores.add(averageScore)
+           }
+       }
+       return allPossibleBestScores.average()
+   }
+
     /**
      * [playBestMove] executes the logic of choosing and executing the best move in the turn
      * @param board current board of current player
@@ -85,7 +107,7 @@ class KIService(private val rootService: RootService) {
 
         // defining thresholds for estimating progress
         val intermezzoScoreThreshold = 0.7
-        val lastMoveThreshhold = 0.8
+        val lastMoveThreshhold = 0.6
 
 
         val scoreMap = buildScoreMap(board)
@@ -121,7 +143,7 @@ class KIService(private val rootService: RootService) {
         }
         val move = chooseBestMove(highestScoresTop)
 
-        if ( (possibleTiles.size == 1) && (move.score < lastMoveThreshhold)  ){
+        if ( (possibleTiles.size == 1) && (move.score < getAverageScoreForTileWith(currentGame.stacks.first().element, currentGame.stacks.first().arrows.size, player, scoreMap))  ){
             val tileFromStack = currentGame.stacks.first()
             val potentialPlacements = calculatePotentialTilePlacements(tileFromStack, scoreMap, player)
             val bestMove = potentialPlacements.maxByOrNull { it.score }
