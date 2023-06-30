@@ -84,6 +84,93 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
     }
 
     /**
+     * [calculatePoints] precalculates a move without writing in the entity-layer
+     *     @param player that wants to precalculate a move
+     *     @param newTile that the player potentially wants to place
+     *     @param tileDirection the direction in which the player wants to potentially place newTile
+     *     @param location the location in which the player wants to potentially place newTile
+     *     @return a mutableList containing
+     *          the points the player would have
+     *          the sound disc difference of the move
+     *          the amount of cacophony discs, the player would have to buy
+     *          the arrows, that are being fulfilled, including the arrows of newTile
+     */
+    fun calculatePoints(
+        player: Player,
+        newTile: Tile,
+        tileDirection: Direction,
+        location: Location
+    ): MutableList<Int> {
+        // Get old values
+        val discPile = player.discs.size
+        val points = player.points.first
+        // New Counter
+        var newPoints = points
+        var newDiscPile = discPile
+        val arrowCount = mutableListOf<Pair<Arrow,Int>>()
+        var boughtCacoDiscs = 0
+        //collect all newly fulfilled arrows in a list
+        for (direction in Direction.values()) {
+            var filteredBoard = rootService.playerActionService.filterInDirection(player.board, direction, location)
+            filteredBoard = filteredBoard.filterValues {
+                it.arrows.contains(Arrow(newTile.element, Direction.values()[(direction.ordinal + 4) % 8]))
+                        && !it.flipped
+            }
+            filteredBoard.values.forEach {
+                it.arrows.forEach { arrow ->
+                    if (arrow.direction == Direction.values()[(direction.ordinal + 4) % 8] && arrow.disc.isEmpty()) {
+                        arrowCount.add(Pair(arrow,it.id))
+                    }
+                }
+            }
+        }
+        //add points for newly fulfilled tiles, add freed discs to the pile
+        for (tile in player.board) {
+            if (!tile.value.flipped) {
+                val idSortedArrows = arrowCount.filter { it.second == tile.value.id }
+                if (tile.value.discs.size - idSortedArrows.size == 0) {
+                    newPoints += tile.value.points
+                    newDiscPile += tile.value.arrows.size
+                }
+            }
+        }
+        // put discs on the new Tile
+        repeat(newTile.arrows.size) {
+            if (newDiscPile > 0) {
+                newDiscPile--
+            } else {
+                boughtCacoDiscs++
+            }
+        }
+        newPoints -= boughtCacoDiscs * 2
+        newTile.rotate(tileDirection)
+
+        //check if arrows of the new Tile are fulfilled
+        for (arrow in newTile.arrows) {
+            var filteredBoard = rootService.playerActionService.filterInDirection(player.board, arrow.direction, location)
+            filteredBoard =  filteredBoard.filterValues { it.element == arrow.element }
+            if (filteredBoard.isNotEmpty()) {
+                arrowCount.add(Pair(arrow,newTile.id))
+            }
+        }
+        //add points and put the discs back, if all arrows of the new Tile are fulfilled
+        val idSortedArrows = arrowCount.filter { it.second == newTile.id }
+        if (newTile.discs.size +idSortedArrows.size == newTile.arrows.size) {
+            newPoints += newTile.points
+            newDiscPile += newTile.arrows.size
+        }
+
+        /*
+            return a list containing
+                the new amount of points
+                the sound disc difference
+                the amount of bought cacophony discs
+                the amount of newly fulfilled arrows
+             */
+        return mutableListOf(newPoints, newDiscPile - discPile - boughtCacoDiscs, boughtCacoDiscs, arrowCount.size)
+    }
+
+    /**
      * [changeToNextPlayer] is called after each player's turn.
      * Checks if an intermezzo has to start or to end.
      * Refills empty offerDisplay and checks if it is the lastRound.
