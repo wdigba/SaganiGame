@@ -3,21 +3,20 @@ package view
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.components.uicomponents.TextField
-import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
 /**
- * [NetworkScene] creates scene to join someone's game using existing key
+ * [NetworkInitiatingGame] creates scene for initiating game
  */
 
-class NetworkScene(private val rootService: RootService) :
+class NetworkInitiatingGame(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
         width = 300, height = 50, posX = 50, posY = 50,
-        text = "Enter your data",
+        text = "Create a key for the game",
         font = Font(size = 22)
     )
 
@@ -36,12 +35,12 @@ class NetworkScene(private val rootService: RootService) :
         }
     }
 
-    private val IDLabel = Label(
+    private val KeyLabel = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
-        text = "Your ID:"
+        text = "Key:"
     )
-    private val IDInput: TextField = TextField(
+    private val KeyInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 240
     ).apply {
@@ -85,6 +84,10 @@ class NetworkScene(private val rootService: RootService) :
             //rootService.gameService.startNewGame()
         }
     }
+
+    /**
+     * checks, if  it is possible to start the game
+     */
     private fun startIsAvailable(): Boolean {
         // Player Name is not empty
         for (input in playerInput) {
@@ -102,15 +105,45 @@ class NetworkScene(private val rootService: RootService) :
         return true
     }
 
-    private val playerInput = mutableListOf( Pair(NameInput, IDInput))
+    private val playerInput = mutableListOf( Pair(NameInput, KeyInput))
+
+    /**
+     * buttton to generate a key
+     */
+
+    private val randomIDButton = StandardButton(
+        posX = 50, posY = 520,
+        text = "Random ID"
+    ).apply {
+        onMouseClicked = {
+
+            val randomID = mutableListOf(
+                "2efkenekvew9", "90hnoertt889", "cnwleri22", "1vm0r9fh90n", "45tgbjo0uttn"
+            )
+
+            randomID.shuffle()
+
+
+
+            for (input in playerInput) {
+
+                // ID
+                input.second.text = "${randomID.removeFirst()}"
+
+
+            }
+            startButton.isDisabled = !startIsAvailable()
+        }
+    }
 
     init {
         opacity = 1.0
         startButton.isDisabled = true
         background = ColorVisual(GameColor.cornSilk)
         addComponents(headlineLabel, NameLabel, NameInput,
-            IDInput, IDLabel,
-            startButton, backButton)
+            KeyInput, KeyLabel,
+            startButton, backButton, randomIDButton)
     }
+
 
 }
