@@ -36,11 +36,12 @@ class KIServiceTest {
             Arrow(Element.EARTH, Direction.DOWN)))
 
         //placing tiles on the board
-        val board = mutableMapOf(
-            Pair(0, 0) to tile1,
-            Pair(0, 1) to tile2,
-            Pair(-1, 1) to tile3
-        )
+        player.board[Pair(0, 0)] = tile1
+        player.board[Pair(0, 1)] = tile2
+        player.board[Pair(-1, 1)] = tile3
+
+
+
         repeat(24) {
             player.discs.add(Disc.SOUND)
         }
@@ -75,7 +76,6 @@ class KIServiceTest {
             }
         }
         // fill the board for player
-        player.board = board
     }
 
     /**
@@ -251,7 +251,7 @@ class KIServiceTest {
 
 
         println(game.actPlayer.board)
-        rootService.kIService.playBestMove(game.actPlayer)
+        rootService.kIService.playBestMove()
         rootService.gameService.changeToNextPlayer()
         println(game.actPlayer.board)
 
@@ -268,7 +268,7 @@ class KIServiceTest {
         game.intermezzo = true
         **/
         // index -1 exception
-        rootService.kIService.playBestMove(game.actPlayer)
+        rootService.kIService.playBestMove()
 
         var breakpoint = true
 
@@ -334,19 +334,20 @@ class KIServiceTest {
             Arrow(Element.AIR, Direction.UP_LEFT),
             Arrow(Element.AIR, Direction.DOWN_RIGHT)))
         // filling the board with those tiles
-        val board = mutableMapOf(
-            Pair(0, 0) to tile1,
-            Pair(1, 0) to tile2,
-            Pair(2, 0) to tile3,
-            Pair(0, 1) to tile4,
-            Pair(1, 1) to tile5,
-            Pair(0, 2) to tile6,
-            Pair(-1, -1) to tile7,
-            Pair(-1, 0) to tile8,
-            Pair(1, -1) to tile9,
-            Pair(1, -2) to tile10,
-            Pair(2, -2) to tile11
-        )
+
+        player.board[Pair(0, 0)] = tile1
+        player.board[Pair(1, 0)] = tile2
+        player.board[Pair(2, 0)] = tile3
+        player.board[Pair(0, 1)] = tile4
+        player.board[Pair(1, 1)] = tile5
+        player.board[Pair(0, 2)] = tile6
+        player.board[Pair(-1, -1)] = tile7
+        player.board[Pair(-1, 0)] = tile8
+        player.board[Pair(1, -1)] = tile9
+        player.board[Pair(1, -2)] = tile10
+        player.board[Pair(2, -2)] = tile11
+
+
         // filling tiles with discs
         repeat(2) {
             tile1.discs.add(popLastElement(player.discs))
@@ -466,7 +467,6 @@ class KIServiceTest {
             }
         }
 
-        player.board = board
         // building the score map for player
         val scoreMap = kiService.buildScoreMap(player.board)
         print(scoreMap)
@@ -493,7 +493,7 @@ class KIServiceTest {
         val highestScore = potentialPlacements.maxByOrNull { it.score }
 
         potentialPlacements.forEach {
-            assert(this.rootService.playerActionService.validLocation(player.board).contains(it.location))
+            assert(this.rootService.playerActionService.validLocations(player.board).contains(it.location))
         }
 
         assertEquals(Pair(0, -1), highestScore?.location)

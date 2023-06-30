@@ -86,10 +86,14 @@ class KIService(private val rootService: RootService) {
      * @param board current board of current player
      * @param player current player
      */
-    fun playBestMove(player: Player) {
+    fun playBestMove() {
+
+
+
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
+        val player = currentGame.actPlayer
 
         val board = player.board
         if (board.size == 0) {
