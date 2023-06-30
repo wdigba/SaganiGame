@@ -1,6 +1,7 @@
 package service
 
 import entity.Color
+import entity.Disc
 import entity.PlayerType
 import kotlin.test.*
 
@@ -48,6 +49,15 @@ class StartNewGameTest {
         assertEquals(bob.third, game.players[1].playerType)
         // stacks contains 67 tiles
         assertEquals(67, game.stacks.size)
+        // offerDisplay contains 67 tiles
+        assertEquals(5, game.offerDisplay.size)
+        // players start with 24 sound discs
+        game.players.forEach {
+            assertEquals(24, it.discs.size)
+            it.discs.forEach { disc ->
+                assertEquals(Disc.SOUND, disc)
+            }
+        }
         // refreshAfterStartNewGame() was called
         assert(refreshable.refreshAfterStartNewGameCalled)
     }

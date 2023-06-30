@@ -1,6 +1,7 @@
 package view
 
 import Location
+import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Player
 import entity.Tile
 
@@ -11,14 +12,14 @@ interface Refreshable {
     /**
      * refresh Gui after startNewGame()
      */
-    fun refreshAfterStartNewGame(player: Player, validLocation: Set<Location>, intermezzo: Boolean) {}
+    fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {}
 
     /**
      * refresh Gui after ChangeToNextPlayers()
      * @param player: next player to place a tile
-     * @param validLocation: Set of all valid locations for next player's board
+     * @param validLocations: Set of all valid locations for next player's board
      */
-    fun refreshAfterChangeToNextPlayer(player: Player, validLocation: Set<Location>, intermezzo: Boolean) {}
+    fun refreshAfterChangeToNextPlayer(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {}
 
     /**
      * refresh Gui after CalculateWinner()
@@ -52,4 +53,11 @@ interface Refreshable {
      * refresh Gui after redo()
      */
     fun refreshAfterRedo() {}
+
+    /**
+     * refresh Gui after a connection state change
+     *
+     * @param newState The new connection state
+     */
+    fun refreshAfterConnectionStateChange(newState: ConnectionState) {}
 }

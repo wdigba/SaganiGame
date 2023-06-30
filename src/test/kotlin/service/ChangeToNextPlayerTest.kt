@@ -133,7 +133,7 @@ class ChangeToNextPlayerTest {
 
     private fun afterTests(game: Sagani, intermezzo: Boolean = false): Sagani {
         // currentGame is new Sagani object
-        // assertNotSame(rootService.currentGame, game)
+        assertNotSame(rootService.currentGame, game)
         val newGameState = rootService.currentGame
         assertNotNull(newGameState)
         if (intermezzo) {
@@ -178,6 +178,60 @@ class ChangeToNextPlayerTest {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Test intermezzo with ending the game
+     */
+    @Test
+    fun intermezzoTest() {
+        // testData
+        intermezzoStartTest()
+        var game = rootService.currentGame
+        assertNotNull(game)
+        game.players[0].points = Pair(45, game.turnCount)
+        assertEquals(2, game.intermezzoPlayers.size)
+        assertEquals(game.players[0], game.intermezzoPlayers[0])
+        refreshable.reset()
+        // function call
+        rootService.gameService.changeToNextPlayer()
+        // tests
+        game = rootService.currentGame
+        assertNotNull(game)
+        // next IntermezzoPlayer
+        assertEquals(1, game.intermezzoPlayers.size)
+        assertEquals(game.players[1], game.intermezzoPlayers[0])
+        // refreshAfterChangeToNextPlayer was called
+        assert(refreshable.refreshAfterChangeToNextPlayerCalled)
+        // refreshAfterCalculateWinner was not called
+        assertFalse(refreshable.refreshAfterCalculateWinnerCalled)
+        refreshable.reset()
+
+        // testData
+        assert(game.offerDisplay.isEmpty())
+        game.actPlayer = game.players[1]    // so that the game will end
+        assertEquals(4, game.intermezzoStorage.size)
+        // next turn
+        rootService.gameService.changeToNextPlayer()
+        // tests
+        game = rootService.currentGame
+        assertNotNull(game)
+        // no IntermezzoPlayer left
+        assertEquals(0, game.intermezzoPlayers.size)
+        // offerDisplay is refilled
+        assert(game.offerDisplay.isNotEmpty())
+        // next actPlayer
+        assertEquals(game.players[0], game.actPlayer)
+        // intermezzoStorage is cleared after none takes a tile
+        assert(game.intermezzoStorage.isEmpty())
+        // refreshAfterChangeToNextPlayer was not called
+        assertFalse(refreshable.refreshAfterChangeToNextPlayerCalled)
+        // refreshAfterCalculateWinner was called
+        assert(refreshable.refreshAfterCalculateWinnerCalled)
+        refreshable.reset()
+    }
+
+    /**
+>>>>>>> main
      * Test without game
      */
     @Test

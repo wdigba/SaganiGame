@@ -1,6 +1,7 @@
 package service
 
 import Location
+import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
@@ -29,20 +30,23 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val stacks = createStacks()
         stacks.shuffle()
 
-        // fill offer display
+        // create new game
         val game = Sagani(players, stacks)
+        rootService.currentGame = game
+
+        // send game init to network players
+        rootService.networkService.client?.sendGameInit()
+
+        // fill offer display
         repeat(5) {
             game.offerDisplay.add(game.stacks.removeFirst())
         }
-
-        // create new game
-        rootService.currentGame = game
 
         // refresh GUI
         onAllRefreshables {
             refreshAfterStartNewGame(
                 game.players[0],
-                setOf(Pair(0, 0)),
+                setOf(Location(0, 0)),
                 false
             )
         }
@@ -84,6 +88,93 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
     }
 
     /**
+     * [calculatePoints] precalculates a move without writing in the entity-layer
+     *     @param player that wants to precalculate a move
+     *     @param newTile that the player potentially wants to place
+     *     @param tileDirection the direction in which the player wants to potentially place newTile
+     *     @param location the location in which the player wants to potentially place newTile
+     *     @return a mutableList containing
+     *          the points the player would have
+     *          the sound disc difference of the move
+     *          the amount of cacophony discs, the player would have to buy
+     *          the arrows, that are being fulfilled, including the arrows of newTile
+     */
+    fun calculatePoints(
+        player: Player,
+        newTile: Tile,
+        tileDirection: Direction,
+        location: Location
+    ): MutableList<Int> {
+        // Get old values
+        val discPile = player.discs.size
+        val points = player.points.first
+        // New Counter
+        var newPoints = points
+        var newDiscPile = discPile
+        val arrowCount = mutableListOf<Pair<Arrow,Int>>()
+        var boughtCacoDiscs = 0
+        //collect all newly fulfilled arrows in a list
+        for (direction in Direction.values()) {
+            var filteredBoard = rootService.playerActionService.filterInDirection(player.board, direction, location)
+            filteredBoard = filteredBoard.filterValues {
+                it.arrows.contains(Arrow(newTile.element, Direction.values()[(direction.ordinal + 4) % 8]))
+                        && !it.flipped
+            }
+            filteredBoard.values.forEach {
+                it.arrows.forEach { arrow ->
+                    if (arrow.direction == Direction.values()[(direction.ordinal + 4) % 8] && arrow.disc.isEmpty()) {
+                        arrowCount.add(Pair(arrow,it.id))
+                    }
+                }
+            }
+        }
+        //add points for newly fulfilled tiles, add freed discs to the pile
+        for (tile in player.board) {
+            if (!tile.value.flipped) {
+                val idSortedArrows = arrowCount.filter { it.second == tile.value.id }
+                if (tile.value.discs.size - idSortedArrows.size == 0) {
+                    newPoints += tile.value.points
+                    newDiscPile += tile.value.arrows.size
+                }
+            }
+        }
+        // put discs on the new Tile
+        repeat(newTile.arrows.size) {
+            if (newDiscPile > 0) {
+                newDiscPile--
+            } else {
+                boughtCacoDiscs++
+            }
+        }
+        newPoints -= boughtCacoDiscs * 2
+        newTile.rotate(tileDirection)
+
+        //check if arrows of the new Tile are fulfilled
+        for (arrow in newTile.arrows) {
+            var filteredBoard = rootService.playerActionService.filterInDirection(player.board, arrow.direction, location)
+            filteredBoard =  filteredBoard.filterValues { it.element == arrow.element }
+            if (filteredBoard.isNotEmpty()) {
+                arrowCount.add(Pair(arrow,newTile.id))
+            }
+        }
+        //add points and put the discs back, if all arrows of the new Tile are fulfilled
+        val idSortedArrows = arrowCount.filter { it.second == newTile.id }
+        if (newTile.discs.size +idSortedArrows.size == newTile.arrows.size) {
+            newPoints += newTile.points
+            newDiscPile += newTile.arrows.size
+        }
+
+        /*
+            return a list containing
+                the new amount of points
+                the sound disc difference
+                the amount of bought cacophony discs
+                the amount of newly fulfilled arrows
+             */
+        return mutableListOf(newPoints, newDiscPile - discPile - boughtCacoDiscs, boughtCacoDiscs, arrowCount.size)
+    }
+
+    /**
      * [changeToNextPlayer] is called after each player's turn.
      * Checks if an intermezzo has to start or to end.
      * Refills empty offerDisplay and checks if it is the lastRound.
@@ -93,9 +184,16 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     fun changeToNextPlayer() {
         var nextPlayer: Player? = null
-        val validLocation: Set<Location>
+        val validLocations: Set<Location>
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
+
+        // identify player
+        val player = if (currentGame.intermezzo) {
+            currentGame.players.find { it.color == currentGame.intermezzoPlayers[0].color }!!
+        } else {
+            currentGame.players.find { it.color == currentGame.actPlayer.color }!!
+        }
 
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
@@ -132,9 +230,33 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
             // check if player has needed amount of points to end the game
             currentGame.players.forEach {
-                if (it.points.first >= 15 * currentGame.players.size + 15) {
+                if (it.points.first >= 15 + currentGame.players.size * 15) {
                     currentGame.lastRound = true
                 }
+            }
+        }
+
+
+        if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
+            rootService.networkService.client?.sendTurnMessage(player)
+        } else {
+            // Check Checksum
+            rootService.networkService.client?.lastTurnChecksum?.let {
+                check(it.score == player.points.first) {
+                    "Checksum: Score did not match. ${it.score} != ${currentGame.actPlayer.points.first}"
+                }
+                check(it.availableDiscs == player.discs.size) {
+                    "Checksum: Available discs did not match. ${it.availableDiscs} != ${currentGame.actPlayer.discs.size}"
+                }
+                val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
+                check(it.startedIntermezzo == startedIntermezzo) {
+                    "Checksum: Intermezzo did not match. ${it.startedIntermezzo} != $startedIntermezzo"
+                }
+                val initiatedLastRound = (!(currentGame.lastTurn?.lastRound ?: false) && currentGame.lastRound)
+                check(it.initiatedLastRound == initiatedLastRound) {
+                    "Checksum: Last round did not match. ${it.initiatedLastRound} != $initiatedLastRound"
+                }
+                rootService.networkService.client?.lastTurnChecksum = null
             }
         }
 
@@ -146,10 +268,16 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             currentGame.actPlayer = nextPlayer
         }
 
+        if (nextPlayer.name == rootService.networkService.client?.playerName) {
+            rootService.networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+        } else {
+            rootService.networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
+        }
+
         // increase turnCount
         currentGame.turnCount++
         // copy game
-        // gameCopy()
+        gameCopy()
 
         // check if game has to end
         if (
@@ -159,13 +287,28 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         ) {
             calculateWinner()
         } else {
-            validLocation = rootService.playerActionService.validLocation(nextPlayer.board)
-            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocation, currentGame.intermezzo) }
+            validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
+            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
         }
     }
 
-    private fun calculateWinner() {
+    /**
+     * [calculateWinner] sorts the playerlist by points and the time they reach points
+     * If a player reaches the same point count as another he still has less, because he got there later
+     * This method will only be called when the game ends, since
+     */
+    fun calculateWinner() {
+
+        // get game reference
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        // sort player list by points and turncount they reached point
+        game.players.sortWith(compareBy({ -it.points.first }, { it.points.second }))
+
+        // update GUI
         onAllRefreshables { refreshAfterCalculateWinner() }
+        rootService.networkService.disconnect()
     }
 
     /**
@@ -178,13 +321,22 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val game = rootService.currentGame
         checkNotNull(game) { "currentGame was null, but gameCopy() was called" }
 
+        // store reference to lastTurn and set to null to prevent infinite loop
+        val lastGame = game.lastTurn
+        game.lastTurn = null
+
+        // allowStructuredMapKeys allows saving with a Pair(Int, Int) as map key
+        val jsonBuilder = Json { allowStructuredMapKeys = true }
+
         // convert game to JSON string
-        val gameAsJson = Json.encodeToString(game)
+        val gameAsJson = jsonBuilder.encodeToString(game)
 
         // recreate game from JSON string. This results in an equal but not same object
         // i.e. the new object will be a different instance
-        val gameFromJson = Json.decodeFromString<Sagani>(gameAsJson)
+        val gameFromJson = jsonBuilder.decodeFromString<Sagani>(gameAsJson)
 
+        // re-establish link from the game that was copied to its lastGame
+        game.lastTurn = lastGame
         // make backlink to game for doubly linked list
         gameFromJson.lastTurn = game
 
@@ -208,10 +360,51 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val game = rootService.currentGame
         checkNotNull(game) { "currentGame was null, but saveGame() was called" }
 
+        val jsonBuilder = Json { allowStructuredMapKeys = true }
+
+        var jsonIndex = 0
+        var jsonAllGameString = ""
+        var gameAsJson: String
+
+        var iterGame = game
+        var iterLastGame = game.lastTurn
+        var iterNextGame = game.nextTurn
+
+        // if both are null there is only one Sagani Game object
+        if ((iterLastGame == null) && (iterNextGame == null)) {
+
+            jsonAllGameString = jsonBuilder.encodeToString(iterGame)
+
+        } else {
+
+            while (iterLastGame != null) {
+
+                // store references
+                iterLastGame = iterGame?.lastTurn
+                iterNextGame = iterGame?.nextTurn
+                // cut links to prevent infinite loop
+                iterGame?.lastTurn = null
+                iterGame?.nextTurn = null
+                // add iterGame to JSON string
+                gameAsJson = jsonBuilder.encodeToString(iterGame)
+                jsonAllGameString += gameAsJson
+                if (iterLastGame != null) {
+                    jsonAllGameString += ";"
+                }
+
+
+                // re-establish links, move pointer and increase index (key in json
+                iterGame?.nextTurn = iterNextGame
+                iterGame?.lastTurn = iterLastGame
+                iterGame = iterGame?.lastTurn
+                jsonIndex += 1
+
+            }
+        }
 
         // write json encoding of game to file specified by parameter path
         FileOutputStream(File(path)).use {
-            Json.encodeToStream(game, it)
+            jsonBuilder.encodeToStream(jsonAllGameString, it)
         }
 
         // refresh GUI
@@ -224,12 +417,39 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     @OptIn(ExperimentalSerializationApi::class)
     fun loadGame(path: String) {
-
-        val loadGame = FileInputStream(File(path)).use {
-            Json.decodeFromStream<Sagani>(it)
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot load game while connected to server"
         }
 
-        rootService.currentGame = loadGame
+        val loadGame = FileInputStream(File(path)).use {
+            Json.decodeFromStream<String>(it)
+        }
+
+        // Sagani strings are separated with ";" during saving
+        // List starts with most current game and is descending
+        var iterGame: Sagani? = null
+        var newGame: Sagani
+        for (gameString in loadGame.split(";")) {
+
+            newGame = Json.decodeFromString<Sagani>(gameString)
+
+            if (iterGame != null) {
+
+                newGame.nextTurn = iterGame
+                iterGame.lastTurn = newGame
+
+            }
+            iterGame = newGame
+
+        }
+
+        checkNotNull(iterGame)
+        // move back to youngest (i.e. first in list) game
+        while (iterGame?.nextTurn != null) {
+            iterGame = iterGame.nextTurn
+        }
+
+        rootService.currentGame = iterGame
 
         // refresh GUI
         onAllRefreshables { refreshAfterLoadGame() }
@@ -240,6 +460,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * Sagani.lastTurn. If so set currentGame reference to this object
      */
     fun undo() {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot undo while connected to server"
+        }
 
         val game = rootService.currentGame
         checkNotNull(game) { "undo() was called but currentGame is null" }
@@ -257,6 +480,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * Sagani.nextTurn. If so set currentGame reference to this object
      */
     fun redo() {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot redo while connected to server"
+        }
 
         val game = rootService.currentGame
         checkNotNull(game) { "redo() was called but currentGame is null" }
@@ -268,4 +494,5 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // refresh GUI
         onAllRefreshables { refreshAfterRedo() }
     }
+
 }

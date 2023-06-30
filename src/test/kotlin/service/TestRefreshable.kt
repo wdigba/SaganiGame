@@ -1,6 +1,7 @@
 package service
 
 import Location
+import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Player
 import entity.Tile
 import view.Refreshable
@@ -25,6 +26,8 @@ class TestRefreshable : Refreshable {
         private set
     var refreshAfterRedoCalled: Boolean = false
         private set
+    var refreshAfterConnectionStateChangeCalled: Boolean = false
+        private set
 
     /**
      * reset all properties
@@ -38,19 +41,20 @@ class TestRefreshable : Refreshable {
         refreshAfterPlaceTileCalled = false
         refreshAfterUndoCalled = false
         refreshAfterRedoCalled = false
+        refreshAfterConnectionStateChangeCalled = false
     }
 
     /**
      * Tests can check if refreshAfterStartNewGame was called
      */
-    override fun refreshAfterStartNewGame(player: Player, validLocation: Set<Location>, intermezzo: Boolean) {
+    override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
         refreshAfterStartNewGameCalled = true
     }
 
     /**
      * Tests can check if refreshAfterChangeToNextPlayer was called
      */
-    override fun refreshAfterChangeToNextPlayer(player: Player, validLocation: Set<Location>, intermezzo: Boolean) {
+    override fun refreshAfterChangeToNextPlayer(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
         refreshAfterChangeToNextPlayerCalled = true
     }
 
@@ -94,5 +98,9 @@ class TestRefreshable : Refreshable {
      */
     override fun refreshAfterRedo() {
         refreshAfterRedoCalled = true
+    }
+
+    override fun refreshAfterConnectionStateChange(newState: ConnectionState) {
+        refreshAfterConnectionStateChangeCalled = true
     }
 }

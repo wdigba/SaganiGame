@@ -26,7 +26,7 @@ class ValidLocationTest {
             board[Pair(xRandom, yRandom)] = tile
         }
         // function call
-        val validLocation = rootService.playerActionService.validLocation(board)
+        val validLocation = rootService.playerActionService.validLocations(board)
         // tests
         board.keys.forEach {
             assertFalse(it in validLocation)
@@ -49,7 +49,7 @@ class ValidLocationTest {
         // testData
         val board: MutableMap<Location, Tile> = mutableMapOf()
         // function call
-        val validLocation = rootService.playerActionService.validLocation(board)
+        val validLocation = rootService.playerActionService.validLocations(board)
         // test with empty board
         assert(Pair(0, 0) in validLocation)
     }
