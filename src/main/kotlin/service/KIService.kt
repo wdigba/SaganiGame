@@ -64,13 +64,29 @@ class KIService(private val rootService: RootService) {
      * @param board current board of current player
      * @param player current player
      */
-    fun playBestMove(board: Map<Pair<Int, Int>, Tile>, player: Player) {
+    fun playBestMove(player: Player) {
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame) { "There is no game." }
+
+
+        val board = player.board
+        if (board.size == 0) {
+            //choose the tile with highest tile.arrows.size from the offerDisplay
+            val tile = currentGame.offerDisplay.maxByOrNull { it.arrows.size }
+
+            rootService.playerActionService.placeTile(tile!!, Direction.UP, Pair(0, 0))
+            return
+        }
+
+
+
+
+
+
         // defining thresholds for estimating progress
         val intermezzoScoreThreshold = 0.7
         val lastMoveThreshhold = 0.8
 
-        val currentGame = rootService.currentGame
-        checkNotNull(currentGame) { "There is no game." }
 
         val scoreMap = buildScoreMap(board)
         // when the game in intermezzo phase
@@ -195,6 +211,7 @@ class KIService(private val rootService: RootService) {
      */
     fun calculatePotentialTilePlacements(tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player): MutableList<TilePlacementInformation> {
 
+
         val arrowWeight = 0.5
 
         val potentialScores = mutableListOf<TilePlacementInformation>()
@@ -233,11 +250,12 @@ class KIService(private val rootService: RootService) {
                     println("Satisfied Arrows: $satisfiedArrowsMetrics")
                 }
 
+                /**
                 for(arrow in tile.arrows){
                     if (arrow.disc.size!=0) {
                         tile.discs.add(arrow.disc.removeAt(arrow.disc.size - 1))
                     }
-                }
+                }**/
             }
         }
         return potentialScores
@@ -312,18 +330,18 @@ class KIService(private val rootService: RootService) {
      * [getArrowCountForElement] calculates the total count of arrows for a given position in a scoreMap
      * @return total amount of arrows
      */
-    private fun getArrowCountForElement(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>) : Int{
+    private fun getArrowCountForElement(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>,  element: Element) : Int{
         var arrowCount = 0
-        if (scoreMap[position]!!.airCount > 0) {
+        if (element == Element.AIR) {
             arrowCount += scoreMap[position]!!.airCount
         }
-        if (scoreMap[position]!!.earthCount > 0) {
+        if (element == Element.EARTH) {
             arrowCount += scoreMap[position]!!.earthCount
         }
-        if (scoreMap[position]!!.waterCount > 0) {
+        if (element == Element.WATER) {
             arrowCount += scoreMap[position]!!.waterCount
         }
-        if (scoreMap[position]!!.fireCount > 0) {
+        if (element == Element.FIRE) {
             arrowCount += scoreMap[position]!!.fireCount
         }
         return arrowCount
@@ -333,18 +351,18 @@ class KIService(private val rootService: RootService) {
      * [getDiscCountForElement] calculates the total count of discs would be freed for a given position in a scoreMap
      * @return total amount of discs
      */
-    private fun getDiscCountForElement(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>) : Int{
+    private fun getDiscCountForElement(position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, element: Element) : Int{
         var discCount = 0
-        if (scoreMap[position]!!.airCount > 0) {
+        if (element == Element.AIR) {
             discCount += scoreMap[position]!!.discsIfAirPlaced
         }
-        if (scoreMap[position]!!.earthCount > 0) {
+        if (element == Element.EARTH) {
             discCount += scoreMap[position]!!.discsIfEarthPlaced
         }
-        if (scoreMap[position]!!.waterCount > 0) {
+        if (element == Element.WATER) {
             discCount += scoreMap[position]!!.discsIfWaterPlaced
         }
-        if (scoreMap[position]!!.fireCount > 0) {
+        if (element == Element.FIRE) {
             discCount += scoreMap[position]!!.discsIfFirePlaced
         }
         return discCount
@@ -366,9 +384,14 @@ class KIService(private val rootService: RootService) {
 
         val element = tile.element
 
-        val arrowsThatWouldBeSatisfiedByElement = getArrowCountForElement(position, scoreMap)
+        val arrowsThatWouldBeSatisfiedByElement = getArrowCountForElement(position, scoreMap, element)
 
-        val maxNumberOfSatisfiedArrows = getMaximumNumberOfArrowsThatCanBeSatisfied(scoreMap)
+        var maxNumberOfSatisfiedArrows = getMaximumNumberOfArrowsThatCanBeSatisfied(scoreMap)
+
+        if(maxNumberOfSatisfiedArrows == 0){
+            maxNumberOfSatisfiedArrows = 1
+        }
+
         // arrows´ satisfaction metrics
         val arrowSatisfiedMetrics = arrowsThatWouldBeSatisfiedByElement.toDouble() / maxNumberOfSatisfiedArrows
         // how many arrows would be blocked by this decision
@@ -380,16 +403,20 @@ class KIService(private val rootService: RootService) {
             if (e == element){
                 continue
             }
-            val arrowMetrics = getArrowCountForElement(position, scoreMap) / maxNumberOfSatisfiedArrows.toDouble()
+            val arrowMetrics = getArrowCountForElement(position, scoreMap, element) / maxNumberOfSatisfiedArrows.toDouble()
             arrowsBlockedMetrics[i] = arrowMetrics
             i++
         }
 
 
         //the same for discs
-        val discsThatWouldBeFreedByElement = getDiscCountForElement(position, scoreMap)
+        val discsThatWouldBeFreedByElement = getDiscCountForElement(position, scoreMap, element)
 
-        val maxNumberOfFreedDiscs = getMaximumNumberOfFreedDiscs(scoreMap)
+        var maxNumberOfFreedDiscs = getMaximumNumberOfFreedDiscs(scoreMap)
+
+        if(maxNumberOfFreedDiscs == 0){
+            maxNumberOfFreedDiscs = 1
+        }
 
         val discsFreedMetrics = discsThatWouldBeFreedByElement.toDouble() / maxNumberOfFreedDiscs
 
@@ -401,7 +428,7 @@ class KIService(private val rootService: RootService) {
             if (e == element){
                 continue
             }
-            val discMetrics = getDiscCountForElement(position, scoreMap) / maxNumberOfFreedDiscs.toDouble()
+            val discMetrics = getDiscCountForElement(position, scoreMap, element) / maxNumberOfFreedDiscs.toDouble()
             discsBlockedMetrics[i] = discMetrics
 
             i++
@@ -604,7 +631,7 @@ class KIService(private val rootService: RootService) {
             while (player.board.containsKey(adjacentPosition)) {
                 if (player.board[adjacentPosition]?.element == arrow.element) {
                     satisfiedArrows++
-                    arrow.disc.add(tile.discs.removeAt(tile.discs.size-1))
+                    //arrow.disc.add(tile.discs.removeAt(tile.discs.size-1))
                     break
                 }
                 adjacentPosition = calculateAdjacentPosition(adjacentPosition, arrow.direction)

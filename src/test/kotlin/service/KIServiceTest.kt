@@ -237,20 +237,21 @@ class KIServiceTest {
         game.offerDisplay.add(tile1)
         game.offerDisplay.add(tile2)
         //index -1 exception
-        //game.offerDisplay.add(tile3)
+        game.offerDisplay.add(tile3)
 
+        /**
         rootService.playerActionService.placeTile(tile1, direction1, location1)
         rootService.gameService.changeToNextPlayer()
         rootService.playerActionService.placeTile(tile2, direction2, location2)
         rootService.gameService.changeToNextPlayer()
-        /*
+
         rootService.playerActionService.placeTile(tile3, direction3, location3)
         rootService.gameService.changeToNextPlayer()
+        **/
 
-         */
 
         println(game.actPlayer.board)
-        rootService.kIService.playBestMove(game.actPlayer.board, game.actPlayer)
+        rootService.kIService.playBestMove(game.actPlayer)
         rootService.gameService.changeToNextPlayer()
         println(game.actPlayer.board)
 
@@ -261,12 +262,15 @@ class KIServiceTest {
         val direction5 = Direction.UP
         val location5 = Pair(1, 0)
 
+        /**
         game.intermezzoPlayers.addAll(game.players)
         game.intermezzoStorage.add(tile5)
         game.intermezzo = true
-
+        **/
         // index -1 exception
-        //rootService.kIService.playBestMove(game.actPlayer.board, game.actPlayer)
+        rootService.kIService.playBestMove(game.actPlayer)
+
+        var breakpoint = true
 
 
     }
