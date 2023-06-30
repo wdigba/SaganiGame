@@ -122,7 +122,7 @@ class KIService(private val rootService: RootService) {
         val move = chooseBestMove(highestScoresTop)
 
         if ( (possibleTiles.size == 1) && (move.score < lastMoveThreshhold)  ){
-            val tileFromStack = currentGame.stacks.removeAt(currentGame.stacks.size - 1)
+            val tileFromStack = currentGame.stacks.first()
             val potentialPlacements = calculatePotentialTilePlacements(tileFromStack, scoreMap, player)
             val bestMove = potentialPlacements.maxByOrNull { it.score }
 
