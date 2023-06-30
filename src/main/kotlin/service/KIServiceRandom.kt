@@ -17,7 +17,7 @@ class KIServiceRandom (private val rootService: RootService) {
         val player = currentGame.actPlayer
 
         // random available location for the tile
-        val randomLocation = rootService.playerActionService.validLocation(player.board).random()
+        val randomLocation = rootService.playerActionService.validLocations(player.board).random()
 
         // random direction for the tile
         val randomDirection = Direction.tileDirection().random()
