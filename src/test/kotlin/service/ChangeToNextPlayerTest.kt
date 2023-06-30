@@ -178,8 +178,6 @@ class ChangeToNextPlayerTest {
     }
 
     /**
-<<<<<<< HEAD
-=======
      * Test intermezzo with ending the game
      */
     @Test
@@ -231,7 +229,6 @@ class ChangeToNextPlayerTest {
     }
 
     /**
->>>>>>> main
      * Test without game
      */
     @Test
