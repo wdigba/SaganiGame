@@ -1,6 +1,7 @@
 package service
 
 import Location
+import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
@@ -32,6 +33,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // create new game
         val game = Sagani(players, stacks)
         rootService.currentGame = game
+
+        // send game init to network players
+        rootService.networkService.client?.sendGameInit()
 
         // fill offer display
         repeat(5) {
@@ -184,6 +188,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
+        // identify player
+        val player = if (currentGame.intermezzo) {
+            currentGame.players.find { it.color == currentGame.intermezzoPlayers[0].color }!!
+        } else {
+            currentGame.players.find { it.color == currentGame.actPlayer.color }!!
+        }
+
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
             // remove first player who had their intermezzo turn already
@@ -225,12 +236,42 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
         }
 
+
+        if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
+            rootService.networkService.client?.sendTurnMessage(player)
+        } else {
+            // Check Checksum
+            rootService.networkService.client?.lastTurnChecksum?.let {
+                check(it.score == player.points.first) {
+                    "Checksum: Score did not match. ${it.score} != ${currentGame.actPlayer.points.first}"
+                }
+                check(it.availableDiscs == player.discs.size) {
+                    "Checksum: Available discs did not match. ${it.availableDiscs} != ${currentGame.actPlayer.discs.size}"
+                }
+                val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
+                check(it.startedIntermezzo == startedIntermezzo) {
+                    "Checksum: Intermezzo did not match. ${it.startedIntermezzo} != $startedIntermezzo"
+                }
+                val initiatedLastRound = (!(currentGame.lastTurn?.lastRound ?: false) && currentGame.lastRound)
+                check(it.initiatedLastRound == initiatedLastRound) {
+                    "Checksum: Last round did not match. ${it.initiatedLastRound} != $initiatedLastRound"
+                }
+                rootService.networkService.client?.lastTurnChecksum = null
+            }
+        }
+
         // determine next player
         if (nextPlayer == null) {
             nextPlayer = currentGame.players[
                 (currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size
             ]
             currentGame.actPlayer = nextPlayer
+        }
+
+        if (nextPlayer.name == rootService.networkService.client?.playerName) {
+            rootService.networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+        } else {
+            rootService.networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
         }
 
         // increase turnCount
@@ -267,6 +308,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // update GUI
         onAllRefreshables { refreshAfterCalculateWinner() }
+        rootService.networkService.disconnect()
     }
 
     /**
@@ -322,19 +364,18 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         var jsonIndex = 0
         var jsonAllGameString = ""
-        var gameAsJson : String
+        var gameAsJson: String
 
         var iterGame = game
         var iterLastGame = game.lastTurn
         var iterNextGame = game.nextTurn
 
         // if both are null there is only one Sagani Game object
-        if ( ( iterLastGame == null ) && ( iterNextGame == null)) {
+        if ((iterLastGame == null) && (iterNextGame == null)) {
 
             jsonAllGameString = jsonBuilder.encodeToString(iterGame)
 
-        }
-        else {
+        } else {
 
             while (iterLastGame != null) {
 
@@ -376,6 +417,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     @OptIn(ExperimentalSerializationApi::class)
     fun loadGame(path: String) {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot load game while connected to server"
+        }
 
         val loadGame = FileInputStream(File(path)).use {
             Json.decodeFromStream<String>(it)
@@ -383,8 +427,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // Sagani strings are separated with ";" during saving
         // List starts with most current game and is descending
-        var iterGame : Sagani? = null
-        var newGame : Sagani
+        var iterGame: Sagani? = null
+        var newGame: Sagani
         for (gameString in loadGame.split(";")) {
 
             newGame = Json.decodeFromString<Sagani>(gameString)
@@ -401,7 +445,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         checkNotNull(iterGame)
         // move back to youngest (i.e. first in list) game
-        while ( iterGame?.nextTurn != null ) {
+        while (iterGame?.nextTurn != null) {
             iterGame = iterGame.nextTurn
         }
 
@@ -416,6 +460,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * Sagani.lastTurn. If so set currentGame reference to this object
      */
     fun undo() {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot undo while connected to server"
+        }
 
         val game = rootService.currentGame
         checkNotNull(game) { "undo() was called but currentGame is null" }
@@ -433,6 +480,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * Sagani.nextTurn. If so set currentGame reference to this object
      */
     fun redo() {
+        check(rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+            "Cannot redo while connected to server"
+        }
 
         val game = rootService.currentGame
         checkNotNull(game) { "redo() was called but currentGame is null" }

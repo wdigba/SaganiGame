@@ -15,6 +15,16 @@ version = "1.0"
 repositories {
     mavenCentral()
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    maven {
+        url = uri("https://sopra-gitlab.cs.tu-dortmund.de/api/v4/projects/1285/packages/maven")
+        credentials(HttpHeaderCredentials::class) {
+            name = "Private-Token"
+            value = "glpat-Enoru9Fp92RaG-cEzizT"
+        }
+        authentication {
+            create<HttpHeaderAuthentication>("header")
+        }
+    }
 }
 
 application {
@@ -28,7 +38,7 @@ dependencies {
     implementation(group = "tools.aqua", name = "bgw-net-common", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
     implementation(group = "tools.aqua", name = "bgw-net-client", version = "0.7.3-14-6ab4c8e-SNAPSHOT")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-
+    implementation(group = "edu.udo.cs.sopra", name = "ntf", version = "1.0")
 }
 
 tasks.distZip {
