@@ -3,6 +3,9 @@ package service
 import entity.*
 import kotlin.test.*
 
+/**
+ * [KIServiceTest] tests main methods of [KIService]
+ */
 class KIServiceTest {
     private lateinit var player: Player
     private lateinit var kiService: KIService
@@ -196,41 +199,40 @@ class KIServiceTest {
             game!!.players[0].discs.add(Disc.SOUND)
         }
 
-        //assert game is the same instance as rootService.currentGame
-
-
-
         // placing the very first tile
 
         game.offerDisplay.clear()
 
         // tiles to place
-        val tile1 = Tile(1, points = 1, Element.WATER, listOf(
-            Arrow(Element.EARTH, Direction.UP)))
+        val tile1 = Tile(1, points = 3, Element.WATER, listOf(
+            Arrow(Element.EARTH, Direction.UP),
+            Arrow(Element.AIR, Direction.LEFT)))
         game.offerDisplay.add(tile1)
 
-        val tile2 = Tile(2, points = 3, Element.AIR, listOf(
-            Arrow(Element.FIRE, Direction.DOWN_RIGHT),
+        val tile2 = Tile(2, points = 3, Element.FIRE, listOf(
+            Arrow(Element.FIRE, Direction.DOWN),
             Arrow(Element.WATER, Direction.UP)))
         game.offerDisplay.add(tile2)
 
         //tile with the biggest amount of arrows should be placed
-        println(game.actPlayer.board)
+        assertEquals(game.actPlayer.board, emptyMap())
+        println("expected empty : " + game.actPlayer.board)
         rootService.kIService.playBestMove()
 
         assertNotSame(game, rootService.currentGame)
 
         rootService.gameService.changeToNextPlayer()
         game = rootService.currentGame!!
-        println(game.actPlayer.board)
+        println("expected tile1 : " + game.actPlayer.board)
 
-        println(game.stacks[0])
+        println("expected random tile : " + game.stacks[0])
         // looking for best tile when only one left in offer display
         rootService.kIService.playBestMove()
         rootService.gameService.changeToNextPlayer()
         game = rootService.currentGame!!
-        println(game.actPlayer.board)
+        println("expected tile1 + tile2/stacks[0] : " + game.actPlayer.board)
 
+        game.offerDisplay.clear()
         // new tiles for offer display
         val tile3 = Tile(3, points = 3, Element.AIR, listOf(
             Arrow(Element.FIRE, Direction.DOWN_LEFT),
@@ -248,17 +250,17 @@ class KIServiceTest {
             Arrow(Element.FIRE, Direction.DOWN)))
         game.offerDisplay.add(tile5)
 
-        println(game.offerDisplay)
+        println("expected tile3, tile4, tile5 : " + game.offerDisplay)
 
-        println(game.actPlayer.board)
+        println("expected tile1 + tile2/stacks[0] : " + game.actPlayer.board)
         assert(game.actPlayer.name == "JohnAI")
         rootService.kIService.playBestMove()
         game = rootService.currentGame!!
         assert(game.actPlayer.name == "JoAI")
         rootService.gameService.changeToNextPlayer()
         game = rootService.currentGame!!
-        println(game.actPlayer.board)
-        assert(game.actPlayer.board.size != 0)
+        println("expected tile1 + tile2/stacks[0] + tile3/tile4/tile5 : " + game.actPlayer.board)
+        assert(game.actPlayer.board.isNotEmpty())
 
         // intermezzo phase
 
@@ -270,16 +272,24 @@ class KIServiceTest {
             Arrow(Element.FIRE, Direction.UP),
             Arrow(Element.AIR, Direction.LEFT)
         ))
-        println(game.intermezzoStorage)
+
+        game.intermezzoStorage.clear()
+        println("expected empty intermezzo storage : " + game.intermezzoStorage)
         game.intermezzoPlayers.addAll(game.players)
         game.intermezzoStorage.add(tile6)
         game.intermezzoStorage.add(tile7)
+        println("expected filled intermezzo storage : " + game.intermezzoStorage)
         game.intermezzo = true
 
+        assert(game.actPlayer.name == "JohnAI")
+        println("expected filled board : " + game.actPlayer.board)
         rootService.kIService.playBestMove()
-        rootService.gameService.changeToNextPlayer()
         game = rootService.currentGame!!
-        println(game.actPlayer.board)
+        game.intermezzoPlayers.clear()
+        game.intermezzo = false
+        game = rootService.currentGame!!
+        assert(game.actPlayer.name == "JohnAI")
+        println("expected previous board + tile6/tile7 : " + game.actPlayer.board)
     }
 
     /**
@@ -486,16 +496,16 @@ class KIServiceTest {
         }
 
         // save timestamp
-        val start = System.currentTimeMillis()
+        //val start = System.currentTimeMillis()
         // calculating all possible placements for that tile
         val potentialPlacements = kiService.calculatePotentialTilePlacements(tile12, scoreMap, player)
 
         // get timestamp after calculation
-        val end = System.currentTimeMillis()
-        val differenceInSeconds = (end - start) / 1000.0
+        //val end = System.currentTimeMillis()
+        //val differenceInSeconds = (end - start) / 1000.0
 
         // get a list of top 10 placements
-        val highestScoresTop = potentialPlacements.toList().sortedByDescending { it.score }.take(10)
+        //val highestScoresTop = potentialPlacements.toList().sortedByDescending { it.score }.take(10)
         // the best position for the tile
         val highestScore = potentialPlacements.maxByOrNull { it.score }
 

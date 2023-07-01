@@ -258,9 +258,6 @@ class KIService(private val rootService: RootService) {
             for (rotation in Direction.tileDirection()) {
                 tile.rotate(rotation)
 
-                if (position == Pair(1, -1) && rotation == Direction.UP) {
-                   print("breakpoint")
-                }
                 // calculate metrics for each position
                 val positionMetrics = getMetricsForPosition(position, scoreMap, tile, player.discs.size)
                 val satisfiedArrowsMetrics = calculateSatisfiedArrowsFromTileInHand(player, tile, position)
