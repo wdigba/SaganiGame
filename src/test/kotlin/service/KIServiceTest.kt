@@ -7,8 +7,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class KIServiceTest {
-    lateinit var player: Player
-    lateinit var kiService: KIService
+    private lateinit var player: Player
+    private lateinit var kiService: KIService
     lateinit var rootService: RootService
 
     /**
@@ -39,8 +39,6 @@ class KIServiceTest {
         player.board[Pair(0, 0)] = tile1
         player.board[Pair(0, 1)] = tile2
         player.board[Pair(-1, 1)] = tile3
-
-
 
         repeat(24) {
             player.discs.add(Disc.SOUND)
@@ -75,16 +73,16 @@ class KIServiceTest {
                 it.disc.add(popLastElement(tile3.discs))
             }
         }
-        // fill the board for player
     }
 
     /**
-     * [popLastElement] takes the last element fom list of discs
+     * [popLastElement] takes the last element from list of discs
      * @return last disc from list of discs
      */
-    fun popLastElement(list: MutableList<Disc>) : Disc {
+    private fun popLastElement(list: MutableList<Disc>) : Disc {
         return list.removeAt(list.size-1)
     }
+
     /**
      * test for [KIService.calculateBoardScore]
      */
@@ -176,11 +174,10 @@ class KIServiceTest {
 
         // check if the score on (1,1) is the highest compared to all others
         val highestScore = potentialPlacements.maxByOrNull { it.score }
-        val highestScores = potentialPlacements.toList().sortedByDescending { it.score}.take(10)
+        //val highestScores = potentialPlacements.toList().sortedByDescending { it.score}.take(10)
 
         assertEquals(Pair(1, 1), highestScore?.location)
         assertEquals(Direction.LEFT, highestScore?.direction)
-
     }
 
     /**
@@ -198,81 +195,80 @@ class KIServiceTest {
         rootService.gameService.startNewGame(players)
         val game = rootService.currentGame
         assertNotNull(game)
+
         repeat(24) {
             game.players[0].discs.add(Disc.SOUND)
         }
 
-        // index -1 exception when offer display is not cleaned (but it has to be automatically)
+        // placing the very first tile
+
         game.offerDisplay.clear()
-        println(game.offerDisplay)
 
-        // tile to place
-        val tile4 = Tile(4, points = 1, Element.WATER, listOf(
-            // index -1 exception when element of arrow AIR or FIRE
+        // tiles to place
+        val tile1 = Tile(1, points = 1, Element.WATER, listOf(
             Arrow(Element.EARTH, Direction.UP)))
-        game.offerDisplay.add(tile4)
+        game.offerDisplay.add(tile1)
 
-        // placed tiles
-        val tile1 = Tile(1, points = 3, Element.AIR, listOf(
+        val tile2 = Tile(2, points = 3, Element.AIR, listOf(
+            Arrow(Element.FIRE, Direction.DOWN_RIGHT),
+            Arrow(Element.WATER, Direction.UP)))
+        game.offerDisplay.add(tile2)
+
+        //tile with the biggest amount of arrows should be placed
+        println(game.actPlayer.board)
+        rootService.kIService.playBestMove()
+        rootService.gameService.changeToNextPlayer()
+        println(game.actPlayer.board)
+
+        println(game.stacks[0])
+        // looking for best tile when only one left in offer display
+        rootService.kIService.playBestMove()
+        rootService.gameService.changeToNextPlayer()
+        println(game.actPlayer.board)
+
+        // new tiles for offer display
+        val tile3 = Tile(3, points = 3, Element.AIR, listOf(
             Arrow(Element.FIRE, Direction.DOWN_LEFT),
             Arrow(Element.EARTH, Direction.UP_RIGHT)))
-        val direction1 = Direction.UP
-        val location1 = Pair(0, 0)
+        game.offerDisplay.add(tile3)
 
-        val tile2 = Tile(2, points = 3, Element.FIRE, listOf(
+        val tile4 = Tile(4, points = 3, Element.FIRE, listOf(
             Arrow(Element.AIR, Direction.LEFT),
             Arrow(Element.WATER, Direction.UP)))
-        val direction2 = Direction.UP
-        val location2 = Pair(1, 0)
+        game.offerDisplay.add(tile4)
 
-        val tile3 = Tile(3, points = 6, Element.EARTH, listOf(
+        val tile5 = Tile(5, points = 6, Element.EARTH, listOf(
             Arrow(Element.WATER, Direction.UP),
             Arrow(Element.FIRE, Direction.UP_LEFT),
             Arrow(Element.FIRE, Direction.DOWN)))
-        val direction3 = Direction.UP
-        val location3 = Pair(1, 1)
+        game.offerDisplay.add(tile5)
 
-
-
-        game.offerDisplay.add(tile1)
-        game.offerDisplay.add(tile2)
-        //index -1 exception
-        game.offerDisplay.add(tile3)
-
-        /**
-        rootService.playerActionService.placeTile(tile1, direction1, location1)
-        rootService.gameService.changeToNextPlayer()
-        rootService.playerActionService.placeTile(tile2, direction2, location2)
-        rootService.gameService.changeToNextPlayer()
-
-        rootService.playerActionService.placeTile(tile3, direction3, location3)
-        rootService.gameService.changeToNextPlayer()
-        **/
-
+        println(game.offerDisplay)
 
         println(game.actPlayer.board)
         rootService.kIService.playBestMove()
         rootService.gameService.changeToNextPlayer()
         println(game.actPlayer.board)
 
-        // Intermezzo
+        // intermezzo phase
 
-        val tile5 = Tile(5, points = 1, Element.WATER, listOf(
+        val tile6 = Tile(6, points = 1, Element.WATER, listOf(
             Arrow(Element.WATER, Direction.UP)))
-        val direction5 = Direction.UP
-        val location5 = Pair(1, 0)
-
-        /**
+        val tile7 = Tile(7, points = 10, Element.AIR, listOf(
+            Arrow(Element.FIRE, Direction.DOWN_RIGHT),
+            Arrow(Element.EARTH, Direction.UP_LEFT),
+            Arrow(Element.FIRE, Direction.UP),
+            Arrow(Element.AIR, Direction.LEFT)
+        ))
+        println(game.intermezzoStorage)
         game.intermezzoPlayers.addAll(game.players)
-        game.intermezzoStorage.add(tile5)
+        game.intermezzoStorage.add(tile6)
+        game.intermezzoStorage.add(tile7)
         game.intermezzo = true
-        **/
-        // index -1 exception
+
         rootService.kIService.playBestMove()
-
-        var breakpoint = true
-
-
+        rootService.gameService.changeToNextPlayer()
+        println(game.actPlayer.board)
     }
 
     /**
@@ -499,4 +495,5 @@ class KIServiceTest {
         assertEquals(Pair(0, -1), highestScore?.location)
         assertEquals(Direction.DOWN, highestScore?.direction)
     }
+
 }
