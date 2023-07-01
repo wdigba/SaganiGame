@@ -495,4 +495,5 @@ class KIServiceTest {
         assertEquals(Pair(0, -1), highestScore?.location)
         assertEquals(Direction.DOWN, highestScore?.direction)
     }
+
 }
