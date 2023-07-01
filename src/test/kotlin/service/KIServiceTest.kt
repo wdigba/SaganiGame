@@ -1,10 +1,7 @@
 package service
 
 import entity.*
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 class KIServiceTest {
     private lateinit var player: Player
@@ -186,19 +183,22 @@ class KIServiceTest {
     @Test
     fun playBestMoveTest() {
         val rootService = RootService()
-        kiService = KIService(rootService)
 
         val john = Triple("JohnAI", Color.BLACK, PlayerType.BEST_AI)
         val jo = Triple("JoAI", Color.WHITE, PlayerType.BEST_AI)
         val players = mutableListOf(john, jo)
 
         rootService.gameService.startNewGame(players)
-        val game = rootService.currentGame
+        var game = rootService.currentGame
         assertNotNull(game)
 
         repeat(24) {
-            game.players[0].discs.add(Disc.SOUND)
+            game!!.players[0].discs.add(Disc.SOUND)
         }
+
+        //assert game is the same instance as rootService.currentGame
+
+
 
         // placing the very first tile
 
@@ -217,13 +217,18 @@ class KIServiceTest {
         //tile with the biggest amount of arrows should be placed
         println(game.actPlayer.board)
         rootService.kIService.playBestMove()
+
+        assertNotSame(game, rootService.currentGame)
+
         rootService.gameService.changeToNextPlayer()
+        game = rootService.currentGame!!
         println(game.actPlayer.board)
 
         println(game.stacks[0])
         // looking for best tile when only one left in offer display
         rootService.kIService.playBestMove()
         rootService.gameService.changeToNextPlayer()
+        game = rootService.currentGame!!
         println(game.actPlayer.board)
 
         // new tiles for offer display
@@ -246,9 +251,14 @@ class KIServiceTest {
         println(game.offerDisplay)
 
         println(game.actPlayer.board)
+        assert(game.actPlayer.name == "JohnAI")
         rootService.kIService.playBestMove()
+        game = rootService.currentGame!!
+        assert(game.actPlayer.name == "JoAI")
         rootService.gameService.changeToNextPlayer()
+        game = rootService.currentGame!!
         println(game.actPlayer.board)
+        assert(game.actPlayer.board.size != 0)
 
         // intermezzo phase
 
@@ -268,6 +278,7 @@ class KIServiceTest {
 
         rootService.kIService.playBestMove()
         rootService.gameService.changeToNextPlayer()
+        game = rootService.currentGame!!
         println(game.actPlayer.board)
     }
 
