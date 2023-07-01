@@ -1,6 +1,7 @@
 package view
 
 import Location
+import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Player
 import entity.Tile
 
@@ -52,4 +53,11 @@ interface Refreshable {
      * refresh Gui after redo()
      */
     fun refreshAfterRedo() {}
+
+    /**
+     * refresh Gui after a connection state change
+     *
+     * @param newState The new connection state
+     */
+    fun refreshAfterConnectionStateChange(newState: ConnectionState) {}
 }
