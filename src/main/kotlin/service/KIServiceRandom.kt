@@ -3,13 +3,14 @@ package service
 import entity.*
 import kotlin.random.Random
 
+/**
+ * [KIServiceRandom] is responsible for AI strategy, which implements random behavior
+ */
 class KIServiceRandom (private val rootService: RootService) {
-    // check offer display and get any tile
-    // check the board for available places
-    // place the tile in the random direction
-    // give a turn to the next player
-
-    fun calculateRandomMove () {
+    /**
+     * [calculateRandomMove] implements random placement calculation using [PlayerActionService.placeTile]
+     */
+    fun calculateRandomMove() {
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 

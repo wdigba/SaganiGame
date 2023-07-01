@@ -108,7 +108,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             rootService.networkService.client?.location = location
         }
 
-
         // refresh GUI
         onAllRefreshables { refreshAfterPlaceTile(player, tile, location) }
 
