@@ -50,7 +50,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
     /**
      * The type of player this client is.
      */
-    var playerType = PlayerType.RANDOM_AI
+    var playerType = PlayerType.BEST_AI // if (playerName == "Client") PlayerType.RANDOM_AI else PlayerType.BEST_AI
 
     /**
      * The type of move the player performed.
@@ -185,6 +185,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      * @param player The player that is sending the turn message
      */
     fun sendTurnMessage(player: Player) {
+        println("test")
         require(networkService.connectionState == ConnectionState.PLAYING_MY_TURN) { "Cannot send a turn message." }
         val game = networkService.rootService.currentGame
         checkNotNull(game) { "Can not send a turn message while the game hasn't started yet." }
@@ -256,6 +257,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
     @GameActionReceiver
     fun onTurnMessageReceived(message: TurnMessage, sender: String) {
         BoardGameApplication.runOnGUIThread {
+            println("$playerName: Received a turn message from $sender")
             check(networkService.connectionState == ConnectionState.WAITING_FOR_OPPONENTS) {
                 "$sender sent a turn when it's not their turn."
             }
@@ -336,7 +338,11 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             }
 
             if (networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
-                networkService.rootService.kIServiceRandom.calculateRandomMove()
+                if (this.playerType == PlayerType.RANDOM_AI) {
+                    networkService.rootService.kIServiceRandom.calculateRandomMove()
+                } else if (this.playerType == PlayerType.BEST_AI) {
+                    networkService.rootService.kIService.playBestMove()
+                }
             }
         }
     }

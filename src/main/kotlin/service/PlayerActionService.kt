@@ -16,6 +16,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * New tile gets discs and its discs get relocated if possible.
      */
     fun placeTile(tile: Tile, direction: Direction, location: Location, sendUpdate: Boolean = true) {
+        println("Called placeTile()")
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -133,6 +134,23 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         // remove all location of given tiles
         validLocation.removeAll(board.keys)
         return validLocation
+    }
+
+    fun skipIntermezzo() {
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame) { "There is no game." }
+
+        // identify player
+        val player = if (currentGame.intermezzo) {
+            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+        } else {
+            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+        }
+
+        rootService.networkService.client?.moveType = MoveType.SKIP
+        rootService.networkService.client?.tile = null
+        rootService.networkService.client?.location = null
+        rootService.gameService.changeToNextPlayer()
     }
 
     private fun relocateDiscs(player: Player, tile: Tile, location: Location, turnCount: Int) {

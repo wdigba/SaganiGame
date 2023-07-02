@@ -8,6 +8,7 @@ import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import kotlin.math.min
 
 /**
  * [GameService] provides server function for the game
@@ -111,7 +112,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // New Counter
         var newPoints = points
         var newDiscPile = discPile
-        val arrowCount = mutableListOf<Pair<Arrow,Int>>()
+        val arrowCount = mutableListOf<Pair<Arrow, Int>>()
         var boughtCacoDiscs = 0
         //collect all newly fulfilled arrows in a list
         for (direction in Direction.values()) {
@@ -123,7 +124,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             filteredBoard.values.forEach {
                 it.arrows.forEach { arrow ->
                     if (arrow.direction == Direction.values()[(direction.ordinal + 4) % 8] && arrow.disc.isEmpty()) {
-                        arrowCount.add(Pair(arrow,it.id))
+                        arrowCount.add(Pair(arrow, it.id))
                     }
                 }
             }
@@ -151,15 +152,16 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         //check if arrows of the new Tile are fulfilled
         for (arrow in newTile.arrows) {
-            var filteredBoard = rootService.playerActionService.filterInDirection(player.board, arrow.direction, location)
-            filteredBoard =  filteredBoard.filterValues { it.element == arrow.element }
+            var filteredBoard =
+                rootService.playerActionService.filterInDirection(player.board, arrow.direction, location)
+            filteredBoard = filteredBoard.filterValues { it.element == arrow.element }
             if (filteredBoard.isNotEmpty()) {
-                arrowCount.add(Pair(arrow,newTile.id))
+                arrowCount.add(Pair(arrow, newTile.id))
             }
         }
         //add points and put the discs back, if all arrows of the new Tile are fulfilled
         val idSortedArrows = arrowCount.filter { it.second == newTile.id }
-        if (newTile.discs.size +idSortedArrows.size == newTile.arrows.size) {
+        if (newTile.discs.size + idSortedArrows.size == newTile.arrows.size) {
             newPoints += newTile.points
             newDiscPile += newTile.arrows.size
         }
@@ -221,7 +223,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         if (!currentGame.intermezzo) {
             // check if offerDisplay has to be refilled
             if (currentGame.offerDisplay.isEmpty()) {
-                repeat(5) {
+                val times = min(currentGame.stacks.size, 5)
+                repeat(times) {
                     currentGame.offerDisplay.add(currentGame.stacks.removeFirst())
                 }
                 if (currentGame.stacks.size < 5) {
@@ -231,15 +234,16 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
             // check if player has needed amount of points to end the game
             currentGame.players.forEach {
-                if (it.points.first >= 15 + currentGame.players.size * 15) {
+                if (it.points.first >= 105 - currentGame.players.size * 15) {
                     currentGame.lastRound = true
                     println("Triggered last round by points ${it.name} | ${it.points.first}")
                 }
             }
         }
 
-
+        println("Current State: ${rootService.networkService.connectionState}")
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
+            println("Calling sendTurnMessage")
             rootService.networkService.client?.sendTurnMessage(player)
         } else {
             // Check Checksum
@@ -293,9 +297,17 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
         }
 
+        println("${rootService.networkService.client?.playerName}: ${rootService.networkService.connectionState}")
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
-            Thread.sleep(150)
-            rootService.kIServiceRandom.calculateRandomMove()
+            Thread.sleep(200)
+            println("Timeout complete.")
+            if (rootService.networkService.client?.playerType == PlayerType.RANDOM_AI) {
+                rootService.kIServiceRandom.calculateRandomMove()
+            } else if (rootService.networkService.client?.playerType == PlayerType.BEST_AI) {
+                println("playing best move")
+                rootService.kIService.playBestMove()
+                println("done playing best move")
+            }
         }
     }
 
