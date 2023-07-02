@@ -2,6 +2,8 @@ package view
 
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
+import view.controllers.NetworkSceneController
+import view.controllers.PlayerConfigSceneController
 import view.scene.*
 
 class SaganiApplication : BoardGameApplication("SoPra Game") {

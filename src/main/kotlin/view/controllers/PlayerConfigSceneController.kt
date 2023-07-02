@@ -1,7 +1,10 @@
-package view
+package view.controllers
 
 import service.RootService
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.SaganiApplication
 import view.scene.PlayerConfigScene
 
 class PlayerConfigSceneController(

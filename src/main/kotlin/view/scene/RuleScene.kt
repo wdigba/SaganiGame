@@ -1,10 +1,12 @@
-package view
+package view.scene
 
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
 
 class RuleScene(private val rootService: RootService) :
     BoardGameScene(1920, 1080), Refreshable {

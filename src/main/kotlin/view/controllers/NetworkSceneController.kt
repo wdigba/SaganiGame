@@ -1,6 +1,8 @@
-package view
+package view.controllers
 
 import service.RootService
+import view.Refreshable
+import view.SaganiApplication
 import view.scene.NetworkScene
 
 
