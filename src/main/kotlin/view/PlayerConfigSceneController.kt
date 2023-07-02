@@ -2,6 +2,7 @@ package view
 
 import service.RootService
 import tools.aqua.bgw.visual.ColorVisual
+import view.scene.PlayerConfigScene
 
 class PlayerConfigSceneController(
     private val playerConfigScene: PlayerConfigScene,

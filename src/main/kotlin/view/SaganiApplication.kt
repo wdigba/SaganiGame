@@ -2,15 +2,14 @@ package view
 
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
-import view.scene.ConfigurationScene
-import view.scene.NewGameMenuScene
-import view.scene.SaganiGameScene
+import view.scene.*
 
 class SaganiApplication : BoardGameApplication("SoPra Game") {
     private val rootService = RootService()
 
 
     private val playerConfigScene = PlayerConfigScene()
+    private val networkScene = NetworkScene()
 
 
     private val playerConfigSceneController: PlayerConfigSceneController =
@@ -25,17 +24,18 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             }
 
         }
-    private val NetworkConfigScene: NetworkScene = NetworkScene(rootService).apply {
+    private val networkConfigSceneController: NetworkSceneController =
+        NetworkSceneController(networkScene, rootService, this).apply {
 
-        //TODO: nur zu Testzwecken
-        startButton.onMouseClicked = {
-            this@SaganiApplication.hideMenuScene()
-        }
-        backButton.onMouseClicked = {
-            this@SaganiApplication.showMenuScene(configurationScene)
-        }
+            //TODO: nur zu Testzwecken
+            networkScene.startButton.onMouseClicked = {
+                this@SaganiApplication.hideMenuScene()
+            }
+            networkScene.backButton.onMouseClicked = {
+                this@SaganiApplication.showMenuScene(configurationScene)
+            }
 
-    }
+        }
 
 
     private val configurationScene: ConfigurationScene = ConfigurationScene(rootService).apply {
@@ -46,7 +46,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
         networkButton.onMouseClicked = {
-            this@SaganiApplication.showMenuScene(NetworkConfigScene)
+            this@SaganiApplication.showMenuScene(networkScene)
         }
     }
     private val saganiGameScene: SaganiGameScene = SaganiGameScene(rootService)
