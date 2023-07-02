@@ -3,7 +3,6 @@ package view
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.components.uicomponents.TextField
-import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
@@ -17,12 +16,12 @@ class NetworkScene(private val rootService: RootService) :
         font = Font(size = 22)
     )
 
-    private val NameLabel = Label(
+    private val nameLabel = Label(
         width = 100, height = 35,
         posX = 50, posY = 125,
         text = "Name:"
     )
-    private val NameInput: TextField = TextField(
+    private val nameInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 160
     ).apply {
@@ -32,12 +31,12 @@ class NetworkScene(private val rootService: RootService) :
         }
     }
 
-    private val IDLabel = Label(
+    private val iDLabel = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
         text = "Your ID:"
     )
-    private val IDInput: TextField = TextField(
+    private val iDInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 240
     ).apply {
@@ -98,14 +97,14 @@ class NetworkScene(private val rootService: RootService) :
         return true
     }
 
-    private val playerInput = mutableListOf( Pair(NameInput, IDInput))
+    private val playerInput = mutableListOf( Pair(nameInput, iDInput))
 
     init {
         opacity = 1.0
         startButton.isDisabled = true
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(headlineLabel, NameLabel, NameInput,
-            IDInput, IDLabel,
+        addComponents(headlineLabel, nameLabel, nameInput,
+            iDInput, iDLabel,
             startButton, backButton)
     }
 
