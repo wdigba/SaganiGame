@@ -14,6 +14,7 @@ class RootService {
     val gameService = GameService(this)
     val playerActionService = PlayerActionService(this)
     val kIService = KIService(this)
+    val kIServiceRandom = KIServiceRandom(this)
     val networkService = NetworkService(this)
     var currentGame: Sagani? = null
 
