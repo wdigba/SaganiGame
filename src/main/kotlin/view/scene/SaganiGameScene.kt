@@ -1,4 +1,4 @@
-package view
+package view.scene
 
 import service.RootService
 import tools.aqua.bgw.components.ComponentView
@@ -11,9 +11,12 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.StandardButton
 
 
-class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
+class SaganiGameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
 
     /**
      * Upper Pane
@@ -248,7 +251,7 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
 
         val leftPaneList = mutableListOf<ComponentView>(smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs)
 
-        val rightPaneList = mutableListOf<ComponentView>(intermezzoLayout,intermezzoLabel,intermezzoOffer1,intermezzoOffer2,intermezzoOffer3,
+        val rightPaneList = mutableListOf(intermezzoLayout,intermezzoLabel,intermezzoOffer1,intermezzoOffer2,intermezzoOffer3,
             intermezzoOffer4,intermezzoOffer5)
 
 
