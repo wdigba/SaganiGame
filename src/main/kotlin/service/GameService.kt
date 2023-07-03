@@ -374,6 +374,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     @OptIn(ExperimentalSerializationApi::class)
     fun saveGame(path: String) {
+        val file = File(path)
+
+        if (!file.exists()) {
+            file.createNewFile()
+        }
 
         // check if game exists
         val game = rootService.currentGame
@@ -422,7 +427,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
 
         // write json encoding of game to file specified by parameter path
-        FileOutputStream(File(path)).use {
+        FileOutputStream(file).use {
             jsonBuilder.encodeToStream(jsonAllGameString, it)
         }
 
