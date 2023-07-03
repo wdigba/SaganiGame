@@ -8,6 +8,7 @@ import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.lang.Integer.min
 
 /**
  * [GameService] provides server function for the game
@@ -221,7 +222,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         if (!currentGame.intermezzo) {
             // check if offerDisplay has to be refilled
             if (currentGame.offerDisplay.isEmpty()) {
-                repeat(5) {
+                val numberOfNewTiles = min(5, currentGame.stacks.size)
+                repeat(numberOfNewTiles) {
                     currentGame.offerDisplay.add(currentGame.stacks.removeFirst())
                 }
                 if (currentGame.stacks.size < 5) {
@@ -230,7 +232,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
             // check if player has needed amount of points to end the game
             currentGame.players.forEach {
-                if (it.points.first >= 15 + currentGame.players.size * 15) {
+                if (it.points.first >= 105 - currentGame.players.size * 15) {
                     currentGame.lastRound = true
                 }
             }
