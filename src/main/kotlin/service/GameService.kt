@@ -247,10 +247,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             // Check Checksum
             rootService.networkService.client?.lastTurnChecksum?.let {
                 check(it.score == player.points.first) {
-                    "Checksum: Score did not match. ${it.score} != ${currentGame.actPlayer.points.first}"
+                    "Checksum: Score did not match. ${it.score} != ${player.points.first}"
                 }
                 check(it.availableDiscs == player.discs.size) {
-                    "Checksum: Available discs did not match. ${it.availableDiscs} != ${currentGame.actPlayer.discs.size}"
+                    "Checksum: Available discs did not match. ${it.availableDiscs} != ${player.discs.size}"
                 }
                 val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
                 check(it.startedIntermezzo == startedIntermezzo) {

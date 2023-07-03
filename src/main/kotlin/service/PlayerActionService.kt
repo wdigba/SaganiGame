@@ -61,6 +61,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 println("${player.name} - Drawing a tile from the draw pile")
                 currentGame.stacks.removeFirst()
                 currentGame.intermezzoStorage.add(currentGame.offerDisplay.removeFirst())
+            } else {
+                rootService.networkService.client?.moveType = MoveType.OFFER_DISPLAY
+                println("${player.name} - Drawing a tile from the offer display")
             }
         }
 
