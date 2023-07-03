@@ -1,6 +1,5 @@
 package view.scene
 
-import service.RootService
 import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.container.LinearLayout
@@ -16,7 +15,7 @@ import view.Refreshable
 import view.StandardButton
 
 
-class SaganiGameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
+class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
 
     /**
      * Upper Pane
@@ -34,35 +33,35 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
     )
 
     //Offer Display
-    private val offer1 = CardStack<CardView>(
+    val offer1 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 450,
         posY = 20,
         visual = ColorVisual(255, 255, 255, 50)
     )
-    private val offer2 = CardStack<CardView>(
+    val offer2 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 650,
         posY = 20,
         visual = ColorVisual(255, 255, 255, 50)
     )
-    private val offer3 = CardStack<CardView>(
+    val offer3 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 850,
         posY = 20,
         visual = ColorVisual(255, 255, 255, 50)
     )
-    private val offer4 = CardStack<CardView>(
+    val offer4 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 1050,
         posY = 20,
         visual = ColorVisual(255, 255, 255, 50)
     )
-    private val offer5 = CardStack<CardView>(
+    val offer5 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 1250,
@@ -108,6 +107,23 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         posY = 600,
         visual = ColorVisual.RED
     )
+
+    //---------------------------------------------------------
+
+    /**
+     * Tile Pane
+     */
+    //----------------------------------------------------------
+
+    //TODO
+    var sampleTile = CardView(
+        width = 120,
+        height = 120,
+        posX = 840,
+        posY = 480,
+        front = ColorVisual(255, 255, 255, 50)
+    )
+
 
     //---------------------------------------------------------
 
@@ -211,7 +227,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         text = "ROTATE"
     )
 
-    private val confirmButton = StandardButton(
+    val confirmButton = StandardButton(
         width = 100,
         height = 50,
         posX = 1780,
@@ -219,14 +235,62 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         text = "CONF"
     )
 
+    val zoomInButton = StandardButton(
+        width = 50,
+        height = 50,
+        posX = 1500,
+        posY = 20,
+        text = "+"
+    )
+
+    val zoomOutButton = StandardButton(
+        width = 50,
+        height = 50,
+        posX = 1560,
+        posY = 20,
+        text = "-"
+    )
+
+    val moveLeftButton = StandardButton(
+        width = 80,
+        height = 50,
+        posX = 700,
+        posY = 20,
+        text = "LEFT"
+    )
+
+    val moveUpButton = StandardButton(
+        width = 80,
+        height = 50,
+        posX = 790,
+        posY = 20,
+        text = "UP"
+    )
+    val moveDownButton = StandardButton(
+        width = 90,
+        height = 50,
+        posX = 880,
+        posY = 20,
+        text = "DOWN"
+    )
+
+    val moveRightButton = StandardButton(
+        width = 80,
+        height = 50,
+        posX = 980,
+        posY = 20,
+        text = "RIGHT"
+    )
+
+
     //-----------------------------------------------------------------------
 
     /**
      * Panes
      */
     //-----------------------------------------------------------------------
-    private val targetPane = Pane<ComponentView>(width = 1000, height = 1000)
-    private val cameraPane = CameraPane(0, 0, 756, 134, target = targetPane)
+    val tilePane = Pane<ComponentView>(width = 1920, height = 1080)
+    //private val cameraPane = CameraPane(0, 0, 756, 134, target = targetPane)
 
 
     private val outerGridPane = GridPane<ComponentView>(0, 0, columns = 1, rows = 3, layoutFromCenter = false)
@@ -251,13 +315,28 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
 
         val leftPaneList = mutableListOf<ComponentView>(smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs)
 
-        val rightPaneList = mutableListOf(intermezzoLayout,intermezzoLabel,intermezzoOffer1,intermezzoOffer2,intermezzoOffer3,
-            intermezzoOffer4,intermezzoOffer5)
+        val rightPaneList = mutableListOf(
+            intermezzoLayout, intermezzoLabel, intermezzoOffer1, intermezzoOffer2, intermezzoOffer3,
+            intermezzoOffer4, intermezzoOffer5
+        )
 
 
         val bottomPaneList =
-            mutableListOf<ComponentView>(redoButton, undoButton, scoreButton, confirmButton, rotateButton)
+            mutableListOf<ComponentView>(
+                redoButton,
+                undoButton,
+                scoreButton,
+                confirmButton,
+                rotateButton,
+                zoomInButton,
+                zoomOutButton,
+                moveLeftButton,
+                moveUpButton,
+                moveDownButton,
+                moveRightButton
+            )
 
+        tilePane.add(sampleTile)
 
 
         addComponentsToPane(upperPane, upperPaneList)
@@ -287,7 +366,7 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         innerGridPane.setColumnWidth(2, 170)
 
         innerGridPane[0, 0] = leftPane
-        innerGridPane[1, 0] = cameraPane
+        innerGridPane[1, 0] = tilePane
         innerGridPane[2, 0] = rightPane
     }
 
