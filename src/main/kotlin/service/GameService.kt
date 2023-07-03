@@ -8,7 +8,7 @@ import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import kotlin.math.min
+import java.lang.Integer.min
 
 /**
  * [GameService] provides server function for the game
@@ -192,9 +192,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // identify player
         val player = if (currentGame.intermezzo) {
-            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+            currentGame.players.find { it.color == currentGame.intermezzoPlayers[0].color }!!
         } else {
-            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+            currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
 
         // check if intermezzo has to start/end
@@ -223,8 +223,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         if (!currentGame.intermezzo) {
             // check if offerDisplay has to be refilled
             if (currentGame.offerDisplay.isEmpty()) {
-                val times = min(currentGame.stacks.size, 5)
-                repeat(times) {
+                val numberOfNewTiles = min(5, currentGame.stacks.size)
+                repeat(numberOfNewTiles) {
                     currentGame.offerDisplay.add(currentGame.stacks.removeFirst())
                 }
                 if (currentGame.stacks.size < 5) {

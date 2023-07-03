@@ -121,19 +121,38 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      */
     fun validLocations(board: MutableMap<Location, Tile>): Set<Location> {
         if (board.isEmpty()) {
-            return mutableSetOf(Pair(0, 0))
+            return mutableSetOf(Location(0, 0))
         }
-        val validLocation: MutableSet<Location> = mutableSetOf()
+        val validLocations: MutableSet<Location> = mutableSetOf()
         // add all location adjacent to given tiles
         board.keys.forEach {
-            validLocation.add(Pair(it.first - 1, it.second))
-            validLocation.add(Pair(it.first + 1, it.second))
-            validLocation.add(Pair(it.first, it.second - 1))
-            validLocation.add(Pair(it.first, it.second + 1))
+            validLocations.add(Location(it.first - 1, it.second))
+            validLocations.add(Location(it.first + 1, it.second))
+            validLocations.add(Location(it.first, it.second - 1))
+            validLocations.add(Location(it.first, it.second + 1))
         }
         // remove all location of given tiles
-        validLocation.removeAll(board.keys)
-        return validLocation
+        validLocations.removeAll(board.keys)
+        return validLocations
+    }
+
+    /**
+     * [skipIntermezzo] is called when a player skips their intermezzo turn.
+     */
+    fun skipIntermezzo() {
+        // check if game exists
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame) { "There is no game." }
+
+        check(currentGame.intermezzo) { "You can't skip your turn. You are not in intermezzo." }
+
+        // Set up variables for the network service
+        rootService.networkService.client?.moveType = MoveType.SKIP
+        rootService.networkService.client?.location = null
+        rootService.networkService.client?.tile = null
+
+        // change to next player
+        rootService.gameService.changeToNextPlayer()
     }
 
     fun skipIntermezzo() {

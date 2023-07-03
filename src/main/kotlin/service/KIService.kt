@@ -1,5 +1,6 @@
 package service
 
+import Location
 import entity.*
 import entity.Element.*
 import java.util.*
@@ -56,7 +57,7 @@ class KIService(private val rootService: RootService) {
      * [TilePlacementInformation] contains general information about tile placement
      */
     class TilePlacementInformation(
-        var tile: Tile, var direction: Direction, var location: Pair<Int, Int>, var score: Double
+        var tile: Tile, var direction: Direction, var location: Location, var score: Double
     )
 
     /**
@@ -65,7 +66,7 @@ class KIService(private val rootService: RootService) {
      * Happens when we decide between card from offer display or card from stack
      */
     private fun getAverageScoreForTileWith(
-        element: Element, numberOfArrows: Int, player: Player, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>
+        element: Element, numberOfArrows: Int, player: Player, scoreMap: Map<Location, CoordinateInformation>
     ): Double {
 
         val currentGame = rootService.currentGame
@@ -97,17 +98,18 @@ class KIService(private val rootService: RootService) {
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
+        // identify player
         val player = if (currentGame.intermezzo) {
-            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+            currentGame.players.find { it.color == currentGame.intermezzoPlayers[0].color }!!
         } else {
-            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+            currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
 
         val board = player.board
         if (board.isEmpty()) {
             //choose the tile with highest tile.arrows.size from the offerDisplay
             val tile = currentGame.offerDisplay.maxByOrNull { it.arrows.size }
-            rootService.playerActionService.placeTile(tile!!, Direction.UP, Pair(0, 0))
+            rootService.playerActionService.placeTile(tile!!, Direction.UP, Location(0, 0))
             return
         }
 
@@ -118,7 +120,6 @@ class KIService(private val rootService: RootService) {
 
         // when the game in intermezzo phase
         if (currentGame.intermezzo) {
-            println("test 4")
             val possibleTiles = currentGame.intermezzoStorage
 
             val highestScoresTop = mutableListOf<TilePlacementInformation>()
@@ -132,13 +133,10 @@ class KIService(private val rootService: RootService) {
             val move = chooseBestMove(highestScoresTop)
 
             if (move.score >= intermezzoScoreThreshold) { // do move only if it's a good move
-                println("test 5")
                 rootService.playerActionService.placeTile(move.tile, move.direction, move.location)
             } else {
-                println("Skip intermezzo")
                 rootService.playerActionService.skipIntermezzo()
             }
-            println("test 6")
             return
         }
 
@@ -152,9 +150,7 @@ class KIService(private val rootService: RootService) {
             // get a list of top 10 placements
             highestScoresTop.addAll(potentialPlacements.toList().sortedByDescending { it.score }.take(10))
         }
-        println("test 2")
         val move = chooseBestMove(highestScoresTop)
-        println("test 3")
 
         // when it is the last tile on the offer display, and we have to decide
         // to pick this tile or the tile from stack
@@ -162,7 +158,6 @@ class KIService(private val rootService: RootService) {
                 currentGame.stacks.first().element, currentGame.stacks.first().arrows.size, player, scoreMap
             ))
         ) {
-            println("Test 4")
             val tileFromStack = currentGame.stacks.first()
             val potentialPlacements = calculatePotentialTilePlacements(tileFromStack, scoreMap, player)
             val bestMove = potentialPlacements.maxByOrNull { it.score }
@@ -180,9 +175,7 @@ class KIService(private val rootService: RootService) {
      * @return best available move
      */
     private fun chooseBestMove(listOfMoves: List<TilePlacementInformation>): TilePlacementInformation {
-        if (listOfMoves.isEmpty()) {
-            throw IllegalArgumentException("There is no best move.")
-        }
+        require(listOfMoves.isNotEmpty()) { "There is no best move." }
         // get best move by getting the maximum score
         val bestMove = listOfMoves.maxByOrNull { it.score }
         return bestMove!!
@@ -193,7 +186,7 @@ class KIService(private val rootService: RootService) {
      * @param board is the current player´s board without additional information
      * @return updated board
      */
-    fun buildScoreMap(board: Map<Pair<Int, Int>, Tile>): Map<Pair<Int, Int>, CoordinateInformation> {
+    fun buildScoreMap(board: Map<Location, Tile>): Map<Location, CoordinateInformation> {
         val scoreMap = fillScoreMap(board)
         updateScoreMapForArrows(board, scoreMap)
         return scoreMap
@@ -203,16 +196,16 @@ class KIService(private val rootService: RootService) {
      * [calculateAdjacentPosition] determining the appropriate positions depending on the given direction
      * @return new position
      */
-    private fun calculateAdjacentPosition(pos: Pair<Int, Int>, direction: Direction): Pair<Int, Int> {
+    private fun calculateAdjacentPosition(pos: Location, direction: Direction): Location {
         return when (direction) {
-            Direction.UP -> Pair(pos.first, pos.second + 1)
-            Direction.DOWN -> Pair(pos.first, pos.second - 1)
-            Direction.LEFT -> Pair(pos.first - 1, pos.second)
-            Direction.RIGHT -> Pair(pos.first + 1, pos.second)
-            Direction.UP_LEFT -> Pair(pos.first - 1, pos.second + 1)
-            Direction.UP_RIGHT -> Pair(pos.first + 1, pos.second + 1)
-            Direction.DOWN_LEFT -> Pair(pos.first - 1, pos.second - 1)
-            Direction.DOWN_RIGHT -> Pair(pos.first + 1, pos.second - 1)
+            Direction.UP -> Location(pos.first, pos.second + 1)
+            Direction.DOWN -> Location(pos.first, pos.second - 1)
+            Direction.LEFT -> Location(pos.first - 1, pos.second)
+            Direction.RIGHT -> Location(pos.first + 1, pos.second)
+            Direction.UP_LEFT -> Location(pos.first - 1, pos.second + 1)
+            Direction.UP_RIGHT -> Location(pos.first + 1, pos.second + 1)
+            Direction.DOWN_LEFT -> Location(pos.first - 1, pos.second - 1)
+            Direction.DOWN_RIGHT -> Location(pos.first + 1, pos.second - 1)
         }
     }
 
@@ -234,8 +227,8 @@ class KIService(private val rootService: RootService) {
      * [deepCopyScoreMap] creates copy of a current score map with all additional information
      * @return copied map
      */
-    private fun deepCopyScoreMap(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
-        val newScoreMap = mutableMapOf<Pair<Int, Int>, CoordinateInformation>()
+    private fun deepCopyScoreMap(scoreMap: Map<Location, CoordinateInformation>): MutableMap<Location, CoordinateInformation> {
+        val newScoreMap = mutableMapOf<Location, CoordinateInformation>()
         for ((position, info) in scoreMap) {
             newScoreMap[position] = info.copy()
         }
@@ -251,7 +244,7 @@ class KIService(private val rootService: RootService) {
      * @return calculated position for the tile, its rotation and placement´s score
      */
     fun calculatePotentialTilePlacements(
-        tile: Tile, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, player: Player
+        tile: Tile, scoreMap: Map<Location, CoordinateInformation>, player: Player
     ): MutableList<TilePlacementInformation> {
 
         val arrowWeight = 0.5
@@ -293,7 +286,7 @@ class KIService(private val rootService: RootService) {
      * could be satisfied by placing tile on the chosen position
      * @return the maximum number of satisfied arrows
      */
-    private fun getMaximumNumberOfArrowsThatCanBeSatisfied(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
+    private fun getMaximumNumberOfArrowsThatCanBeSatisfied(scoreMap: Map<Location, CoordinateInformation>): Int {
         var maxCount = 0
         //for all positions
         for ((_, coordinateInfo) in scoreMap) {
@@ -322,7 +315,7 @@ class KIService(private val rootService: RootService) {
      * [getMaximumNumberOfFreedDiscs] calculates how many discs of on element could be freed after placing a tile
      * @return maximum amount of discs
      */
-    private fun getMaximumNumberOfFreedDiscs(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Int {
+    private fun getMaximumNumberOfFreedDiscs(scoreMap: Map<Location, CoordinateInformation>): Int {
         var maxCount = 0
         //for all positions
         for ((_, coordinateInfo) in scoreMap) {
@@ -353,7 +346,7 @@ class KIService(private val rootService: RootService) {
      * @return total amount of arrows
      */
     private fun getArrowCountForElement(
-        position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, element: Element
+        position: Location, scoreMap: Map<Location, CoordinateInformation>, element: Element
     ): Int {
         var arrowCount = 0
         if (element == AIR) {
@@ -376,7 +369,7 @@ class KIService(private val rootService: RootService) {
      * @return total amount of discs
      */
     private fun getDiscCountForElement(
-        position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, element: Element
+        position: Location, scoreMap: Map<Location, CoordinateInformation>, element: Element
     ): Int {
         var discCount = 0
         if (element == AIR) {
@@ -402,10 +395,7 @@ class KIService(private val rootService: RootService) {
      * @return placement´s probability (the higher, the better)
      */
     private fun getMetricsForPosition(
-        position: Pair<Int, Int>,
-        scoreMap: Map<Pair<Int, Int>, CoordinateInformation>,
-        tile: Tile,
-        playerDiscsCount: Int
+        position: Location, scoreMap: Map<Location, CoordinateInformation>, tile: Tile, playerDiscsCount: Int
     ): Double {
 
         val element = tile.element
@@ -484,10 +474,7 @@ class KIService(private val rootService: RootService) {
      * @param tile current tile
      */
     private fun updatePosition(
-        newScoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>,
-        positionToUpdate: Pair<Int, Int>,
-        arrow: Arrow,
-        tile: Tile
+        newScoreMap: MutableMap<Location, CoordinateInformation>, positionToUpdate: Location, arrow: Arrow, tile: Tile
     ) {
         val info = newScoreMap[positionToUpdate]!!
         val isTheOnlyUnsatisfiedArrow = isOnlyUnsatisfiedArrow(arrow, tile)
@@ -531,8 +518,8 @@ class KIService(private val rootService: RootService) {
      * @return updated map
      */
     private fun getNewScoreMapForTile(
-        scoreMap: Map<Pair<Int, Int>, CoordinateInformation>, tile: Tile, position: Pair<Int, Int>
-    ): MutableMap<Pair<Int, Int>, CoordinateInformation> {
+        scoreMap: Map<Location, CoordinateInformation>, tile: Tile, position: Location
+    ): MutableMap<Location, CoordinateInformation> {
         val newScoreMap = deepCopyScoreMap(scoreMap)
         val tileInfo = newScoreMap[position] ?: CoordinateInformation()
         tileInfo.occupied = true
@@ -554,7 +541,7 @@ class KIService(private val rootService: RootService) {
      * [calculateBoardScore] calculates the total score for the whole board
      * contains main calculating information
      */
-    fun calculateBoardScore(scoreMap: Map<Pair<Int, Int>, CoordinateInformation>): Double {
+    fun calculateBoardScore(scoreMap: Map<Location, CoordinateInformation>): Double {
 
         //weights
         val arrowDensityWeight = 1 //concentration of discs pointing to a particular position
@@ -655,7 +642,7 @@ class KIService(private val rootService: RootService) {
      * from a tile placed on a player's board at a given position
      * @return satisfaction level for arrows of the tile
      */
-    private fun calculateSatisfiedArrowsFromTileInHand(player: Player, tile: Tile, position: Pair<Int, Int>): Double {
+    private fun calculateSatisfiedArrowsFromTileInHand(player: Player, tile: Tile, position: Location): Double {
         //number of satisfied arrows
         var satisfiedArrows = 0.0
 
@@ -680,7 +667,7 @@ class KIService(private val rootService: RootService) {
      * [updateScoreMapForArrows] puts all tiles in all position to the score map
      */
     private fun updateScoreMapForArrows(
-        board: Map<Pair<Int, Int>, Tile>, scoreMap: MutableMap<Pair<Int, Int>, CoordinateInformation>
+        board: Map<Location, Tile>, scoreMap: MutableMap<Location, CoordinateInformation>
     ) {
         for ((position, tile) in board) {
             scoreMap.putAll(getNewScoreMapForTile(scoreMap, tile, position))
@@ -693,7 +680,7 @@ class KIService(private val rootService: RootService) {
      * @return position number
      */
     private fun getLowestGameDistanceFromNeighbours(
-        position: Pair<Int, Int>, scoreMap: Map<Pair<Int, Int>, CoordinateInformation>
+        position: Location, scoreMap: Map<Location, CoordinateInformation>
     ): Int {
         var lowestGameDistance = Int.MAX_VALUE
         for (direction in Direction.tileDirection()) {
@@ -710,9 +697,9 @@ class KIService(private val rootService: RootService) {
      * [fillScoreMap] is used to fill the score Map for the player in definite range (till definite number).
      * This information can be used to evaluate positions and make decisions in the game
      */
-    private fun fillScoreMap(board: Map<Pair<Int, Int>, Tile>): MutableMap<Pair<Int, Int>, CoordinateInformation> {
-        val scoreMap = mutableMapOf<Pair<Int, Int>, CoordinateInformation>()
-        val queue: Queue<Pair<Int, Int>> = LinkedList()
+    private fun fillScoreMap(board: Map<Location, Tile>): MutableMap<Location, CoordinateInformation> {
+        val scoreMap = mutableMapOf<Location, CoordinateInformation>()
+        val queue: Queue<Location> = LinkedList()
 
         // Initialize scoreMap for all tiles on the board
         for ((position, _) in board) {
