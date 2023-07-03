@@ -4,6 +4,7 @@ import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
 import view.controllers.NetworkSceneController
 import view.controllers.PlayerConfigSceneController
+import view.controllers.SaganiGameSceneController
 import view.scene.*
 
 class SaganiApplication : BoardGameApplication("SoPra Game") {
@@ -12,6 +13,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
 
     private val playerConfigScene = PlayerConfigScene()
     private val networkScene = NetworkScene()
+    private val saganiGameScene = SaganiGameScene()
 
 
     private val playerConfigSceneController: PlayerConfigSceneController =
@@ -51,7 +53,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             this@SaganiApplication.showMenuScene(networkScene)
         }
     }
-    private val saganiGameScene: SaganiGameScene = SaganiGameScene(rootService)
+    private val saganiGameSceneController: SaganiGameSceneController =
+        SaganiGameSceneController(saganiGameScene, rootService, this)
     private val ruleScene: RuleScene = RuleScene(rootService)
 
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene(rootService).apply {
