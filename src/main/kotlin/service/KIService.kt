@@ -130,8 +130,10 @@ class KIService(private val rootService: RootService) {
             // choosing the best move among others based on calculated score
             val move = chooseBestMove(highestScoresTop)
 
-            if (move.score >= intermezzoScoreThreshold){ // do move only if it's a good move
+            if (move.score >= intermezzoScoreThreshold) { // do move only if it's a good move
                 rootService.playerActionService.placeTile(move.tile, move.direction, move.location)
+            } else {
+                rootService.playerActionService.skipIntermezzo()
             }
             return
         }
