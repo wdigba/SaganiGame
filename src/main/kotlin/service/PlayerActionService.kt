@@ -22,9 +22,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         // identify player
         val player = if (currentGame.intermezzo) {
-            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
+            currentGame.players.find { it.color == currentGame.intermezzoPlayers[0].color }!!
         } else {
-            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
+            currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
 
         println("")
