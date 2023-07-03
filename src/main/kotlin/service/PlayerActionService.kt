@@ -126,6 +126,25 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         return validLocation
     }
 
+    /**
+     * [skipIntermezzo] is called when a player skips their intermezzo turn.
+     */
+    fun skipIntermezzo() {
+        // check if game exists
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame) { "There is no game." }
+
+        check(currentGame.intermezzo) { "You can't skip your turn. You are not in intermezzo." }
+
+        // Set up variables for the network service
+        rootService.networkService.client?.moveType = MoveType.SKIP
+        rootService.networkService.client?.location = null
+        rootService.networkService.client?.tile = null
+
+        // change to next player
+        rootService.gameService.changeToNextPlayer()
+    }
+
     private fun relocateDiscs(player: Player, tile: Tile, location: Location, turnCount: Int) {
         // relocate discs to fulfilled arrows
         for (direction in Direction.values()) {
