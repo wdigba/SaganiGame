@@ -185,7 +185,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      * @param player The player that is sending the turn message
      */
     fun sendTurnMessage(player: Player) {
-        println("test")
         require(networkService.connectionState == ConnectionState.PLAYING_MY_TURN) { "Cannot send a turn message." }
         val game = networkService.rootService.currentGame
         checkNotNull(game) { "Can not send a turn message while the game hasn't started yet." }

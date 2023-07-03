@@ -241,9 +241,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
         }
 
-        println("Current State: ${rootService.networkService.connectionState}")
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
-            println("Calling sendTurnMessage")
             rootService.networkService.client?.sendTurnMessage(player)
         } else {
             // Check Checksum
@@ -297,16 +295,12 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
         }
 
-        println("${rootService.networkService.client?.playerName}: ${rootService.networkService.connectionState}")
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
             Thread.sleep(200)
-            println("Timeout complete.")
             if (rootService.networkService.client?.playerType == PlayerType.RANDOM_AI) {
                 rootService.kIServiceRandom.calculateRandomMove()
             } else if (rootService.networkService.client?.playerType == PlayerType.BEST_AI) {
-                println("playing best move")
                 rootService.kIService.playBestMove()
-                println("done playing best move")
             }
         }
     }

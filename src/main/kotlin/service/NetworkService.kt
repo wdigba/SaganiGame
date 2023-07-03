@@ -30,7 +30,6 @@ class NetworkService(val rootService: RootService) : AbstractRefreshingService()
     var connectionState = ConnectionState.DISCONNECTED
         set(value) {
             field = value
-            println("Set network state to $value")
             onAllRefreshables {
                 refreshAfterConnectionStateChange(value)
             }

@@ -16,7 +16,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * New tile gets discs and its discs get relocated if possible.
      */
     fun placeTile(tile: Tile, direction: Direction, location: Location, sendUpdate: Boolean = true) {
-        println("Called placeTile()")
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -30,7 +29,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         println("")
         println("${player.name} - Before: ${player.points.first} score, ${player.discs.size} discs, ${player.board.size} tiles")
-        println("${player.name} - Placing a tile with ${tile.arrows.size} arrows at $location")
+        println("${player.name} - Placing tile ${tile.id} with ${tile.arrows.size} arrows at $location")
 
         // check if position is free
         require(!player.board.contains(location)) { "Location is already used." }
@@ -102,7 +101,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
         println("${player.name} - After: ${player.points.first} score, ${player.discs.size} discs, ${player.board.size} tiles")
-        println("There are ${currentGame.stacks.size} tiles in the stack")
 
         if (sendUpdate) {
             rootService.networkService.client?.tile = tile
@@ -152,23 +150,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         rootService.networkService.client?.tile = null
 
         // change to next player
-        rootService.gameService.changeToNextPlayer()
-    }
-
-    fun skipIntermezzo() {
-        val currentGame = rootService.currentGame
-        checkNotNull(currentGame) { "There is no game." }
-
-        // identify player
-        val player = if (currentGame.intermezzo) {
-            currentGame.players.find { it.name == currentGame.intermezzoPlayers[0].name }!!
-        } else {
-            currentGame.players.find { it.name == currentGame.actPlayer.name }!!
-        }
-
-        rootService.networkService.client?.moveType = MoveType.SKIP
-        rootService.networkService.client?.tile = null
-        rootService.networkService.client?.location = null
         rootService.gameService.changeToNextPlayer()
     }
 
