@@ -7,7 +7,8 @@ typealias Location = Pair<Int, Int>
 fun main(args: Array<String>) {
     val rootService = RootService()
     val secondRoot = RootService()
-    val sessionID = "group7-test-1"
+    val sessionID = "gruppe7"
+    val saveGame = false
     if ("--host" in args) {
         rootService.networkService.hostGame("Host", sessionID)
     } else if ("--client" in args) {
@@ -28,5 +29,10 @@ fun main(args: Array<String>) {
     while (rootService.networkService.connectionState != ConnectionState.DISCONNECTED) {
         Thread.sleep(1000)
     }
+
+    if (saveGame) {
+        rootService.gameService.saveGame("./${System.currentTimeMillis()}.json")
+    }
+
     println("Application ended. Goodbye")
 }
