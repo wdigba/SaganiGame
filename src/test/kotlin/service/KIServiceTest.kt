@@ -616,25 +616,25 @@ class KIServiceTest {
         // List of parameters to try for Alice
         var i = 0
         var currentParameterIndex = 0
-        val last = 10
+        val last = 100
         repeat(last + 1) {
             println("trial $i")
 
-            var adjustweight = 0.9
+            var adjustweight = 0.1
 
             // if random boolean true set adjustweight to 1.1
             if (Random.nextBoolean()) {
-                adjustweight = 1.1
+                adjustweight = -0.1
             }
 
             if (i % 4 == 0) {
-                aliceParameters.discBlockedWeight = aliceParameters.discBlockedWeight * adjustweight
+                aliceParameters.discBlockedWeight = aliceParameters.discBlockedWeight + adjustweight
             } else if (i % 4 == 1) {
-                aliceParameters.arrowWeight = aliceParameters.arrowWeight * adjustweight
+                aliceParameters.arrowWeight = aliceParameters.arrowWeight + adjustweight
             } else if (i % 4 == 2) {
-                aliceParameters.discWeight = aliceParameters.discWeight * adjustweight
+                aliceParameters.discWeight = aliceParameters.discWeight + adjustweight
             } else if (i % 4 == 3) {
-                aliceParameters.arrowBlockedWeight = aliceParameters.arrowBlockedWeight * adjustweight
+                aliceParameters.arrowBlockedWeight = aliceParameters.arrowBlockedWeight + adjustweight
 
             }
 
@@ -655,6 +655,13 @@ class KIServiceTest {
                 if (aliceAndBobsWins.first > aliceAndBobsWins.second) {
                     bestParameters = aliceParameters.getCopy()
                     print("learning new params form alice after she won $aliceAndBobsWins.first times\n")
+
+                    println("new params: ")
+                    println("discBlockedWeight: ${bestParameters.discBlockedWeight}")
+                    println("arrowWeight: ${bestParameters.arrowWeight}")
+                    println("discWeight: ${bestParameters.discWeight}")
+                    println("arrowBlockedWeight: ${bestParameters.arrowBlockedWeight}")
+                    println("")
 
                 } else {
                     // If Alice's score is not better, revert the parameter change
@@ -702,7 +709,7 @@ class KIServiceTest {
         val bobWins = mutableListOf<Int>()
 
         var j = 0
-        repeat(10) {
+        repeat(11) {
             print("trial $i.$j\n")
             j++
             rootService.gameService.startNewGame(playerNames)
