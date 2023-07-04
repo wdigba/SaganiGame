@@ -71,9 +71,25 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
         }
     }
     private val saganiGameScene: GridPaneVersuch = GridPaneVersuch(rootService).apply {
+     scoreButton.onMouseClicked ={
+         this@SaganiApplication.showMenuScene(scoreScene)
+     }
+     undoButton.onMouseClicked ={
+         rootService.gameService.undo()
+     }
+     redoButton.onMouseClicked ={
+         rootService.gameService.redo()
+
+     }
 
     }
     private val ruleScene: RuleScene = RuleScene(rootService)
+
+    private val scoreScene: ScoreScene =ScoreScene(rootService).apply {
+        backButton.onMouseClicked ={
+            this@SaganiApplication.showGameScene(saganiGameScene)
+    }
+    }
 
     private val endScene: EndScene =EndScene(rootService).apply {
         newGameButton.onMouseClicked ={

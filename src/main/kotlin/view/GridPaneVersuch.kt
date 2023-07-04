@@ -21,25 +21,25 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
         font = Font(size = 22)
     )
 
-    private val undoButton = StandardButton(
+     val undoButton = StandardButton(
         posX = 50, posY = 50,
         width = 100, height = 50,
         text = "UNDO"
     )
 
-    private val redoButton = StandardButton(
+    val redoButton = StandardButton(
         posX = 150, posY = 50,
         width = 100, height = 50,
         text = "REDO"
     )
 
-    private val scoreButton = StandardButton(
+     val scoreButton = StandardButton(
         posX = 350, posY = 50,
         width = 100, height = 50,
         text = "SCORE"
     )
 
-    private val rotateButton = StandardButton(
+     val rotateButton = StandardButton(
         posX = 500, posY = 50,
         width = 50, height = 50,
         text = "rotate"
