@@ -1,6 +1,7 @@
 package service
 
 import Location
+import edu.udo.cs.sopra.ntf.MoveType
 import entity.*
 
 /**
@@ -14,18 +15,16 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * Discs are relocated to arrows with the same element that points to the new card. Player may get points and discs.
      * New tile gets discs and its discs get relocated if possible.
      */
-    fun placeTile(tile: Tile, direction: Direction, location: Location) {
-        var tileFrom: String
-
+    fun placeTile(tile: Tile, direction: Direction, location: Location, sendUpdate: Boolean = true) {
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
         // identify player
         val player = if (currentGame.intermezzo) {
-            currentGame.intermezzoPlayers[0]
+            currentGame.players.find { it.color == currentGame.intermezzoPlayers[0].color }!!
         } else {
-            currentGame.actPlayer
+            currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
 
         // check if position is free
@@ -39,23 +38,24 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             check(tile in currentGame.intermezzoStorage) {
                 "You can't take this tile. It is not part of the intermezzo storage."
             }
+            rootService.networkService.client?.moveType = MoveType.INTERMEZZO
             currentGame.intermezzoStorage.remove(tile)
-            tileFrom = "intermezzoStorage"
         } else if (currentGame.offerDisplay.size > 1) {
             check(tile in currentGame.offerDisplay) {
                 "You can't take this tile. It is not part of the offer display."
             }
+            rootService.networkService.client?.moveType = MoveType.OFFER_DISPLAY
             currentGame.offerDisplay.remove(tile)
-            tileFrom = "offerDisplay"
         } else {
             check(tile in currentGame.offerDisplay || tile == currentGame.stacks[0]) {
                 "You can't take this tile. It is not part of the offer display or the top card of the stacks."
             }
-            tileFrom = "offerDisplay"
             if (!currentGame.offerDisplay.remove(tile)) {
+                rootService.networkService.client?.moveType = MoveType.DRAW_PILE
                 currentGame.stacks.removeFirst()
-                tileFrom = "stacks"
                 currentGame.intermezzoStorage.add(currentGame.offerDisplay.removeFirst())
+            } else {
+                rootService.networkService.client?.moveType = MoveType.OFFER_DISPLAY
             }
         }
 
@@ -95,6 +95,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             tile.flipped = true
         }
 
+        if (sendUpdate) {
+            rootService.networkService.client?.tile = tile
+            rootService.networkService.client?.location = location
+        }
+
+
         // refresh GUI
         onAllRefreshables { refreshAfterPlaceTile(player, tile, location) }
 
@@ -107,19 +113,38 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      */
     fun validLocations(board: MutableMap<Location, Tile>): Set<Location> {
         if (board.isEmpty()) {
-            return mutableSetOf(Pair(0,0))
+            return mutableSetOf(Location(0, 0))
         }
-        val validLocation: MutableSet<Location> = mutableSetOf()
+        val validLocations: MutableSet<Location> = mutableSetOf()
         // add all location adjacent to given tiles
         board.keys.forEach {
-            validLocation.add(Pair(it.first - 1, it.second))
-            validLocation.add(Pair(it.first + 1, it.second))
-            validLocation.add(Pair(it.first, it.second - 1))
-            validLocation.add(Pair(it.first, it.second + 1))
+            validLocations.add(Location(it.first - 1, it.second))
+            validLocations.add(Location(it.first + 1, it.second))
+            validLocations.add(Location(it.first, it.second - 1))
+            validLocations.add(Location(it.first, it.second + 1))
         }
         // remove all location of given tiles
-        validLocation.removeAll(board.keys)
-        return validLocation
+        validLocations.removeAll(board.keys)
+        return validLocations
+    }
+
+    /**
+     * [skipIntermezzo] is called when a player skips their intermezzo turn.
+     */
+    fun skipIntermezzo() {
+        // check if game exists
+        val currentGame = rootService.currentGame
+        checkNotNull(currentGame) { "There is no game." }
+
+        check(currentGame.intermezzo) { "You can't skip your turn. You are not in intermezzo." }
+
+        // Set up variables for the network service
+        rootService.networkService.client?.moveType = MoveType.SKIP
+        rootService.networkService.client?.location = null
+        rootService.networkService.client?.tile = null
+
+        // change to next player
+        rootService.gameService.changeToNextPlayer()
     }
 
     private fun relocateDiscs(player: Player, tile: Tile, location: Location, turnCount: Int) {
