@@ -9,6 +9,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Integer.min
+import java.nio.file.Paths
 
 /**
  * [GameService] provides server function for the game
@@ -58,7 +59,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     fun createStacks(): MutableList<Tile> {
         // read each line of .csv-file
-        val lines = File(GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path).readLines()
+        val lines = Paths.get("build/resources/main/tiles_colornames_v2.csv").toAbsolutePath().toFile().readLines()
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
         lines.forEach { line -> tiles.add(line.split(",")) }
