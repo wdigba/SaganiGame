@@ -34,13 +34,13 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
     )
 
     private val scoreButton = StandardButton(
-        posX = 350, posY = 980,
+        posX = 350, posY = 50,
         width = 100, height = 50,
         text = "SCORE"
     )
 
     private val rotateButton = StandardButton(
-        posX = 500, posY = 980,
+        posX = 500, posY = 50,
         width = 50, height = 50,
         text = "rotate"
     ).apply {
@@ -48,7 +48,7 @@ class GridPaneVersuch(private val rootService: RootService) : BoardGameScene(192
     }
 
     private val confirmButton = StandardButton(
-        posX = 800, posY = 980,
+        posX = 800, posY = 50,
         width = 50, height = 50,
         text = "Conf"
     ).apply {
