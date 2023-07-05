@@ -72,25 +72,24 @@ class SaganiGameSceneController(
             }
         }
 
-        // TODO: Relation zum Zoom herstellen ( Reingezoomt -> Kleinere Schritte, Rausgezoomt -> größere Schritte
         saganiGameScene.moveUpButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.posY += 10
+                saganiGameScene.tilePane.posY += 10 / currentZoom.scale
             }
         }
         saganiGameScene.moveDownButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.posY -= 10
+                saganiGameScene.tilePane.posY -= 10 / currentZoom.scale
             }
         }
         saganiGameScene.moveLeftButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.posX += 10
+                saganiGameScene.tilePane.posX += 10 / currentZoom.scale
             }
         }
         saganiGameScene.moveRightButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.posX -= 10
+                saganiGameScene.tilePane.posX -= 10 / currentZoom.scale
             }
         }
 
@@ -180,17 +179,12 @@ class SaganiGameSceneController(
     }
 
     private fun centerTilePane(){
-        // Methode um tilePane zu centern --> wenn neuer Spieler dann kann gecentert werden
-        //TODO
-
         saganiGameScene.tilePane.posX = saganiGameScene.centerTilePanePosX
         saganiGameScene.tilePane.posY = saganiGameScene.centerTilePanePosY
-
     }
 
 
 
-    // Home Button um nach Center zu springen
     // Move faktor Abhängig vom Scale faktor (größer wenn rausgezoomt, kleiner wenn reingezoomt)
 
 
