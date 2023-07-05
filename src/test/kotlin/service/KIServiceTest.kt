@@ -622,7 +622,7 @@ class KIServiceTest {
 
             var adjustweight = 0.1
 
-            // if random boolean true set adjustweight to 1.1
+
             if (Random.nextBoolean()) {
                 adjustweight = -0.1
             }
@@ -652,7 +652,7 @@ class KIServiceTest {
 
             if (i != last) {
 
-                if (aliceAndBobsWins.first > aliceAndBobsWins.second) {
+                if (aliceAndBobsWins.first -2 > aliceAndBobsWins.second) {
                     bestParameters = aliceParameters.getCopy()
                     print("learning new params form alice after she won ${aliceAndBobsWins.first} times\n")
 
@@ -682,7 +682,105 @@ class KIServiceTest {
                 println("Bob (best) has won ${aliceAndBobsWins.second} times")
 
                 print("best config: \n")
-                print("checkDiscleft: ${bestParameters.checkDiscleft}\n")
+                print("checkDiscleft: ${bestParameters.checkDiscleftWeight}\n")
+                print("arrowWeight: ${bestParameters.arrowWeight}\n")
+                print("discWeight: ${bestParameters.discWeight}\n")
+                print("arrowBlockedWeight: ${bestParameters.arrowBlockedWeight}\n")
+                print("discBlockedWeight: ${bestParameters.discBlockedWeight}\n")
+
+
+            }
+
+
+        }
+
+
+    }
+
+    @Test
+    fun `optimize AI Random search`() {
+        val rootService = RootService()
+        val playerNames: MutableList<Triple<String, Color, PlayerType>> = mutableListOf()
+        val alice = Triple("Alice", Color.WHITE, PlayerType.BEST_AI)
+        val bob = Triple("Bob", Color.BROWN, PlayerType.BEST_AI)
+
+
+        playerNames.add(alice)
+        playerNames.add(bob)
+
+        val trainingRounds = 200
+
+        // Initialize Alice's parameters
+
+        var aliceParameters = GameParams()
+
+
+        // Initialize Bob's parameters to be the same as Alice's
+        var bestParameters = GameParams()
+
+
+        var i = 0
+
+        repeat(trainingRounds + 1) {
+            println("trial $i")
+
+            var adjustweight = 0.1
+
+
+            // set one random parameter to a random value
+            when (Random.nextInt(4)) {
+                0 -> aliceParameters.discBlockedWeight = Random.nextDouble(-1.0, 4.0)
+                1 -> aliceParameters.arrowWeight = Random.nextDouble(-1.0, 4.0)
+                2 -> aliceParameters.discWeight = Random.nextDouble(-1.0, 4.0)
+                3 -> aliceParameters.arrowBlockedWeight = Random.nextDouble(-1.0, 4.0)
+            }
+
+
+
+
+            i++
+
+            if (i == trainingRounds) {
+                aliceParameters = GameParams()
+            }
+
+
+
+            val aliceAndBobsWins = playSomeGames(rootService, aliceParameters, bestParameters, i, playerNames, 15)
+
+            if (i != trainingRounds) {
+
+                if (aliceAndBobsWins.first -2 > aliceAndBobsWins.second) {
+                    bestParameters = aliceParameters.getCopy()
+                    print("learning new params form alice after she won ${aliceAndBobsWins.first} times\n")
+
+                    println("new params: ")
+                    println("discBlockedWeight: ${bestParameters.discBlockedWeight}")
+                    println("arrowWeight: ${bestParameters.arrowWeight}")
+                    println("discWeight: ${bestParameters.discWeight}")
+                    println("arrowBlockedWeight: ${bestParameters.arrowBlockedWeight}")
+                    println("")
+
+                } else {
+                    // If Alice's score is not better, revert the parameter change
+                    aliceParameters = bestParameters.getCopy()
+                    print("reverting params to best params after bob won $aliceAndBobsWins.second times\n")
+                }
+            } else {
+                print("Alice (init) has ${rootService.currentGame!!.players[0].discs.size} discs left\n")
+                println("Bob (best) has ${rootService.currentGame!!.players[1].discs.size} discs left\n")
+
+
+                //print points
+                println("Alice (init) has ${rootService.currentGame!!.players[0].points.first} points")
+                println("Bob (best) has ${rootService.currentGame!!.players[1].points.first} points")
+
+
+                println("Alice (init) has won ${aliceAndBobsWins.first} times")
+                println("Bob (best) has won ${aliceAndBobsWins.second} times")
+
+                print("best config: \n")
+                print("checkDiscleft: ${bestParameters.checkDiscleftWeight}\n")
                 print("arrowWeight: ${bestParameters.arrowWeight}\n")
                 print("discWeight: ${bestParameters.discWeight}\n")
                 print("arrowBlockedWeight: ${bestParameters.arrowBlockedWeight}\n")
@@ -703,13 +801,14 @@ class KIServiceTest {
         aliceParameters: GameParams,
         bestParameters: GameParams,
         i: Int,
-        playerNames: MutableList<Triple<String, Color, PlayerType>>
+        playerNames: MutableList<Triple<String, Color, PlayerType>>,
+        numberGames: Int = 10
     ): Pair<Int, Int> {
         val aliceWins = mutableListOf<Int>()
         val bobWins = mutableListOf<Int>()
 
         var j = 0
-        repeat(11) {
+        repeat(numberGames) {
             print("trial $i.$j\n")
             j++
             rootService.gameService.startNewGame(playerNames)
@@ -726,13 +825,13 @@ class KIServiceTest {
 
             repeat(50) {
                 if (rootService.currentGame!!.actPlayer.name == "Alice") {
-                    rootService.kIService.checkDiscleft = aliceParameters.checkDiscleft
+                    rootService.kIService.checkDiscleftWeight = aliceParameters.checkDiscleftWeight
                     rootService.kIService.arrowWeight = aliceParameters.arrowWeight
                     rootService.kIService.discWeight = aliceParameters.discWeight
                     rootService.kIService.arrowBlockedWeight = aliceParameters.arrowBlockedWeight
                     rootService.kIService.discBlockedWeight = aliceParameters.discBlockedWeight
                 } else {
-                    rootService.kIService.checkDiscleft = true
+                    rootService.kIService.checkDiscleftWeight = 1.0
                     rootService.kIService.arrowWeight = bestParameters.arrowWeight
                     rootService.kIService.discWeight = bestParameters.discWeight
                     rootService.kIService.arrowBlockedWeight = bestParameters.arrowBlockedWeight
@@ -788,10 +887,11 @@ class KIServiceTest {
 
         val bobParameters = GameParams()
 
-        bobParameters.arrowWeight = 2.0
+        bobParameters.arrowWeight = 0.5
         bobParameters.discWeight = 3.0
-        bobParameters.arrowBlockedWeight = 0.0
-        bobParameters.discBlockedWeight = 0.0
+        bobParameters.arrowBlockedWeight = 1.0
+        bobParameters.discBlockedWeight = 0.4
+        bobParameters.checkDiscleftWeight = 1.0
 
 
         val i = 0
@@ -803,11 +903,11 @@ class KIServiceTest {
         playerNames.add(alice)
         playerNames.add(bob)
 
-        val aliceAndBobsWins = playSomeGames(rootService, aliceParameters, bobParameters, i, playerNames)
+        val aliceAndBobsWins = playSomeGames(rootService, aliceParameters, bobParameters, i, playerNames, 30)
 
 
-        print("Alice has ${rootService.currentGame!!.players[0].discs.size} discs left\n")
-        println("Bob  has ${rootService.currentGame!!.players[1].discs.size} discs left\n")
+        //print("Alice has ${rootService.currentGame!!.players[0].discs.size} discs left\n")
+        //println("Bob  has ${rootService.currentGame!!.players[1].discs.size} discs left\n")
 
         println("Alice  has won ${aliceAndBobsWins.first} times")
         println("Bob  has won ${aliceAndBobsWins.second} times")
@@ -816,15 +916,16 @@ class KIServiceTest {
 
 
     class GameParams {
-        var checkDiscleft = true
-        var arrowWeight = 1.0
+        var checkDiscleftWeight = 1.0
+        var arrowWeight = 2.0
         var discWeight = 3.0
-        var arrowBlockedWeight = 0.4
-        var discBlockedWeight = 0.7
+        var arrowBlockedWeight = 1.0
+        var discBlockedWeight = 0.4
+
 
         fun getCopy(): GameParams {
             val copy = GameParams()
-            copy.checkDiscleft = this.checkDiscleft
+            copy.checkDiscleftWeight = this.checkDiscleftWeight
             copy.arrowWeight = this.arrowWeight
             copy.discWeight = this.discWeight
             copy.arrowBlockedWeight = this.arrowBlockedWeight

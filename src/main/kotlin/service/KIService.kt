@@ -14,7 +14,7 @@ class KIService(private val rootService: RootService) {
 
 
 
-    var checkDiscleft: Boolean = false
+    var checkDiscleftWeight: Double = 1.0
     var arrowWeight: Double = 0.8
     var discWeight: Double  = 2.0
     var arrowBlockedWeight: Double  = 0.4
@@ -290,14 +290,16 @@ class KIService(private val rootService: RootService) {
                 // add informartion about loosing points
                 var weight = 1.0 - (player.discs.size / 24.0)
 
-                if (!checkDiscleft){
+                var unsisifiedArrowPenalty =    0.0
+
+                if (checkDiscleftWeight == 0.0){
                     weight = 0.0
+                } else {
+
+                    unsisifiedArrowPenalty = (tile.arrows.size - satisfiedArrows) / checkDiscleftWeight
+
+
                 }
-
-                val unsisifiedArrowPenalty = tile.arrows.size - satisfiedArrows
-
-
-
 
                 val positionScore = score + arrowWeight * satisfiedArrowsMetrics + positionMetrics - unsisifiedArrowPenalty * weight
                 potentialScores.add(TilePlacementInformation(tile, rotation, position, positionScore))
