@@ -102,7 +102,7 @@ class KIService(private val rootService: RootService) {
      * [playBestMove] contains the logic of choosing and executing the best move in the turn
      * using [PlayerActionService.placeTile]
      */
-    fun playBestMove(checkDiscleft: Boolean = true) {
+    fun playBestMove() {
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
 
@@ -483,8 +483,8 @@ class KIService(private val rootService: RootService) {
         // influence rating of each parameter
 
         // total calculation based on satisfied metrics
-        val resultMetrics = arrowSatisfiedMetrics * arrowWeight - arrowBlockedWeight * (arrowsBlockedMetrics.sum() / 3)
-        +discsFreedMetrics * (discWeight - (playerDiscsCount / 24)) - discBlockedWeight * (discsBlockedMetrics.sum() / 3)
+        val resultMetrics = arrowSatisfiedMetrics * arrowWeight - (arrowBlockedWeight * (arrowsBlockedMetrics.sum() / 3))
+        +discsFreedMetrics * (discWeight - (playerDiscsCount / 24)) - (discBlockedWeight * (discsBlockedMetrics.sum() / 3))
 
         return resultMetrics
     }

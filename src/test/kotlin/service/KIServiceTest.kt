@@ -616,7 +616,7 @@ class KIServiceTest {
         // List of parameters to try for Alice
         var i = 0
         var currentParameterIndex = 0
-        val last = 100
+        val last = 10
         repeat(last + 1) {
             println("trial $i")
 
@@ -654,7 +654,7 @@ class KIServiceTest {
 
                 if (aliceAndBobsWins.first > aliceAndBobsWins.second) {
                     bestParameters = aliceParameters.getCopy()
-                    print("learning new params form alice after she won $aliceAndBobsWins.first times\n")
+                    print("learning new params form alice after she won ${aliceAndBobsWins.first} times\n")
 
                     println("new params: ")
                     println("discBlockedWeight: ${bestParameters.discBlockedWeight}")
@@ -777,6 +777,41 @@ class KIServiceTest {
             }
         }
         return Pair(aliceWins.size, bobWins.size)
+    }
+
+
+
+    @Test
+    fun `compare two parameter sets`(){
+
+        val aliceParameters = GameParams()
+
+        val bobParameters = GameParams()
+
+        bobParameters.arrowWeight = 2.0
+        bobParameters.discWeight = 3.0
+        bobParameters.arrowBlockedWeight = 0.0
+        bobParameters.discBlockedWeight = 0.0
+
+
+        val i = 0
+
+        val playerNames: MutableList<Triple<String, Color, PlayerType>> = mutableListOf()
+        val alice = Triple("Alice", Color.WHITE, PlayerType.BEST_AI)
+        val bob = Triple("Bob", Color.BROWN, PlayerType.BEST_AI)
+
+        playerNames.add(alice)
+        playerNames.add(bob)
+
+        val aliceAndBobsWins = playSomeGames(rootService, aliceParameters, bobParameters, i, playerNames)
+
+
+        print("Alice has ${rootService.currentGame!!.players[0].discs.size} discs left\n")
+        println("Bob  has ${rootService.currentGame!!.players[1].discs.size} discs left\n")
+
+        println("Alice  has won ${aliceAndBobsWins.first} times")
+        println("Bob  has won ${aliceAndBobsWins.second} times")
+
     }
 
 
