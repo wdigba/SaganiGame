@@ -1,5 +1,6 @@
 package view.scene
 
+import service.TileImageLoader
 import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.container.LinearLayout
@@ -10,12 +11,15 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import tools.aqua.bgw.visual.ImageVisual
 import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
 
 class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
+
+    val tileImageLoader = TileImageLoader()
 
     /**
      * Upper Pane
@@ -29,7 +33,8 @@ class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
         height = 120,
         posX = 20,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        visual = ImageVisual(tileImageLoader.getFrontImage(1))
+//        visual = ColorVisual(255, 255, 255, 50)
     )
 
     //Offer Display
