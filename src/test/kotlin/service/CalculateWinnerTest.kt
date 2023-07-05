@@ -19,7 +19,7 @@ class CalculateWinnerTest {
         val gameSettings = mutableListOf(
             Triple("PlayerOne", Color.BLACK, PlayerType.HUMAN),
             Triple("PlayerTwo", Color.BROWN, PlayerType.BEST_AI),
-            Triple("PlayerThree", Color.GREY, PlayerType.RANDOM_AI),
+            Triple("PlayerThree", Color.GRAY, PlayerType.RANDOM_AI),
             Triple("PlayerFour", Color.WHITE, PlayerType.HUMAN),
         )
 

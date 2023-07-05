@@ -19,7 +19,7 @@ class CopyGameTest {
         val gameSettings = mutableListOf(
             Triple("PlayerHuman", Color.BLACK, PlayerType.HUMAN),
             Triple("PlayerAI", Color.BROWN, PlayerType.BEST_AI),
-            Triple("PlayerRandom", Color.GREY, PlayerType.RANDOM_AI)
+            Triple("PlayerRandom", Color.GRAY, PlayerType.RANDOM_AI)
         )
 
         rootService.gameService.startNewGame(gameSettings)

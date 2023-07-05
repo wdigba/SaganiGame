@@ -360,7 +360,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      */
     private fun Color.toNTFColor(): edu.udo.cs.sopra.ntf.Color = when (this) {
         Color.BLACK -> edu.udo.cs.sopra.ntf.Color.BLACK
-        Color.GREY -> edu.udo.cs.sopra.ntf.Color.GREY
+        Color.GRAY -> edu.udo.cs.sopra.ntf.Color.GREY
         Color.BROWN -> edu.udo.cs.sopra.ntf.Color.BROWN
         Color.WHITE -> edu.udo.cs.sopra.ntf.Color.WHITE
     }
@@ -370,7 +370,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      */
     private fun edu.udo.cs.sopra.ntf.Color.toEntityColor(): Color = when (this) {
         edu.udo.cs.sopra.ntf.Color.BLACK -> Color.BLACK
-        edu.udo.cs.sopra.ntf.Color.GREY -> Color.GREY
+        edu.udo.cs.sopra.ntf.Color.GREY -> Color.GRAY
         edu.udo.cs.sopra.ntf.Color.BROWN -> Color.BROWN
         edu.udo.cs.sopra.ntf.Color.WHITE -> Color.WHITE
     }
