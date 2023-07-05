@@ -54,6 +54,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 rootService.networkService.client?.moveType = MoveType.DRAW_PILE
                 currentGame.stacks.removeFirst()
                 currentGame.intermezzoStorage.add(currentGame.offerDisplay.removeFirst())
+            } else {
+                rootService.networkService.client?.moveType = MoveType.OFFER_DISPLAY
             }
         }
 
