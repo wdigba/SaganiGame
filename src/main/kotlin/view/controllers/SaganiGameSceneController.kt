@@ -49,6 +49,8 @@ class SaganiGameSceneController(
         board = game.actPlayer.board
         selectedTile = game.offerDisplay[0]
 
+
+        //TODO Funktion
         saganiGameScene.confirmButton.apply {
             onMouseClicked = {
                 confirmPlacement()
@@ -70,15 +72,15 @@ class SaganiGameSceneController(
             }
         }
 
-        // TODO: Relation zum Ausschnitt des fensters herstellen?
+        // TODO: Relation zum Zoom herstellen ( Reingezoomt -> Kleinere Schritte, Rausgezoomt -> größere Schritte
         saganiGameScene.moveUpButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.posY -= 10
+                saganiGameScene.tilePane.posY += 10
             }
         }
         saganiGameScene.moveDownButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.posY += 10
+                saganiGameScene.tilePane.posY -= 10
             }
         }
         saganiGameScene.moveLeftButton.apply {
@@ -89,6 +91,12 @@ class SaganiGameSceneController(
         saganiGameScene.moveRightButton.apply {
             onMouseClicked = {
                 saganiGameScene.tilePane.posX -= 10
+            }
+        }
+
+        saganiGameScene.homeButton.apply {
+            onMouseClicked = {
+                centerTilePane()
             }
         }
 
@@ -113,6 +121,7 @@ class SaganiGameSceneController(
             }
         }
 
+        // TODo: Karte in die Mitte legen
         saganiGameScene.cardStack.apply {
             if (game.stacks.size > 0) {
                 visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
@@ -137,8 +146,7 @@ class SaganiGameSceneController(
             saganiGameScene.intermezzoOffer1,
             saganiGameScene.intermezzoOffer2,
             saganiGameScene.intermezzoOffer3,
-            saganiGameScene.intermezzoOffer4,
-            saganiGameScene.intermezzoOffer5)
+            saganiGameScene.intermezzoOffer4)
 
         intermezzoOffers.forEachIndexed { index, intermezzo ->
             intermezzo.apply {
@@ -171,8 +179,17 @@ class SaganiGameSceneController(
 
     }
 
+    private fun centerTilePane(){
+        // Methode um tilePane zu centern --> wenn neuer Spieler dann kann gecentert werden
+        //TODO
 
-    // Methode um tilePane zu centern --> wenn neuer Spieler dann kann gecentert werden
+        saganiGameScene.tilePane.posX = saganiGameScene.centerTilePanePosX
+        saganiGameScene.tilePane.posY = saganiGameScene.centerTilePanePosY
+
+    }
+
+
+
     // Home Button um nach Center zu springen
     // Move faktor Abhängig vom Scale faktor (größer wenn rausgezoomt, kleiner wenn reingezoomt)
 

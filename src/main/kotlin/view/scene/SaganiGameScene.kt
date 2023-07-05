@@ -132,6 +132,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     //--> 1600
     // 838
 
+    val centerTilePanePosX  = leftPane.width - 4440/2 +1600/2
+    val centerTilePanePosY = upperPane.height - 4440/2 + 838/2
 
     //TODO
     var sampleTile = CardView(
@@ -151,6 +153,9 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
      */
     //----------------------------------
     //Intermezzo
+
+    // TODO: Intermezzo Offer abstände schön
+
     private val intermezzoLayout: LinearLayout<CardView> = LinearLayout(
         width = 100,
         height = 800,
@@ -175,37 +180,31 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 120,
         height = 120,
         posX = 10,
-        posY = 70,
+        posY = 50,
         visual = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer2 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
-        posY = 220,
+        posY = 208,
         visual = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer3 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
-        posY = 370,
+        posY = 412,
         visual = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer4 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
-        posY = 520,
-        visual = ColorVisual(GameColor.chaletGreen)
-    )
-    val intermezzoOffer5 = CardStack<CardView>(
-        width = 120,
-        height = 120,
-        posX = 10,
         posY = 670,
         visual = ColorVisual(GameColor.chaletGreen)
     )
+
 
     //-------------------------------------
 
@@ -224,7 +223,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     private val redoButton = StandardButton(
         width = 100,
         height = 50,
-        posX = 150,
+        posX = 130,
         posY = 20,
         text = "REDO"
     )
@@ -232,7 +231,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     private val scoreButton = StandardButton(
         width = 100,
         height = 50,
-        posX = 280,
+        posX = 240,
         posY = 20,
         text = "SCORE"
     )
@@ -240,7 +239,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     private val rotateButton = StandardButton(
         width = 100,
         height = 50,
-        posX = 410,
+        posX = 350,
         posY = 20,
         text = "ROTATE"
     )
@@ -300,6 +299,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "RIGHT"
     )
 
+    val homeButton = StandardButton(
+        width = 80,
+        height = 50,
+        posX =  1200,
+        posY = 20,
+        text = "HOME"
+    )
+
 
     //-----------------------------------------------------------------------
 
@@ -334,7 +341,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
         val rightPaneList = mutableListOf(
             intermezzoLayout, intermezzoLabel, intermezzoOffer1, intermezzoOffer2, intermezzoOffer3,
-            intermezzoOffer4, intermezzoOffer5
+            intermezzoOffer4
         )
 
 
@@ -350,7 +357,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
                 moveLeftButton,
                 moveUpButton,
                 moveDownButton,
-                moveRightButton
+                moveRightButton,
+                homeButton
             )
 
 
