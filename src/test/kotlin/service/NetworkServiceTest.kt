@@ -66,7 +66,7 @@ class NetworkServiceTest {
         assertEquals(1, otherPlayers.size)
         val players = listOf(
             Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER),
-            Triple(hostRootService.networkService.client!!.playerName, Color.GRAY, PlayerType.HUMAN)
+            Triple(hostRootService.networkService.client!!.playerName, Color.GREY, PlayerType.HUMAN)
         )
         hostRootService.gameService.startNewGame(players)
         guestRootService.waitForState(ConnectionState.PLAYING_MY_TURN)
@@ -100,7 +100,7 @@ class NetworkServiceTest {
         assertEquals(1, otherPlayers.size)
         val players = listOf(
             Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER),
-            Triple(hostRootService.networkService.client!!.playerName, Color.GRAY, PlayerType.HUMAN)
+            Triple(hostRootService.networkService.client!!.playerName, Color.GREY, PlayerType.HUMAN)
         )
 
         // Start game and wait until both clients are in the correct state

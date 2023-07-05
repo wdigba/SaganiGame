@@ -91,7 +91,7 @@ class ScoreScene(private val rootService: RootService) :
             when (game.players[i].color) {
                 Color.BLACK -> boardButtons[i].visual = ColorVisual(GameColor.black)
                 Color.BROWN -> boardButtons[i].visual = ColorVisual(GameColor.brown)
-                Color.GRAY -> boardButtons[i].visual = ColorVisual(GameColor.gray)
+                Color.GREY -> boardButtons[i].visual = ColorVisual(GameColor.gray)
                 else -> boardButtons[i].visual = ColorVisual(GameColor.white)
             }
         }
