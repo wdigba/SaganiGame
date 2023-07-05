@@ -9,6 +9,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Integer.min
+import java.nio.file.Paths
 
 /**
  * [GameService] provides server function for the game
@@ -58,7 +59,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     fun createStacks(): MutableList<Tile> {
         // read each line of .csv-file
-        val lines = File(GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path).readLines()
+        val lines = Paths.get("build/resources/main/tiles_colornames_v2.csv").toAbsolutePath().toFile().readLines()
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
         lines.forEach { line -> tiles.add(line.split(",")) }
@@ -245,10 +246,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             // Check Checksum
             rootService.networkService.client?.lastTurnChecksum?.let {
                 check(it.score == player.points.first) {
-                    "Checksum: Score did not match. ${it.score} != ${currentGame.actPlayer.points.first}"
+                    "Checksum: Score did not match. ${it.score} != ${player.points.first}"
                 }
                 check(it.availableDiscs == player.discs.size) {
-                    "Checksum: Available discs did not match. ${it.availableDiscs} != ${currentGame.actPlayer.discs.size}"
+                    "Checksum: Available discs did not match. ${it.availableDiscs} != ${player.discs.size}"
                 }
                 val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
                 check(it.startedIntermezzo == startedIntermezzo) {
@@ -357,6 +358,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     @OptIn(ExperimentalSerializationApi::class)
     fun saveGame(path: String) {
+        val file = File(path)
+
+        if (!file.exists()) {
+            file.createNewFile()
+        }
 
         // check if game exists
         val game = rootService.currentGame
@@ -405,7 +411,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
 
         // write json encoding of game to file specified by parameter path
-        FileOutputStream(File(path)).use {
+        FileOutputStream(file).use {
             jsonBuilder.encodeToStream(jsonAllGameString, it)
         }
 
