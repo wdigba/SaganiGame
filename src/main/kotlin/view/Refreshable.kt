@@ -60,4 +60,11 @@ interface Refreshable {
      * @param newState The new connection state
      */
     fun refreshAfterConnectionStateChange(newState: ConnectionState) {}
+
+    /**
+     * refresh Gui after a player connects or disconnects.
+     *
+     * @param currentPlayers The list of players after the change
+     */
+    fun refreshAfterPlayerListChange(currentPlayers: List<String>) {}
 }

@@ -136,6 +136,11 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             }
 
             otherPlayers += notification.sender
+
+            networkService.onAllRefreshables {
+                val players = listOf(playerName) + otherPlayers
+                refreshAfterPlayerListChange(players)
+            }
         }
     }
 
@@ -146,6 +151,11 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
     override fun onPlayerLeft(notification: PlayerLeftNotification) {
         BoardGameApplication.runOnGUIThread {
             otherPlayers -= notification.sender
+
+            networkService.onAllRefreshables {
+                val players = listOf(playerName) + otherPlayers
+                refreshAfterPlayerListChange(players)
+            }
         }
     }
 
