@@ -728,11 +728,12 @@ class KIServiceTest {
 
 
             // set one random parameter to a random value
-            when (Random.nextInt(4)) {
+            when (Random.nextInt(5)) {
                 0 -> aliceParameters.discBlockedWeight = Random.nextDouble(-1.0, 4.0)
                 1 -> aliceParameters.arrowWeight = Random.nextDouble(-1.0, 4.0)
                 2 -> aliceParameters.discWeight = Random.nextDouble(-1.0, 4.0)
                 3 -> aliceParameters.arrowBlockedWeight = Random.nextDouble(-1.0, 4.0)
+                4 -> aliceParameters.checkDiscleftWeight = Random.nextDouble(-1.0, 4.0)
             }
 
 
@@ -831,7 +832,7 @@ class KIServiceTest {
                     rootService.kIService.arrowBlockedWeight = aliceParameters.arrowBlockedWeight
                     rootService.kIService.discBlockedWeight = aliceParameters.discBlockedWeight
                 } else {
-                    rootService.kIService.checkDiscleftWeight = 1.0
+                    rootService.kIService.checkDiscleftWeight = bestParameters.checkDiscleftWeight
                     rootService.kIService.arrowWeight = bestParameters.arrowWeight
                     rootService.kIService.discWeight = bestParameters.discWeight
                     rootService.kIService.arrowBlockedWeight = bestParameters.arrowBlockedWeight
