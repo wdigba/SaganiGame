@@ -100,6 +100,8 @@ class SaganiGameSceneController(
         }
 
 
+
+
         val offers = listOf(
             saganiGameScene.offer1,
             saganiGameScene.offer2,
@@ -179,8 +181,8 @@ class SaganiGameSceneController(
     }
 
     private fun centerTilePane(){
-        saganiGameScene.tilePane.posX = saganiGameScene.centerTilePanePosX
-        saganiGameScene.tilePane.posY = saganiGameScene.centerTilePanePosY
+        saganiGameScene.tilePane.posX = centerPosInTilePaneX
+        saganiGameScene.tilePane.posY = centerPosInTilePaneY
     }
 
 

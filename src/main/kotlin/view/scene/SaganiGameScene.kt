@@ -10,9 +10,7 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
-import view.GameColor
-import view.Refreshable
-import view.StandardButton
+import view.*
 import java.awt.Color
 
 
@@ -122,25 +120,30 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
      * Tile Pane
      */
     //----------------------------------------------------------
-    private val upperPane = Pane<ComponentView>(0, 0, 1920, 162, visual = ColorVisual(Color.CYAN))
-    private val bottomPane = Pane<ComponentView>(0, 0, 1920, 80, visual = ColorVisual(Color.MAGENTA))
-    private val leftPane = Pane<ComponentView>(0, 0, 150, 838, visual = ColorVisual(Color.ORANGE))
-    private val rightPane = Pane<ComponentView>(0, 0, 170, 838, visual = ColorVisual(Color.PINK))
+    private val upperPane = Pane<ComponentView>(0, 0, upperPaneWidth, upperPaneHeight, visual = ColorVisual(Color.CYAN))
+    private val bottomPane =
+        Pane<ComponentView>(0, 0, bottomPaneWidth, bottomPaneHeight, visual = ColorVisual(Color.MAGENTA))
+    private val leftPane = Pane<ComponentView>(0, 0, leftPaneWidth, leftPaneHeight, visual = ColorVisual(Color.ORANGE))
+    private val rightPane = Pane<ComponentView>(0, 0, rightPaneWidth, rightPaneHeight, visual = ColorVisual(Color.PINK))
 
-    val tilePane = Pane<ComponentView>(width = 4440, height = 4440, posY = upperPane.height - 4440/2 + 838/2, posX = leftPane.width - 4440/2 +1600/2, visual = ColorVisual(Color.GRAY))
+    val tilePane = Pane<ComponentView>(
+        width = 4440,
+        height = 4440,
+        posY = centerTilePanePosY,
+        posX = centerTilePanePosX,
+        visual = ColorVisual(Color.GRAY)
+    )
 
     //--> 1600
     // 838
 
-    val centerTilePanePosX  = leftPane.width - 4440/2 +1600/2
-    val centerTilePanePosY = upperPane.height - 4440/2 + 838/2
 
     //TODO
     var sampleTile = CardView(
-        width = 120,
-        height = 120,
-        posX = tilePane.width/2 - 120/2,
-        posY = tilePane.height/2- 120/2,
+        width = standardTileViewWidth,
+        height = standardTileViewHeight,
+        posX = centerPosInTilePaneX,
+        posY = centerPosInTilePaneY,
         front = ColorVisual(255, 255, 255, 50)
     )
 
@@ -302,7 +305,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     val homeButton = StandardButton(
         width = 80,
         height = 50,
-        posX =  1200,
+        posX = 1200,
         posY = 20,
         text = "HOME"
     )
@@ -318,9 +321,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     //private val cameraPane = CameraPane(0, 0, 756, 134, target = targetPane)
 
 
-    private val outerGridPane = GridPane<ComponentView>( columns = 1, rows = 3, layoutFromCenter = false)
+    private val outerGridPane = GridPane<ComponentView>(columns = 1, rows = 3, layoutFromCenter = false)
     private val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1, layoutFromCenter = false)
-
 
 
     //-----------------------------------------------------------------------
@@ -373,7 +375,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
 
         background = ColorVisual(GameColor.chaletGreen)
-        addComponents(tilePane,outerGridPane)
+        addComponents(tilePane, outerGridPane)
     }
 
     /**
@@ -386,10 +388,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
 
         outerGridPane[0, 2] = bottomPane
+        outerGridPane[0, 1] = innerGridPane
         outerGridPane[0, 0] = upperPane
-
-
-
 
 
         innerGridPane.setColumnWidth(0, 150)
@@ -397,11 +397,9 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         innerGridPane.setColumnWidth(2, 170)
 
         innerGridPane[0, 0] = leftPane
-
         innerGridPane[2, 0] = rightPane
 
-        outerGridPane[0, 1] = innerGridPane
-        //innerGridPane[1, 0] = tilePane
+
     }
 
     private fun addComponentsToPane(pane: Pane<ComponentView>, componentList: MutableList<ComponentView>) {
