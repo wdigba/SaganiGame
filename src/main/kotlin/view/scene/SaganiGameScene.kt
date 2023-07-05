@@ -13,9 +13,13 @@ import tools.aqua.bgw.visual.ColorVisual
 import view.GameColor
 import view.Refreshable
 import view.StandardButton
+import java.awt.Color
 
 
-class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
+class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
+
+    private val windowX = 1600
+    private val windowY = 838
 
     /**
      * Upper Pane
@@ -114,13 +118,23 @@ class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
      * Tile Pane
      */
     //----------------------------------------------------------
+    private val upperPane = Pane<ComponentView>(0, 0, 1920, 162, visual = ColorVisual(Color.CYAN))
+    private val bottomPane = Pane<ComponentView>(0, 0, 1920, 80, visual = ColorVisual(Color.MAGENTA))
+    private val leftPane = Pane<ComponentView>(0, 0, 150, 838, visual = ColorVisual(Color.ORANGE))
+    private val rightPane = Pane<ComponentView>(0, 0, 170, 838, visual = ColorVisual(Color.PINK))
+
+    val tilePane = Pane<ComponentView>(width = 4440, height = 4440, posY = upperPane.height - 4440/2 + 838/2, posX = leftPane.width - 4440/2 +1600/2, visual = ColorVisual(Color.GRAY))
+
+    //--> 1600
+    // 838
+
 
     //TODO
     var sampleTile = CardView(
         width = 120,
         height = 120,
-        posX = 840,
-        posY = 480,
+        posX = tilePane.width/2 - 120/2,
+        posY = tilePane.height/2- 120/2,
         front = ColorVisual(255, 255, 255, 50)
     )
 
@@ -289,17 +303,14 @@ class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
      * Panes
      */
     //-----------------------------------------------------------------------
-    val tilePane = Pane<ComponentView>(width = 1920, height = 1080)
+
     //private val cameraPane = CameraPane(0, 0, 756, 134, target = targetPane)
 
 
-    private val outerGridPane = GridPane<ComponentView>(0, 0, columns = 1, rows = 3, layoutFromCenter = false)
+    private val outerGridPane = GridPane<ComponentView>( columns = 1, rows = 3, layoutFromCenter = false)
     private val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1, layoutFromCenter = false)
 
-    private val upperPane = Pane<ComponentView>(0, 0, 1920, 162, visual = ColorVisual(GameColor.chaletGreen))
-    private val bottomPane = Pane<ComponentView>(0, 0, 1920, 80, visual = ColorVisual(221, 161, 94))
-    private val leftPane = Pane<ComponentView>(0, 0, 150, 838, visual = ColorVisual(GameColor.chaletGreen))
-    private val rightPane = Pane<ComponentView>(0, 0, 170, 838, visual = ColorVisual(GameColor.chaletGreen))
+
 
     //-----------------------------------------------------------------------
 
@@ -336,6 +347,8 @@ class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
                 moveRightButton
             )
 
+
+
         tilePane.add(sampleTile)
 
 
@@ -346,7 +359,7 @@ class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
 
 
         background = ColorVisual(GameColor.chaletGreen)
-        addComponents(outerGridPane)
+        addComponents(tilePane,outerGridPane)
     }
 
     /**
@@ -357,17 +370,24 @@ class SaganiGameScene() : BoardGameScene(1920, 1080), Refreshable {
         outerGridPane.setRowHeight(1, 838)
         outerGridPane.setRowHeight(2, 80)
 
-        outerGridPane[0, 0] = upperPane
-        outerGridPane[0, 1] = innerGridPane
+
         outerGridPane[0, 2] = bottomPane
+        outerGridPane[0, 0] = upperPane
+
+
+
+
 
         innerGridPane.setColumnWidth(0, 150)
         innerGridPane.setColumnWidth(1, 1600)
         innerGridPane.setColumnWidth(2, 170)
 
         innerGridPane[0, 0] = leftPane
-        innerGridPane[1, 0] = tilePane
+
         innerGridPane[2, 0] = rightPane
+
+        outerGridPane[0, 1] = innerGridPane
+        //innerGridPane[1, 0] = tilePane
     }
 
     private fun addComponentsToPane(pane: Pane<ComponentView>, componentList: MutableList<ComponentView>) {

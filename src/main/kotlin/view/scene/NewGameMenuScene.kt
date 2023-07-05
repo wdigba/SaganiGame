@@ -9,7 +9,7 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
-class NewGameMenuScene(private val rootService: RootService) :
+class NewGameMenuScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(

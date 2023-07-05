@@ -1,30 +1,32 @@
 package view.controllers
 
 import service.RootService
-import view.Refreshable
-import view.SaganiApplication
 import view.scene.SaganiGameScene
 import Location
 import entity.Color
 import entity.PlayerType
 import entity.Tile
+import service.TileImageLoader
+import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.event.KeyCode
-import view.PossibleMovements
-import view.ZoomLevels
+import tools.aqua.bgw.visual.ColorVisual
+import tools.aqua.bgw.visual.ImageVisual
+import view.*
 import view.ZoomLevels.*
 import kotlin.math.max
 import kotlin.math.min
 
 class SaganiGameSceneController(
     private val saganiGameScene: SaganiGameScene,
-    private val rootService: RootService,
-    private val saganiApplication: SaganiApplication
+    private val rootService: RootService
 ) : Refreshable {
 
     private var board: MutableMap<Location, Tile>
     private var possibleMovements = mutableListOf<PossibleMovements>()
 
     private var loadedBoardTiles = mutableMapOf<Location, Tile>()
+
+    private var loadedBoardViews = mutableMapOf<Location, CardView>()
 
     private var selectedTile: Tile
     private var selectedTilePlacement = saganiGameScene.sampleTile
@@ -34,13 +36,12 @@ class SaganiGameSceneController(
     private var chosenOfferDisplay = -1
 
     init {
-
-        val playerList = mutableListOf<Triple<String, Color, PlayerType>>(
+        // Creates initial game
+        val playerList = mutableListOf(
             Triple("Marie", Color.BLACK, PlayerType.HUMAN),
             Triple("Nils", Color.BROWN, PlayerType.HUMAN),
             Triple("Polina", Color.GREY, PlayerType.HUMAN)
         )
-
         rootService.gameService.startNewGame(playerList)
 
 
@@ -72,22 +73,22 @@ class SaganiGameSceneController(
         // TODO: Relation zum Ausschnitt des fensters herstellen?
         saganiGameScene.moveUpButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.reposition(posX, posY - 50)
+                saganiGameScene.tilePane.posY -= 10
             }
         }
         saganiGameScene.moveDownButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.reposition(posX, posY = posY + 50)
+                saganiGameScene.tilePane.posY += 10
             }
         }
         saganiGameScene.moveLeftButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.reposition(posX = posX - 50, posY)
+                saganiGameScene.tilePane.posX += 10
             }
         }
         saganiGameScene.moveRightButton.apply {
             onMouseClicked = {
-                saganiGameScene.tilePane.reposition(posX = posX + 50, posY)
+                saganiGameScene.tilePane.posX -= 10
             }
         }
 
@@ -146,24 +147,101 @@ class SaganiGameSceneController(
     }
 
 
+    // Methode um tilePane zu centern --> wenn neuer Spieler dann kann gecentert werden
+    // Home Button um nach Center zu springen
+    // Move faktor Abhängig vom Scale faktor (größer wenn rausgezoomt, kleiner wenn reingezoomt)
+
+
+
     private fun initScene() {
-        if (!tilePlaced) {
-            drawPossiblePlacements()
-            saganiGameScene.sampleTile.apply {
-                //TODO Load and show front
+        // geht erst alle y von 0 bis 960 in 120er schritten durch und dann ein x (120er schritte) weiter
+
+
+        for (x in 0..1800 step 120) {
+            for (y in 0..960 step 120) {
+                loadedBoardViews.put(
+                    Location(x, y),
+                    CardView(x, y, 120, 120, front = ColorVisual(255,255,255,50))
+                )
             }
         }
-        loadBoardTiles()
+
+
+        saganiGameScene.tilePane.addAll(loadedBoardViews.values)
+
+        for (tile in loadedBoardViews){
+            tile.value.isVisible = false
+        }
+
+       // checkNotNull(loadedBoardViews.get(Location(840,480))).isVisible = true
+
+
+
+
+        // Mitte trd sichtbar ? --> SampleTile kann dann weg
+        // Grid besteht dann aus eingeblendeten CardViews
+        // Liste besteht dann aus CardViews die eingeblendet werden
+
+
+        /*
+           if (!tilePlaced) {
+               drawPossiblePlacements()
+               saganiGameScene.sampleTile.apply {
+                   //TODO Load and show front
+               }
+           }
+           loadBoardTiles()*/
     }
 
     //Ladet alle Tiles vom Board und added in Scene
     private fun loadBoardTiles() {
+
+        // Pane direkt mit allen card views laden -->
+        // ? Rechenaufwand zu groß ?
+
+        //toDo Show Front?
+
         val game = checkNotNull(rootService.currentGame)  // TODO hier notwendig?
-        loadedBoardTiles.putAll(game.actPlayer.board)
+        board = game.actPlayer.board
+
+        val tileImageLoader = TileImageLoader()
+
+        board.forEach {
+            val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
+
+            if (tileView != null) {
+                initializeTileView(
+                    tile = it.value,
+                    tileView,
+                    tileImageLoader = tileImageLoader,
+                    flip = false
+                )
+            }
+        }
+    }
 
 
-        //kann Tiles nicht in Scene packen -> muss Card Views reinpacken und die Tiles entsprechend an anderer Stelle laden
-        // TODO: Tiles im tilePane laden!
+
+    private fun initializeTileView(
+        tile: Tile,
+        tileView: CardView,
+        tileImageLoader: TileImageLoader,
+        flip: Boolean
+    ) {
+
+        tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
+
+        tileView.backVisual = ImageVisual(tileImageLoader.getBackImage(tile.id))
+
+        // cardMap.add(card to cardView)
+
+        if (flip) {
+            when (tileView.currentSide) {
+                CardView.CardSide.BACK -> tileView.showFront()
+                CardView.CardSide.FRONT -> tileView.showBack()
+            }
+
+        }
     }
 
 

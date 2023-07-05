@@ -29,7 +29,7 @@ class PlayerConfigSceneController(
         playerConfigScene.comboBox3,
         playerConfigScene.comboBox4
     )
-    val comboBoxColors = mutableListOf("White", "Gray", "Brown", "Black")
+   private val comboBoxColors = mutableListOf("White", "Gray", "Brown", "Black")
 
     init {
         playerConfigScene.startButton.apply {
@@ -143,7 +143,7 @@ class PlayerConfigSceneController(
         for (comboBox in comboBoxes){
             comboBox.items = comboBoxColors
             comboBox.selectedItemProperty.addListener{_,newValue ->
-                comboBox.visual = returnColorfromString(newValue)
+                comboBox.visual = returnColorFromString(newValue)
                 playerConfigScene.startButton.isDisabled = !startIsAvailable()
             }
         }
@@ -230,7 +230,7 @@ class PlayerConfigSceneController(
         return colors.size == colors.distinct().size
     }
 
-    private fun returnColorfromString(color: String?): ColorVisual {
+    private fun returnColorFromString(color: String?): ColorVisual {
         checkNotNull(color) { "No color selected." }
         when (color) {
             "White" -> return ColorVisual(GameColor.white)
