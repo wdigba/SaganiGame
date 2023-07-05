@@ -22,7 +22,10 @@ class SaganiGameSceneController(
 ) : Refreshable {
 
     private var board: MutableMap<Location, Tile>
-    private var possibleMovements = mutableListOf<PossibleMovements>()
+
+    //private var possibleMovements = mutableListOf<PossibleMovements>()
+    private var possibleMovements = mutableListOf<CardView>()
+
 
     private var loadedBoardTiles = mutableMapOf<Location, Tile>()
 
@@ -34,7 +37,8 @@ class SaganiGameSceneController(
     private var currentZoom = LEVEL1
 
     private var chosenOfferDisplay = -1
-    val tileImageLoader = TileImageLoader()
+    private var chosenTileView: CardView
+    private val tileImageLoader = TileImageLoader()
 
     init {
         // Creates initial game
@@ -48,6 +52,7 @@ class SaganiGameSceneController(
         val game = checkNotNull(rootService.currentGame) { "There is no game." }
         board = game.actPlayer.board
         selectedTile = game.offerDisplay[0]
+        chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 90))
 
 
         //TODO Funktion
@@ -100,8 +105,6 @@ class SaganiGameSceneController(
         }
 
 
-
-
         val offers = listOf(
             saganiGameScene.offer1,
             saganiGameScene.offer2,
@@ -115,12 +118,27 @@ class SaganiGameSceneController(
                 if (game.offerDisplay.size > index) {
                     visual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
                 }
-                onMouseClicked = {
-                    chosenOfferDisplay = 1
-                    selectedTile = game.offerDisplay[index]
-                }
+                // onMouseClicked = {
+                //     chosenOfferDisplay = 1
+                //     selectedTile = game.offerDisplay[index]
+                //      drawPossiblePlacements()
+                // }
             }
         }
+
+        saganiGameScene.offer1.apply {
+            onMouseClicked = {
+                chosenOfferDisplay = 1
+                selectedTile = game.offerDisplay[0]
+                drawPossiblePlacements()
+                println(possibleMovements.size)
+
+
+                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
+                // println(board.size)
+            }
+        }
+
 
         // TODo: Karte in die Mitte legen
         saganiGameScene.cardStack.apply {
@@ -147,7 +165,8 @@ class SaganiGameSceneController(
             saganiGameScene.intermezzoOffer1,
             saganiGameScene.intermezzoOffer2,
             saganiGameScene.intermezzoOffer3,
-            saganiGameScene.intermezzoOffer4)
+            saganiGameScene.intermezzoOffer4
+        )
 
         intermezzoOffers.forEachIndexed { index, intermezzo ->
             intermezzo.apply {
@@ -157,22 +176,19 @@ class SaganiGameSceneController(
             }
         }
 
-        // currentZoom = LEVEL4
-        // saganiGameScene.tilePane.scale(currentZoom.scale)
+
 
         initScene()
-
     }
 
 
     //TODO
     private fun confirmPlacement() {
-        if (!tilePlaced) {
 
-            //TODO: Show Error
-            return
-        }
+
         saganiGameScene.tilePane.removeAll(possibleMovements)
+        possibleMovements.clear()
+
 
         val selectedPlacement = Location(selectedTilePlacement.posX.toInt(), selectedTilePlacement.posY.toInt())
 
@@ -180,26 +196,19 @@ class SaganiGameSceneController(
 
     }
 
-    private fun centerTilePane(){
+    private fun centerTilePane() {
         saganiGameScene.tilePane.posX = centerPosInTilePaneX
         saganiGameScene.tilePane.posY = centerPosInTilePaneY
     }
 
-
-
-    // Move faktor Abhängig vom Scale faktor (größer wenn rausgezoomt, kleiner wenn reingezoomt)
-
-
-
     private fun initScene() {
-        // geht erst alle y von 0 bis 960 in 120er schritten durch und dann ein x (120er schritte) weiter
+        // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
 
-
-        for (x in 0..1800 step 120) {
-            for (y in 0..960 step 120) {
+        for (x in 0..tilePaneWidth.toInt() step 120) {
+            for (y in 0..tilePaneHeight.toInt() step 120) {
                 loadedBoardViews.put(
                     Location(x, y),
-                    CardView(x, y, 120, 120, front = ColorVisual(255,255,255,50))
+                    CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50))
                 )
             }
         }
@@ -207,19 +216,18 @@ class SaganiGameSceneController(
 
         saganiGameScene.tilePane.addAll(loadedBoardViews.values)
 
-        for (tile in loadedBoardViews){
+        for (tile in loadedBoardViews) {
             tile.value.isVisible = false
+            tile.value.isDisabled = true
         }
 
-       // checkNotNull(loadedBoardViews.get(Location(840,480))).isVisible = true
+        // checkNotNull(loadedBoardViews.get(Location(840, 480))).isVisible = true
 
 
+        //TODO: SampleTile Weg?
+        saganiGameScene.sampleTile.isVisible = false
 
-
-        // Mitte trd sichtbar ? --> SampleTile kann dann weg
-        // Grid besteht dann aus eingeblendeten CardViews
-        // Liste besteht dann aus CardViews die eingeblendet werden
-
+        loadBoardTiles()
 
         /*
            if (!tilePlaced) {
@@ -233,9 +241,6 @@ class SaganiGameSceneController(
 
     //Ladet alle Tiles vom Board und added in Scene
     private fun loadBoardTiles() {
-
-        // Pane direkt mit allen card views laden -->
-        // ? Rechenaufwand zu groß ?
 
         //toDo Show Front?
 
@@ -257,7 +262,6 @@ class SaganiGameSceneController(
             }
         }
     }
-
 
 
     private fun initializeTileView(
@@ -290,18 +294,31 @@ class SaganiGameSceneController(
      * y = 0,12,240...
      */
     private fun isOccupied(x: Int, y: Int): Boolean {
-
         return board.containsKey(Location(x, y))
     }
 
 
     private fun drawPossiblePlacements() {
-        /* Player has not yet placed a tile -> place in the middle of the board (840,480) */
-        if (board.isEmpty()) {
-            possibleMovements += PossibleMovements(
-                x = 840,
-                y = 480,
-            )
+        /* Player has not yet placed a tile -> place in the middle of the board (centerPosInTilePane) */
+        if (board.size == 0) {
+            val centerCardView =
+                loadedBoardViews.get(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()))
+
+
+            if (centerCardView != null) {
+                possibleMovements.add(centerCardView)
+                centerCardView.isVisible = true
+                centerCardView.isDisabled = false
+                centerCardView.isFocusable = true
+                centerCardView.apply {
+                    onMouseClicked = {
+                        chosenTileView = centerCardView
+                        println(centerCardView.posX)
+                        executeTileMove()
+                    }
+                }
+            }
+
         }
 
         //TODO: Fehler Abfangen wenn ein Tile am Rand gesetzt wird. da sonst koordinate negativ
@@ -312,34 +329,103 @@ class SaganiGameSceneController(
             // y = it.key.second
             //Checks bottom
             if (!isOccupied(it.key.first + 120, it.key.second)) {
-                possibleMovements += PossibleMovements(
-                    x = it.key.first + 1,
-                    y = it.key.second,
-                )
+                val currentView = checkNotNull(
+                    loadedBoardViews.get(
+                        Location(
+                            it.key.first + 120,
+                            it.key.second
+                        )
+                    )
+                ) { "Something went wrong!" }
+                possibleMovements += currentView
+                currentView.isVisible = true
+                currentView.isDisabled = false
+                currentView.apply {
+                    onMouseClicked = {
+                        chosenTileView = currentView
+                        println(currentView.posX)
+                        executeTileMove()
+                    }
+                }
             }
             //Checks right
             if (!isOccupied(it.key.first, it.key.second + 120)) {
-                possibleMovements += PossibleMovements(
-                    x = it.key.first,
-                    y = it.key.second + 120,
-                )
+                val currentView = checkNotNull(
+                    loadedBoardViews.get(
+                        Location(
+                            it.key.first,
+                            it.key.second + 120
+                        )
+                    )
+                ) { "Something went wrong!" }
+                possibleMovements += currentView
+                currentView.isVisible = true
+                currentView.isDisabled = false
+                currentView.apply {
+                    onMouseClicked = {
+                        chosenTileView = currentView
+                        println(currentView.posX)
+                        executeTileMove()
+                    }
+                }
+
             }
             //checks top
             if (!isOccupied(it.key.first - 120, it.key.second)) {
-                possibleMovements += PossibleMovements(
-                    x = it.key.first - 120,
-                    y = it.key.second,
-                )
+                val currentView = checkNotNull(
+                    loadedBoardViews.get(
+                        Location(
+                            it.key.first - 120,
+                            it.key.second
+                        )
+                    )
+                ) { "Something went wrong!" }
+                possibleMovements += currentView
+                currentView.isVisible = true
+                currentView.isDisabled = false
+                currentView.apply {
+                    onMouseClicked = {
+                        chosenTileView = currentView
+                        println(currentView.posX)
+                        executeTileMove()
+                    }
+                }
             }
             //checks left
             if (!isOccupied(it.key.first, it.key.second - 120)) {
-                possibleMovements += PossibleMovements(
-                    x = it.key.first,
-                    y = it.key.second - 120,
-                )
+                val currentView = checkNotNull(
+                    loadedBoardViews.get(
+                        Location(
+                            it.key.first,
+                            it.key.second - 120
+                        )
+                    )
+                ) { "Something went wrong!" }
+                possibleMovements += currentView
+                currentView.isVisible = true
+                currentView.isDisabled = false
+                currentView.apply {
+                    onMouseClicked = {
+                        chosenTileView = currentView
+                        println(currentView.posX)
+                        executeTileMove()
+                    }
+                }
             }
         }
-        /* Add all [VisualGuideSpace]s to the scene and add functionality. */
+
+        /*
+                for(view in possibleMovements){
+                    view.apply {
+                        onMouseClicked = {
+                            chosenTileView = view
+                            println(view.posX )
+                            executeTileMove()
+                        }
+                    }
+                }*/
+
+        /*
         possibleMovements.forEach { space ->
             space.apply {
                 /* Place tile on a valid space */
@@ -355,11 +441,20 @@ class SaganiGameSceneController(
                 }
             }
         }
+        */
+
+    }
+
+    private fun executeTileMove() {
+
+        val tileImageLoader = TileImageLoader()
+
+        initializeTileView(selectedTile, chosenTileView, tileImageLoader, false)
 
 
     }
 
-
+    /*
     private fun testPlacement(x: Int, y: Int) {
         tilePlaced = true
         //ToDo: testTile()
@@ -371,7 +466,7 @@ class SaganiGameSceneController(
         }
 
         //TODO: Rotate?
-    }
+    }*/
 
 
 }
