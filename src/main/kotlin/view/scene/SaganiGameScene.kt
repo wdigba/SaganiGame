@@ -1,6 +1,5 @@
 package view.scene
 
-import service.TileImageLoader
 import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.container.LinearLayout
@@ -11,7 +10,6 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
-import tools.aqua.bgw.visual.ImageVisual
 import view.GameColor
 import view.Refreshable
 import view.StandardButton
@@ -23,8 +21,6 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     private val windowX = 1600
     private val windowY = 838
 
-    val tileImageLoader = TileImageLoader()
-
     /**
      * Upper Pane
      */
@@ -32,13 +28,12 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     /**
      * defines cardStack
      */
-    private val cardStack = CardStack<CardView>(
+    val cardStack = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 20,
         posY = 20,
-        visual = ImageVisual(tileImageLoader.getFrontImage(1))
-//        visual = ColorVisual(255, 255, 255, 50)
+        visual = ColorVisual(255, 255, 255, 50)
     )
 
     //Offer Display
@@ -86,20 +81,24 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
      */
     //---------------------------------------------------------
 
-    private val smallCardStack1 = CardStack<CardView>(
+    val smallCardStack1 = CardStack<CardView>(
         width = 100,
         height = 100,
         posX = 20,
         posY = 20,
         visual = ColorVisual(255, 255, 255, 50)
-    )
-    private val smallCardStack2 = CardStack<CardView>(
+    ).apply {
+        opacity = 0.3
+    }
+    val smallCardStack2 = CardStack<CardView>(
         width = 100,
         height = 100,
         posX = 20,
         posY = 150,
         visual = ColorVisual(255, 255, 255, 50)
-    )
+    ).apply {
+        opacity = 0.3
+    }
 
     private val soundDiscs = TokenView(
         width = 50,
@@ -172,35 +171,35 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     }
 
 
-    private val intermezzoOffer1 = CardStack<CardView>(
+    val intermezzoOffer1 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
         posY = 70,
         visual = ColorVisual(GameColor.chaletGreen)
     )
-    private val intermezzoOffer2 = CardStack<CardView>(
+    val intermezzoOffer2 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
         posY = 220,
         visual = ColorVisual(GameColor.chaletGreen)
     )
-    private val intermezzoOffer3 = CardStack<CardView>(
+    val intermezzoOffer3 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
         posY = 370,
         visual = ColorVisual(GameColor.chaletGreen)
     )
-    private val intermezzoOffer4 = CardStack<CardView>(
+    val intermezzoOffer4 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
         posY = 520,
         visual = ColorVisual(GameColor.chaletGreen)
     )
-    private val intermezzoOffer5 = CardStack<CardView>(
+    val intermezzoOffer5 = CardStack<CardView>(
         width = 120,
         height = 120,
         posX = 10,
@@ -324,7 +323,9 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
         //WIP !
 
-
+//        val game = rootService.currentGame
+//        checkNotNull(game)
+//        game.stacks.size
         initViewStructure()
 
         val upperPaneList = mutableListOf<ComponentView>(cardStack, offer1, offer2, offer3, offer4, offer5)

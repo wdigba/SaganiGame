@@ -34,6 +34,7 @@ class SaganiGameSceneController(
     private var currentZoom = LEVEL1
 
     private var chosenOfferDisplay = -1
+    val tileImageLoader = TileImageLoader()
 
     init {
         // Creates initial game
@@ -43,7 +44,6 @@ class SaganiGameSceneController(
             Triple("Polina", Color.GREY, PlayerType.HUMAN)
         )
         rootService.gameService.startNewGame(playerList)
-
 
         val game = checkNotNull(rootService.currentGame) { "There is no game." }
         board = game.actPlayer.board
@@ -92,34 +92,59 @@ class SaganiGameSceneController(
             }
         }
 
-        saganiGameScene.offer1.apply {
-            onMouseClicked = {
-                chosenOfferDisplay = 1
-                selectedTile = game.offerDisplay[0]
+
+        val offers = listOf(
+            saganiGameScene.offer1,
+            saganiGameScene.offer2,
+            saganiGameScene.offer3,
+            saganiGameScene.offer4,
+            saganiGameScene.offer5
+        )
+
+        offers.forEachIndexed { index, offer ->
+            offer.apply {
+                if (game.offerDisplay.size > index) {
+                    visual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
+                }
+                onMouseClicked = {
+                    chosenOfferDisplay = 1
+                    selectedTile = game.offerDisplay[index]
+                }
             }
         }
-        saganiGameScene.offer2.apply {
-            onMouseClicked = {
-                chosenOfferDisplay = 1
-                selectedTile = game.offerDisplay[1]
+
+        saganiGameScene.cardStack.apply {
+            if (game.stacks.size > 0) {
+                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
             }
         }
-        saganiGameScene.offer3.apply {
-            onMouseClicked = {
-                chosenOfferDisplay = 1
-                selectedTile = game.offerDisplay[2]
+
+        saganiGameScene.smallCardStack1.apply {
+            if (game.stacks.size in 25..48) {
+                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
+            } else if (rootService.currentGame!!.stacks.size > 48) {
+                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 48].id))
             }
         }
-        saganiGameScene.offer4.apply {
-            onMouseClicked = {
-                chosenOfferDisplay = 1
-                selectedTile = game.offerDisplay[3]
+
+        saganiGameScene.smallCardStack2.apply {
+            if (game.stacks.size > 48) {
+                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
             }
         }
-        saganiGameScene.offer5.apply {
-            onMouseClicked = {
-                chosenOfferDisplay = 1
-                selectedTile = game.offerDisplay[4]
+
+        val intermezzoOffers = listOf(
+            saganiGameScene.intermezzoOffer1,
+            saganiGameScene.intermezzoOffer2,
+            saganiGameScene.intermezzoOffer3,
+            saganiGameScene.intermezzoOffer4,
+            saganiGameScene.intermezzoOffer5)
+
+        intermezzoOffers.forEachIndexed { index, intermezzo ->
+            intermezzo.apply {
+                if (game.intermezzoStorage.size > index) {
+                    visual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
+                }
             }
         }
 

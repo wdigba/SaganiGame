@@ -10,11 +10,9 @@ import view.scene.*
 class SaganiApplication : BoardGameApplication("SoPra Game") {
     private val rootService = RootService()
 
-
     private val playerConfigScene = PlayerConfigScene()
     private val networkScene = NetworkScene()
     private val saganiGameScene = SaganiGameScene()
-
 
     private val playerConfigSceneController: PlayerConfigSceneController =
         PlayerConfigSceneController(playerConfigScene, rootService, this).apply {
@@ -38,9 +36,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             networkScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
-
         }
-
 
     private val configurationScene: ConfigurationScene = ConfigurationScene().apply {
         playersButton.onMouseClicked = {
@@ -53,9 +49,10 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             this@SaganiApplication.showMenuScene(networkScene)
         }
     }
+
     private val saganiGameSceneController: SaganiGameSceneController =
         SaganiGameSceneController(saganiGameScene, rootService)
-    private val ruleScene: RuleScene = RuleScene()
+    private val ruleScene: RuleScene = RuleScene(rootService)
 
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene().apply {
         playWithKIButton.onMouseClicked = {
@@ -78,6 +75,5 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
         this.showMenuScene(newGameMenuScene)
         this.showGameScene(saganiGameScene)
     }
-
 }
 

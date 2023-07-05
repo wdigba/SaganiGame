@@ -5,13 +5,11 @@ import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Integer.min
-import java.nio.file.Paths
-import javax.imageio.ImageIO
+import java.net.URI
 
 /**
  * [GameService] provides server function for the game
@@ -61,9 +59,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     fun createStacks(): MutableList<Tile> {
         // read each line of .csv-file
-        val lines = File(GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path).readLines()
-//        private val image : BufferedImage = ImageIO.read(CardImageLoader::class.java.getResource(CARDS_FILE))
-//        val lines = Paths.get("build/resources/main/tiles_colornames_v2.csv").toAbsolutePath().toFile().readLines()
+//        val lines = File(GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path).readLines()
+        val url = GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path
+        // Convert url to uri to which will remove the %20 (space) characters:
+        val uri = URI(url.toString())
+        val lines = File(uri.path).readLines()
+
+
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
         lines.forEach { line -> tiles.add(line.split(",")) }
