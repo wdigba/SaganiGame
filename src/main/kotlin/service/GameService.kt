@@ -52,6 +52,15 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 false
             )
         }
+
+        // If the start player is an AI, calculate its move
+        if (game.players[0].playerType == PlayerType.RANDOM_AI) {
+            Thread.sleep(200) //TODO: Change to time selected
+            rootService.kIServiceRandom.calculateRandomMove()
+        } else if (game.players[0].playerType == PlayerType.BEST_AI) {
+            Thread.sleep(200) //TODO: Change to time selected
+            rootService.kIService.playBestMove()
+        }
     }
 
     /**
@@ -292,6 +301,15 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         } else {
             validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
+
+            // If the next player is an AI, calculate its move
+            if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
+                Thread.sleep(200) //TODO: Change to time selected
+                rootService.kIServiceRandom.calculateRandomMove()
+            } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
+                Thread.sleep(200) //TODO: Change to time selected
+                rootService.kIService.playBestMove()
+            }
         }
     }
 
