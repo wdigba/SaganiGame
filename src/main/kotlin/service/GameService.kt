@@ -9,11 +9,19 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Integer.min
+import java.nio.file.Paths
 
 /**
  * [GameService] provides server function for the game
  */
 class GameService(private val rootService: RootService) : AbstractRefreshingService() {
+
+    /**
+     * The time in milliseconds that the AI waits before calculating its move.
+     * Default is the medium speed setting representing 1000ms.
+     */
+    var simulationTime = 750
+
     /**
      * [startNewGame] creates a new game
      */
@@ -51,6 +59,15 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 false
             )
         }
+
+        // If the start player is an AI, calculate its move
+        if (game.players[0].playerType == PlayerType.RANDOM_AI) {
+            Thread.sleep(200) //TODO: Change to time selected
+            rootService.kIServiceRandom.calculateRandomMove()
+        } else if (game.players[0].playerType == PlayerType.BEST_AI) {
+            Thread.sleep(200) //TODO: Change to time selected
+            rootService.kIService.playBestMove()
+        }
     }
 
     /**
@@ -58,7 +75,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     fun createStacks(): MutableList<Tile> {
         // read each line of .csv-file
-        val lines = File(GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path).readLines()
+        val lines = Paths.get("build/resources/main/tiles_colornames_v2.csv").toAbsolutePath().toFile().readLines()
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
         lines.forEach { line -> tiles.add(line.split(",")) }
@@ -293,6 +310,15 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         } else {
             validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
+
+            // If the next player is an AI, calculate its move
+            if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
+                Thread.sleep(simulationTime.toLong())
+                rootService.kIServiceRandom.calculateRandomMove()
+            } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
+                Thread.sleep(simulationTime.toLong())
+                rootService.kIService.playBestMove()
+            }
         }
 
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {

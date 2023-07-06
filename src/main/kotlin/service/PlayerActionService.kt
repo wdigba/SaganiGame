@@ -138,9 +138,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
-     * [skipIntermezzo] is called when a player skips their intermezzo turn.
+     * [skipIntermezzoTurn] is called when a player skips their intermezzo turn.
      */
-    fun skipIntermezzo() {
+    fun skipIntermezzoTurn() {
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
