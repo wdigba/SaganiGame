@@ -332,6 +332,16 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
                     game.players[0], setOf(Location(0, 0)), false
                 )
             }
+
+            // If it's our turn, and we are an AI, calculate the next move
+            if (networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
+                if (this.playerType == PlayerType.RANDOM_AI) {
+                    networkService.rootService.kIServiceRandom.calculateRandomMove()
+                } else if (this.playerType == PlayerType.BEST_AI) {
+                    networkService.rootService.kIService.playBestMove()
+                }
+            }
+
         }
     }
 
