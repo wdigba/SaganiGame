@@ -54,6 +54,8 @@ class SaganiGameSceneController(
         chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 90))
 
 
+
+
         //TODO Funktion
         saganiGameScene.testButton.apply {
             onMouseClicked = {
@@ -231,9 +233,15 @@ class SaganiGameSceneController(
             }
         }
 
-        saganiGameScene.tilePane.addAll(loadedBoardViews.values)
+
+
+
+
+
+       // saganiGameScene.i.addAll(loadedBoardViews.values)
 
         for (tile in loadedBoardViews) {
+
             tile.value.isVisible = false
             tile.value.isDisabled = true
         }
@@ -242,7 +250,10 @@ class SaganiGameSceneController(
 
 
         //TODO: SampleTile Weg?
-        saganiGameScene.sampleTile.isVisible = false
+       // saganiGameScene.sampleTile.isVisible = true
+        //saganiGameScene.sampleTile.isFocusable = true
+
+
 
         loadBoardTiles()
 
@@ -329,6 +340,9 @@ class SaganiGameSceneController(
                 }
             }
 
+        }
+        for (tile in possibleMovements){
+            saganiGameScene.innerGridPane.set(1,0,tile)
         }
 
         //TODO: Fehler Abfangen wenn ein Tile am Rand gesetzt wird. da sonst koordinate negativ

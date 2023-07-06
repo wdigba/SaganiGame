@@ -1,7 +1,6 @@
 package view.scene
 
 import tools.aqua.bgw.components.ComponentView
-import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.container.LinearLayout
 import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.components.gamecomponentviews.TokenView
@@ -15,9 +14,6 @@ import java.awt.Color
 
 
 class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
-
-    private val windowX = 1600
-    private val windowY = 838
 
     /**
      * Upper Pane
@@ -120,11 +116,33 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
      * Tile Pane
      */
     //----------------------------------------------------------
-    private val upperPane = Pane<ComponentView>(0, 0, upperPaneWidth, upperPaneHeight, visual = ColorVisual(Color.CYAN))
-    private val bottomPane =
-        Pane<ComponentView>(0, 0, bottomPaneWidth, bottomPaneHeight, visual = ColorVisual(Color.MAGENTA))
-    private val leftPane = Pane<ComponentView>(0, 0, leftPaneWidth, leftPaneHeight, visual = ColorVisual(Color.ORANGE))
-    private val rightPane = Pane<ComponentView>(0, 0, rightPaneWidth, rightPaneHeight, visual = ColorVisual(Color.PINK))
+    private val upperPane = Pane<ComponentView>(
+        0,
+        0,
+        upperPaneWidth,
+        upperPaneHeight,
+        visual = ColorVisual(Color.CYAN))
+
+    private val bottomPane = Pane<ComponentView>(
+        0,
+        0,
+        bottomPaneWidth,
+        bottomPaneHeight,
+        visual = ColorVisual(Color.MAGENTA))
+
+    private val leftPane = Pane<ComponentView>(
+        0,
+        0,
+        leftPaneWidth,
+        leftPaneHeight,
+        visual = ColorVisual(Color.ORANGE))
+
+    private val rightPane = Pane<ComponentView>(
+        0,
+        0,
+        rightPaneWidth,
+        rightPaneHeight,
+        visual = ColorVisual(Color.PINK))
 
     val tilePane = Pane<ComponentView>(
         width = 4440,
@@ -142,8 +160,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     var sampleTile = CardView(
         width = standardTileViewWidth,
         height = standardTileViewHeight,
-        posX = centerPosInTilePaneX,
-        posY = centerPosInTilePaneY,
+        posX = centerPosInTilePaneX - 100,
+        posY = centerPosInTilePaneY - 100,
         front = ColorVisual(255, 255, 255, 50)
     )
 
@@ -190,14 +208,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 120,
         height = 120,
         posX = 10,
-        posY = 208,
+        posY = 256,
         front = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer3 = CardView(
         width = 120,
         height = 120,
         posX = 10,
-        posY = 412,
+        posY = 462,
         front = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer4 = CardView(
@@ -330,7 +348,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
 
     private val outerGridPane = GridPane<ComponentView>(columns = 1, rows = 3, layoutFromCenter = false)
-    private val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1, layoutFromCenter = false)
+     val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1, layoutFromCenter = false)
 
 
     //-----------------------------------------------------------------------
@@ -370,6 +388,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             intermezzoOffer4
         )
 
+       // innerGridPane.set(1,0,sampleTile)
+
 
         val bottomPaneList =
             mutableListOf<ComponentView>(
@@ -390,7 +410,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
 
 
-        tilePane.add(sampleTile)
+       // tilePane.add(sampleTile)
+
+        sampleTile.apply {
+            onMouseClicked = {
+                println("HEELLOO")
+            }
+        }
+
 
 
         addComponentsToPane(upperPane, upperPaneList)
