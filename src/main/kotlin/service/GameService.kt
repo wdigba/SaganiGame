@@ -18,7 +18,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
     /**
      * The time in milliseconds that the AI waits before calculating its move.
-     * Default is the medium speed setting representing 1000ms.
+     * Default is the medium speed setting representing 750ms.
      */
     var simulationTime = 750
 
@@ -62,10 +62,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // If the start player is an AI, calculate its move
         if (game.players[0].playerType == PlayerType.RANDOM_AI) {
-            Thread.sleep(200) //TODO: Change to time selected
+            Thread.sleep(simulationTime.toLong())
             rootService.kIServiceRandom.calculateRandomMove()
         } else if (game.players[0].playerType == PlayerType.BEST_AI) {
-            Thread.sleep(200) //TODO: Change to time selected
+            Thread.sleep(simulationTime.toLong())
             rootService.kIService.playBestMove()
         }
     }
