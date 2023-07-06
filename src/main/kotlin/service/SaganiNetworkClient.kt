@@ -281,8 +281,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             networkService.rootService.playerActionService.placeTile(
                 tile, direction, position, false
             )
-
-            lastTurnChecksum = null
         }
     }
 
