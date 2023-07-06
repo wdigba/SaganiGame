@@ -241,8 +241,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
         if (players.first().name == playerName) {
             networkService.connectionState = ConnectionState.PLAYING_MY_TURN
-            Thread.sleep(100)
-            networkService.rootService.kIServiceRandom.calculateRandomMove()
         } else {
             networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
         }
