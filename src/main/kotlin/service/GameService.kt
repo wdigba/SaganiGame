@@ -15,6 +15,13 @@ import java.nio.file.Paths
  * [GameService] provides server function for the game
  */
 class GameService(private val rootService: RootService) : AbstractRefreshingService() {
+
+    /**
+     * The time in milliseconds that the AI waits before calculating its move.
+     * Default is the medium speed setting representing 1000ms.
+     */
+    var simulationTime = 1000
+
     /**
      * [startNewGame] creates a new game
      */
@@ -122,7 +129,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // New Counter
         var newPoints = points
         var newDiscPile = discPile
-        val arrowCount = mutableListOf<Pair<Arrow,Int>>()
+        val arrowCount = mutableListOf<Pair<Arrow, Int>>()
         var boughtCacoDiscs = 0
         //collect all newly fulfilled arrows in a list
         for (direction in Direction.values()) {
@@ -134,7 +141,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             filteredBoard.values.forEach {
                 it.arrows.forEach { arrow ->
                     if (arrow.direction == Direction.values()[(direction.ordinal + 4) % 8] && arrow.disc.isEmpty()) {
-                        arrowCount.add(Pair(arrow,it.id))
+                        arrowCount.add(Pair(arrow, it.id))
                     }
                 }
             }
@@ -162,15 +169,16 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         //check if arrows of the new Tile are fulfilled
         for (arrow in newTile.arrows) {
-            var filteredBoard = rootService.playerActionService.filterInDirection(player.board, arrow.direction, location)
-            filteredBoard =  filteredBoard.filterValues { it.element == arrow.element }
+            var filteredBoard =
+                rootService.playerActionService.filterInDirection(player.board, arrow.direction, location)
+            filteredBoard = filteredBoard.filterValues { it.element == arrow.element }
             if (filteredBoard.isNotEmpty()) {
-                arrowCount.add(Pair(arrow,newTile.id))
+                arrowCount.add(Pair(arrow, newTile.id))
             }
         }
         //add points and put the discs back, if all arrows of the new Tile are fulfilled
         val idSortedArrows = arrowCount.filter { it.second == newTile.id }
-        if (newTile.discs.size +idSortedArrows.size == newTile.arrows.size) {
+        if (newTile.discs.size + idSortedArrows.size == newTile.arrows.size) {
             newPoints += newTile.points
             newDiscPile += newTile.arrows.size
         }
@@ -304,10 +312,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
             // If the next player is an AI, calculate its move
             if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
-                Thread.sleep(200) //TODO: Change to time selected
+                Thread.sleep(simulationTime.toLong())
                 rootService.kIServiceRandom.calculateRandomMove()
             } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
-                Thread.sleep(200) //TODO: Change to time selected
+                Thread.sleep(simulationTime.toLong())
                 rootService.kIService.playBestMove()
             }
         }

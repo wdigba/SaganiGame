@@ -4,6 +4,7 @@ import service.RootService
 import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.container.LinearLayout
 import tools.aqua.bgw.components.gamecomponentviews.CardView
+import tools.aqua.bgw.components.uicomponents.ComboBox
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.BoardGameScene
@@ -41,6 +42,29 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
         width = 50, height = 50,
         text = "rotate"
     )
+
+    private val simulationSpeedLabel = Label(
+        posX = 1350, posY = 980,
+        width = 150, height = 50,
+        text = "Simulation Speed"
+    )
+
+    private val simulationSpeedDropDown = ComboBox(
+        posX = 1500, posY = 980,
+        width = 100, height = 50,
+        items = listOf("Fast", "Normal", "Slow"),
+        prompt = "Simulation Speed"
+    ).apply {
+        selectedItem = "Normal"
+        selectedItemProperty.addListener { _, newValue ->
+            rootService.gameService.simulationTime = when (newValue) {
+                "Fast" -> 200
+                "Normal" -> 750
+                "Slow" -> 2000
+                else -> error("Invalid simulation speed")
+            }
+        }
+    }
 
     private val confirmButton = StandardButton(
         posX = 800, posY = 980,
@@ -96,7 +120,8 @@ class SaganiGameScene(private val rootService: RootService) : BoardGameScene(192
             headlineLabel,
             undoButton, redoButton,
             midCardsView, cardStack, smallcardStack, smallcardStack2,
-            rotateButton, scoreButton, confirmButton
+            rotateButton, scoreButton, confirmButton,
+            simulationSpeedLabel, simulationSpeedDropDown
         )
     }
 
