@@ -17,8 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class SaganiGameSceneController(
-    private val saganiGameScene: SaganiGameScene,
-    private val rootService: RootService
+    private val saganiGameScene: SaganiGameScene, private val rootService: RootService
 ) : Refreshable {
 
     private var board: MutableMap<Location, Tile>
@@ -56,6 +55,25 @@ class SaganiGameSceneController(
 
 
         //TODO Funktion
+        saganiGameScene.testButton.apply {
+            onMouseClicked = {
+                saganiGameScene.offer1.apply {
+                    if (game.offerDisplay.size > 0) {
+                        chosenTileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[0].id))
+                        chosenTileView.backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[0].id))
+                        chosenTileView.flip()
+                        game.offerDisplay.removeFirst()
+                    }
+                    if (game.offerDisplay.size > 0) {
+                        frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[0].id))
+                        backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[0].id))
+                    } else {
+                        visual = ColorVisual(255, 255, 255, 50)
+                    }
+                }
+            }
+        }
+
         saganiGameScene.confirmButton.apply {
             onMouseClicked = {
                 confirmPlacement()
@@ -65,8 +83,7 @@ class SaganiGameSceneController(
         saganiGameScene.zoomInButton.apply {
             onMouseClicked = {
                 println(ZoomLevels.values()[min(ZoomLevels.values().size - 1, currentZoom.ordinal + 1)])
-                currentZoom =
-                    ZoomLevels.values()[min(ZoomLevels.values().size - 1, currentZoom.ordinal + 1)]
+                currentZoom = ZoomLevels.values()[min(ZoomLevels.values().size - 1, currentZoom.ordinal + 1)]
                 saganiGameScene.tilePane.scale(currentZoom.scale)
             }
         }
@@ -104,7 +121,6 @@ class SaganiGameSceneController(
             }
         }
 
-
         val offers = listOf(
             saganiGameScene.offer1,
             saganiGameScene.offer2,
@@ -116,7 +132,9 @@ class SaganiGameSceneController(
         offers.forEachIndexed { index, offer ->
             offer.apply {
                 if (game.offerDisplay.size > index) {
-                    visual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
+                    frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
+                    backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[index].id))
+                    flip()
                 }
                 // onMouseClicked = {
                 //     chosenOfferDisplay = 1
@@ -143,21 +161,25 @@ class SaganiGameSceneController(
         // TODo: Karte in die Mitte legen
         saganiGameScene.cardStack.apply {
             if (game.stacks.size > 0) {
-                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[0].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
             }
         }
 
         saganiGameScene.smallCardStack1.apply {
             if (game.stacks.size in 25..48) {
-                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
             } else if (rootService.currentGame!!.stacks.size > 48) {
-                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 48].id))
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 48].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 48].id))
             }
         }
 
         saganiGameScene.smallCardStack2.apply {
             if (game.stacks.size > 48) {
-                visual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
             }
         }
 
@@ -171,12 +193,11 @@ class SaganiGameSceneController(
         intermezzoOffers.forEachIndexed { index, intermezzo ->
             intermezzo.apply {
                 if (game.intermezzoStorage.size > index) {
-                    visual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
+                    frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
+                    backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
                 }
             }
         }
-
-
 
         initScene()
     }
@@ -185,10 +206,8 @@ class SaganiGameSceneController(
     //TODO
     private fun confirmPlacement() {
 
-
         saganiGameScene.tilePane.removeAll(possibleMovements)
         possibleMovements.clear()
-
 
         val selectedPlacement = Location(selectedTilePlacement.posX.toInt(), selectedTilePlacement.posY.toInt())
 
@@ -207,12 +226,10 @@ class SaganiGameSceneController(
         for (x in 0..tilePaneWidth.toInt() step 120) {
             for (y in 0..tilePaneHeight.toInt() step 120) {
                 loadedBoardViews.put(
-                    Location(x, y),
-                    CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50))
+                    Location(x, y), CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50))
                 )
             }
         }
-
 
         saganiGameScene.tilePane.addAll(loadedBoardViews.values)
 
@@ -254,10 +271,7 @@ class SaganiGameSceneController(
 
             if (tileView != null) {
                 initializeTileView(
-                    tile = it.value,
-                    tileView,
-                    tileImageLoader = tileImageLoader,
-                    flip = false
+                    tile = it.value, tileView, tileImageLoader = tileImageLoader, flip = false
                 )
             }
         }
@@ -265,10 +279,7 @@ class SaganiGameSceneController(
 
 
     private fun initializeTileView(
-        tile: Tile,
-        tileView: CardView,
-        tileImageLoader: TileImageLoader,
-        flip: Boolean
+        tile: Tile, tileView: CardView, tileImageLoader: TileImageLoader, flip: Boolean
     ) {
 
         tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
@@ -298,8 +309,7 @@ class SaganiGameSceneController(
     }
 
 
-    private fun drawPossiblePlacements() {
-        /* Player has not yet placed a tile -> place in the middle of the board (centerPosInTilePane) */
+    private fun drawPossiblePlacements() {/* Player has not yet placed a tile -> place in the middle of the board (centerPosInTilePane) */
         if (board.size == 0) {
             val centerCardView =
                 loadedBoardViews.get(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()))
@@ -332,8 +342,7 @@ class SaganiGameSceneController(
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
                         Location(
-                            it.key.first + 120,
-                            it.key.second
+                            it.key.first + 120, it.key.second
                         )
                     )
                 ) { "Something went wrong!" }
@@ -353,8 +362,7 @@ class SaganiGameSceneController(
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
                         Location(
-                            it.key.first,
-                            it.key.second + 120
+                            it.key.first, it.key.second + 120
                         )
                     )
                 ) { "Something went wrong!" }
@@ -375,8 +383,7 @@ class SaganiGameSceneController(
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
                         Location(
-                            it.key.first - 120,
-                            it.key.second
+                            it.key.first - 120, it.key.second
                         )
                     )
                 ) { "Something went wrong!" }
@@ -396,8 +403,7 @@ class SaganiGameSceneController(
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
                         Location(
-                            it.key.first,
-                            it.key.second - 120
+                            it.key.first, it.key.second - 120
                         )
                     )
                 ) { "Something went wrong!" }

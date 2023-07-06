@@ -26,49 +26,49 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     /**
      * defines cardStack
      */
-    val cardStack = CardStack<CardView>(
+    val cardStack = CardView(
         width = 120,
         height = 120,
         posX = 20,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     )
 
     //Offer Display
-    val offer1 = CardStack<CardView>(
+    val offer1 = CardView(
         width = 120,
         height = 120,
         posX = 450,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     )
-    val offer2 = CardStack<CardView>(
+    val offer2 = CardView(
         width = 120,
         height = 120,
         posX = 650,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     )
-    val offer3 = CardStack<CardView>(
+    val offer3 = CardView(
         width = 120,
         height = 120,
         posX = 850,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     )
-    val offer4 = CardStack<CardView>(
+    val offer4 = CardView(
         width = 120,
         height = 120,
         posX = 1050,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     )
-    val offer5 = CardStack<CardView>(
+    val offer5 = CardView(
         width = 120,
         height = 120,
         posX = 1250,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     )
 
     //---------------------------------------------------------
@@ -79,21 +79,21 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
      */
     //---------------------------------------------------------
 
-    val smallCardStack1 = CardStack<CardView>(
+    val smallCardStack1 = CardView(
         width = 100,
         height = 100,
         posX = 20,
         posY = 20,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     ).apply {
         opacity = 0.3
     }
-    val smallCardStack2 = CardStack<CardView>(
+    val smallCardStack2 = CardView(
         width = 100,
         height = 100,
         posX = 20,
         posY = 150,
-        visual = ColorVisual(255, 255, 255, 50)
+        front = ColorVisual(255, 255, 255, 50)
     ).apply {
         opacity = 0.3
     }
@@ -179,33 +179,33 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     }
 
 
-    val intermezzoOffer1 = CardStack<CardView>(
+    val intermezzoOffer1 = CardView(
         width = 120,
         height = 120,
         posX = 10,
         posY = 50,
-        visual = ColorVisual(GameColor.chaletGreen)
+        front = ColorVisual(GameColor.chaletGreen)
     )
-    val intermezzoOffer2 = CardStack<CardView>(
+    val intermezzoOffer2 = CardView(
         width = 120,
         height = 120,
         posX = 10,
         posY = 208,
-        visual = ColorVisual(GameColor.chaletGreen)
+        front = ColorVisual(GameColor.chaletGreen)
     )
-    val intermezzoOffer3 = CardStack<CardView>(
+    val intermezzoOffer3 = CardView(
         width = 120,
         height = 120,
         posX = 10,
         posY = 412,
-        visual = ColorVisual(GameColor.chaletGreen)
+        front = ColorVisual(GameColor.chaletGreen)
     )
-    val intermezzoOffer4 = CardStack<CardView>(
+    val intermezzoOffer4 = CardView(
         width = 120,
         height = 120,
         posX = 10,
         posY = 670,
-        visual = ColorVisual(GameColor.chaletGreen)
+        front = ColorVisual(GameColor.chaletGreen)
     )
 
 
@@ -245,6 +245,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         posX = 350,
         posY = 20,
         text = "ROTATE"
+    )
+
+    val testButton = StandardButton(
+        width = 100,
+        height = 50,
+        posX = 460,
+        posY = 20,
+        text = "TEST"
     )
 
     val confirmButton = StandardButton(
@@ -329,12 +337,28 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
 
     init {
-
         //WIP !
 
 //        val game = rootService.currentGame
 //        checkNotNull(game)
 //        game.stacks.size
+
+        offer1.isDraggable = true
+
+        offer1.onDragGestureEnded = { _, success ->
+            if (success) {
+                offer1.isDraggable = false
+            }
+        }
+
+        soundDiscs.isDraggable = true
+        soundDiscs.onDragGestureEnded = { _, success ->
+            if (success) {
+                soundDiscs.isDraggable = false
+            }
+        }
+
+
         initViewStructure()
 
         val upperPaneList = mutableListOf<ComponentView>(cardStack, offer1, offer2, offer3, offer4, offer5)
@@ -354,6 +378,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
                 scoreButton,
                 confirmButton,
                 rotateButton,
+                testButton,
                 zoomInButton,
                 zoomOutButton,
                 moveLeftButton,

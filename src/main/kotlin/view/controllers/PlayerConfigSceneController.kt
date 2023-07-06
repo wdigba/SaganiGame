@@ -62,7 +62,7 @@ class PlayerConfigSceneController(
 //                playerNames.removeIf() { it.isEmpty() }
 
                 //neues Spiel starten
-//                rootService.gameService.startNewGame(playerInfos)
+                rootService.gameService.startNewGame(playerInfos)
             }
         }
 
