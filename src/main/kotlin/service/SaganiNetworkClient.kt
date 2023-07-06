@@ -88,8 +88,8 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
             when (response.status) {
                 CreateGameResponseStatus.SUCCESS -> {
-                    networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
                     sessionID = response.sessionID
+                    networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
                 }
 
                 else -> disconnectAndError(response.status)
@@ -136,6 +136,11 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             }
 
             otherPlayers += notification.sender
+
+            networkService.onAllRefreshables {
+                val players = listOf(playerName) + otherPlayers
+                refreshAfterPlayerListChange(players)
+            }
         }
     }
 
@@ -146,6 +151,11 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
     override fun onPlayerLeft(notification: PlayerLeftNotification) {
         BoardGameApplication.runOnGUIThread {
             otherPlayers -= notification.sender
+
+            networkService.onAllRefreshables {
+                val players = listOf(playerName) + otherPlayers
+                refreshAfterPlayerListChange(players)
+            }
         }
     }
 

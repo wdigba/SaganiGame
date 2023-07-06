@@ -19,15 +19,16 @@ class RootService {
     var currentGame: Sagani? = null
 
     /**
-     * Add [refreshable] in gameService und playerActionService
+     * Add [refreshable] in [GameService], [PlayerActionService] and [NetworkService].
      */
     private fun addRefreshable(refreshable: view.Refreshable) {
         gameService.addRefreshable(refreshable)
         playerActionService.addRefreshable(refreshable)
+        networkService.addRefreshable(refreshable)
     }
 
     /**
-     * Add multiple [refreshable] in gameService und playerActionService
+     * Add multiple [refreshable] in [GameService], [PlayerActionService] and [NetworkService].
      */
     fun addEachRefreshable(vararg refreshable: view.Refreshable) {
         refreshable.forEach { addRefreshable(it) }

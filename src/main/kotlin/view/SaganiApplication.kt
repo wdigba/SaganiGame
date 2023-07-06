@@ -74,6 +74,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
     init {
         this.showMenuScene(newGameMenuScene)
         this.showGameScene(saganiGameScene)
+        rootService.addEachRefreshable(NetworkConfigScene)
     }
 }
 

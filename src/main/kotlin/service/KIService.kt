@@ -135,7 +135,7 @@ class KIService(private val rootService: RootService) {
             if (move.score >= intermezzoScoreThreshold) { // do move only if it's a good move
                 rootService.playerActionService.placeTile(move.tile, move.direction, move.location)
             } else {
-                rootService.playerActionService.skipIntermezzo()
+                rootService.playerActionService.skipIntermezzoTurn()
             }
             return
         }
