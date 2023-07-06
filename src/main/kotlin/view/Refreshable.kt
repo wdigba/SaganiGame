@@ -4,6 +4,10 @@ import Location
 import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Player
 import entity.Tile
+import service.RootService
+import tools.aqua.bgw.core.Scene
+import tools.aqua.bgw.visual.ImageVisual
+import view.scene.SaganiGameScene
 
 /**
  * [Refreshable] enables to refresh GUI in service layer functions

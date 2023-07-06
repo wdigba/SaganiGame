@@ -14,7 +14,6 @@ import java.awt.Color
 
 
 class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
-
     /**
      * Upper Pane
      */
@@ -361,22 +360,6 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 //        checkNotNull(game)
 //        game.stacks.size
 
-        offer1.isDraggable = true
-
-        offer1.onDragGestureEnded = { _, success ->
-            if (success) {
-                offer1.isDraggable = false
-            }
-        }
-
-        soundDiscs.isDraggable = true
-        soundDiscs.onDragGestureEnded = { _, success ->
-            if (success) {
-                soundDiscs.isDraggable = false
-            }
-        }
-
-
         initViewStructure()
 
         val upperPaneList = mutableListOf<ComponentView>(cardStack, offer1, offer2, offer3, offer4, offer5)
@@ -389,7 +372,6 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         )
 
        // innerGridPane.set(1,0,sampleTile)
-
 
         val bottomPaneList =
             mutableListOf<ComponentView>(
@@ -408,8 +390,6 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
                 homeButton
             )
 
-
-
        // tilePane.add(sampleTile)
 
         sampleTile.apply {
@@ -417,8 +397,6 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
                 println("HEELLOO")
             }
         }
-
-
 
         addComponentsToPane(upperPane, upperPaneList)
         addComponentsToPane(leftPane, leftPaneList)

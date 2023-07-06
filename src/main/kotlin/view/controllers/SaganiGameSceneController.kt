@@ -4,6 +4,7 @@ import service.RootService
 import view.scene.SaganiGameScene
 import Location
 import entity.Color
+import entity.Player
 import entity.PlayerType
 import entity.Tile
 import service.TileImageLoader
@@ -54,25 +55,12 @@ class SaganiGameSceneController(
         chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 90))
 
 
-
-
         //TODO Funktion
         saganiGameScene.testButton.apply {
             onMouseClicked = {
-                saganiGameScene.offer1.apply {
-                    if (game.offerDisplay.size > 0) {
-                        chosenTileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[0].id))
-                        chosenTileView.backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[0].id))
-                        chosenTileView.flip()
-                        game.offerDisplay.removeFirst()
-                    }
-                    if (game.offerDisplay.size > 0) {
-                        frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[0].id))
-                        backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[0].id))
-                    } else {
-                        visual = ColorVisual(255, 255, 255, 50)
-                    }
-                }
+                val selectedPlacement =
+                    Location(selectedTilePlacement.posX.toInt() - 2060, selectedTilePlacement.posY.toInt() - 2060)
+                refreshAfterPlaceTile(game.actPlayer, selectedTile, selectedPlacement)
             }
         }
 
@@ -148,17 +136,21 @@ class SaganiGameSceneController(
 
         saganiGameScene.offer1.apply {
             onMouseClicked = {
-                chosenOfferDisplay = 1
+//                chosenOfferDisplay = 1
                 selectedTile = game.offerDisplay[0]
                 drawPossiblePlacements()
-                println(possibleMovements.size)
-
+//                println(possibleMovements.size)
 
                 // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
                 // println(board.size)
             }
         }
 
+        saganiGameScene.sampleTile.apply {
+            onMouseClicked = {
+                println("Clicked")
+            }
+        }
 
         // TODo: Karte in die Mitte legen
         saganiGameScene.cardStack.apply {
@@ -208,13 +200,18 @@ class SaganiGameSceneController(
     //TODO
     private fun confirmPlacement() {
 
+        val game = rootService.currentGame
+        checkNotNull(game)
+
         saganiGameScene.tilePane.removeAll(possibleMovements)
         possibleMovements.clear()
 
-        val selectedPlacement = Location(selectedTilePlacement.posX.toInt(), selectedTilePlacement.posY.toInt())
+        val selectedPlacement =
+            Location(selectedTilePlacement.posX.toInt() - 2060, selectedTilePlacement.posY.toInt() - 2060)
 
         rootService.playerActionService.placeTile(selectedTile, selectedTile.direction, selectedPlacement)
 
+        refreshAfterPlaceTile(game.actPlayer, selectedTile, selectedPlacement)
     }
 
     private fun centerTilePane() {
@@ -234,11 +231,7 @@ class SaganiGameSceneController(
         }
 
 
-
-
-
-
-       // saganiGameScene.i.addAll(loadedBoardViews.values)
+        // saganiGameScene.i.addAll(loadedBoardViews.values)
 
         for (tile in loadedBoardViews) {
 
@@ -250,9 +243,8 @@ class SaganiGameSceneController(
 
 
         //TODO: SampleTile Weg?
-       // saganiGameScene.sampleTile.isVisible = true
+        // saganiGameScene.sampleTile.isVisible = true
         //saganiGameScene.sampleTile.isFocusable = true
-
 
 
         loadBoardTiles()
@@ -281,20 +273,16 @@ class SaganiGameSceneController(
             val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
 
             if (tileView != null) {
-                initializeTileView(
-                    tile = it.value, tileView, tileImageLoader = tileImageLoader, flip = false
-                )
+                initializeTileView(tile = it.value, tileView, flip = false)
             }
         }
     }
 
 
-    private fun initializeTileView(
-        tile: Tile, tileView: CardView, tileImageLoader: TileImageLoader, flip: Boolean
-    ) {
+    private fun initializeTileView(tile: Tile, tileView: CardView, flip: Boolean = true) {
+        val tileImageLoader = TileImageLoader()
 
         tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
-
         tileView.backVisual = ImageVisual(tileImageLoader.getBackImage(tile.id))
 
         // cardMap.add(card to cardView)
@@ -341,8 +329,8 @@ class SaganiGameSceneController(
             }
 
         }
-        for (tile in possibleMovements){
-            saganiGameScene.innerGridPane.set(1,0,tile)
+        for (tile in possibleMovements) {
+            saganiGameScene.innerGridPane.set(1, 0, tile)
         }
 
         //TODO: Fehler Abfangen wenn ein Tile am Rand gesetzt wird. da sonst koordinate negativ
@@ -463,14 +451,12 @@ class SaganiGameSceneController(
         }
         */
 
+
     }
 
     private fun executeTileMove() {
 
-        val tileImageLoader = TileImageLoader()
-
-        initializeTileView(selectedTile, chosenTileView, tileImageLoader, false)
-
+        initializeTileView(selectedTile, chosenTileView, true)
 
     }
 
@@ -487,6 +473,73 @@ class SaganiGameSceneController(
 
         //TODO: Rotate?
     }*/
+
+    override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
+
+        // Search for the tile and reload offerstack, offers or intermezzo
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        val offers = listOf(
+            saganiGameScene.offer1,
+            saganiGameScene.offer2,
+            saganiGameScene.offer3,
+            saganiGameScene.offer4,
+            saganiGameScene.offer5
+        )
+
+        offers.forEachIndexed { index, offer ->
+            offer.apply {
+                if (game.offerDisplay.size > index) {
+                    frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
+                    backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[index].id))
+                } else {
+                    backVisual = ColorVisual.LIGHT_GRAY
+                }
+
+            }
+        }
+
+        val intermezzoOffers = listOf(
+            saganiGameScene.intermezzoOffer1,
+            saganiGameScene.intermezzoOffer2,
+            saganiGameScene.intermezzoOffer3,
+            saganiGameScene.intermezzoOffer4
+        )
+
+        intermezzoOffers.forEachIndexed { index, intermezzo ->
+            intermezzo.apply {
+                if (game.intermezzoStorage.size > index) {
+                    frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
+                    backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
+                }
+            }
+        }
+
+        saganiGameScene.cardStack.apply {
+            if (game.stacks.size > 0) {
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[0].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
+            }
+        }
+
+        saganiGameScene.smallCardStack1.apply {
+            if (game.stacks.size in 25..48) {
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
+            } else if (rootService.currentGame!!.stacks.size > 48) {
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 48].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 48].id))
+            }
+        }
+
+        saganiGameScene.smallCardStack2.apply {
+            if (game.stacks.size > 48) {
+                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
+                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
+            }
+        }
+    }
 
 
 }
