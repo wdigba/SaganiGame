@@ -17,7 +17,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
         }
 
     }
-    private val NetworkConfigScene: NetworkScene = NetworkScene(rootService).apply {
+    private val networkConfigScene: NetworkScene = NetworkScene(rootService).apply {
 
         //TODO: nur zu Testzwecken
         startButton.onMouseClicked = {
@@ -38,7 +38,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
         networkButton.onMouseClicked ={
-            this@SaganiApplication.showMenuScene(NetworkConfigScene)
+            this@SaganiApplication.showMenuScene(networkConfigScene)
         }
     }
     private val saganiGameScene: GridPaneVersuch = GridPaneVersuch(rootService)
@@ -61,10 +61,23 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
         }
     }
 
+    private val scoreScene = ScoreScene(rootService).apply {
+        backButton.onMouseClicked = {
+            hideMenuScene()
+            this@SaganiApplication.showGameScene(saganiGameScene)
+        }
+        boardButtons.forEach {
+            it.onMouseClicked = {
+                hideMenuScene()
+                // show chosen board scene
+            }
+        }
+    }
+
     init {
         this.showMenuScene(newGameMenuScene)
         this.showGameScene(saganiGameScene)
-        rootService.addEachRefreshable(NetworkConfigScene)
+        rootService.addEachRefreshable(networkConfigScene)
     }
 
 }

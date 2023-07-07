@@ -40,7 +40,7 @@ class ScoreScene(private val rootService: RootService) :
         width = 200, height = 35,
         posX = 50, posY = 355,
     )
-    private val backButton = StandardButton(
+    val backButton = StandardButton(
         posX = 50, posY = 465,
         width = 140,
         text = "Go Back"
@@ -63,7 +63,7 @@ class ScoreScene(private val rootService: RootService) :
     )
 
     private val playerLabels = listOf(player1Label, player2Label, player3Label, player4Label)
-    private val boardButtons = listOf(board1Button, board2Button, board3Button, board4Button)
+    val boardButtons = listOf(board1Button, board2Button, board3Button, board4Button)
 
     init {
         opacity = 1.0
