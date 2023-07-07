@@ -12,6 +12,14 @@ class KIService(private val rootService: RootService) {
     // depth of searching for the tile placement
     private val range = 3
 
+
+
+    var checkDiscleftWeight: Double = 1.0
+    var arrowWeight: Double = 0.8
+    var discWeight: Double  = 2.0
+    var arrowBlockedWeight: Double  = 0.4
+    var discBlockedWeight: Double = 0.7
+
     /**
      * [CoordinateInformation] contains specific information about possible tile placement
      */
@@ -244,7 +252,7 @@ class KIService(private val rootService: RootService) {
      * @return calculated position for the tile, its rotation and placement´s score
      */
     fun calculatePotentialTilePlacements(
-        tile: Tile, scoreMap: Map<Location, CoordinateInformation>, player: Player
+        tile: Tile, scoreMap: Map<Location, CoordinateInformation>, player: Player,
     ): MutableList<TilePlacementInformation> {
 
         val arrowWeight = 0.5
@@ -262,7 +270,9 @@ class KIService(private val rootService: RootService) {
 
                 // calculate metrics for each position
                 val positionMetrics = getMetricsForPosition(position, scoreMap, tile, player.discs.size)
-                val satisfiedArrowsMetrics = calculateSatisfiedArrowsFromTileInHand(player, tile, position)
+                val satisfiedArrows = calculateSatisfiedArrowsFromTileInHand(player, tile, position)
+
+                val satisfiedArrowsMetrics = (satisfiedArrows + (satisfiedArrows / tile.arrows.size) * 2.0) / 6.0
 
                 // get a Map with the same values as player.board
                 val newPlayerBoard = player.board.toMutableMap()
@@ -274,8 +284,27 @@ class KIService(private val rootService: RootService) {
                 val score = calculateBoardScore(updatedScoreMap)
                 // get potential scores based on metrics
 
-                val positionScore = score + arrowWeight * satisfiedArrowsMetrics + positionMetrics
+
+
+
+                // add informartion about loosing points
+                var weight = 1.0 - (player.discs.size / 24.0)
+
+                var unsisifiedArrowPenalty =    0.0
+
+                if (checkDiscleftWeight == 0.0){
+                    weight = 0.0
+                } else {
+
+                    unsisifiedArrowPenalty = (tile.arrows.size - satisfiedArrows) / checkDiscleftWeight
+
+
+                }
+
+                val positionScore = score + arrowWeight * satisfiedArrowsMetrics + positionMetrics - unsisifiedArrowPenalty * weight
                 potentialScores.add(TilePlacementInformation(tile, rotation, position, positionScore))
+
+
             }
         }
         return potentialScores
@@ -396,6 +425,7 @@ class KIService(private val rootService: RootService) {
      */
     private fun getMetricsForPosition(
         position: Location, scoreMap: Map<Location, CoordinateInformation>, tile: Tile, playerDiscsCount: Int
+
     ): Double {
 
         val element = tile.element
@@ -453,15 +483,10 @@ class KIService(private val rootService: RootService) {
         }
 
         // influence rating of each parameter
-        val arrowWeight = 0.8
-        val discWeight = 2.0 - (playerDiscsCount / 24)
-
-        val arrowBlockedWeight = 0.4
-        val discBlockedWeight = 0.7
 
         // total calculation based on satisfied metrics
-        val resultMetrics = arrowSatisfiedMetrics * arrowWeight - arrowBlockedWeight * (arrowsBlockedMetrics.sum() / 3)
-        +discsFreedMetrics * discWeight - discBlockedWeight * (discsBlockedMetrics.sum() / 3)
+        val resultMetrics = arrowSatisfiedMetrics * arrowWeight - (arrowBlockedWeight * (arrowsBlockedMetrics.sum() / 3))
+        +discsFreedMetrics * (discWeight - (playerDiscsCount / 24)) - (discBlockedWeight * (discsBlockedMetrics.sum() / 3))
 
         return resultMetrics
     }
@@ -660,7 +685,7 @@ class KIService(private val rootService: RootService) {
             }
         }
         // maximum level is 1
-        return (satisfiedArrows + (satisfiedArrows / tile.arrows.size) * 2.0) / 6.0
+        return satisfiedArrows
     }
 
     /**
