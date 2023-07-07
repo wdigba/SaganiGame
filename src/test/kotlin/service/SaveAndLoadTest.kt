@@ -12,6 +12,9 @@ class SaveAndLoadTest {
 
     private val rootService = RootService()
 
+    /**
+     * Creates a new game with three players
+     */
     @BeforeTest
     fun prepareGame() {
 

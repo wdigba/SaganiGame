@@ -92,6 +92,9 @@ class NetworkServiceTest {
         assertEquals(guestGame.offerDisplay, hostGame.offerDisplay)
     }
 
+    /**
+     * Test if clients can send a turn and have the same state afterwards.
+     */
     @Test
     fun `test if a turn gets sent correctly`() {
         // Setup game
