@@ -19,7 +19,6 @@ class SaganiGameSceneController(
 ) : Refreshable {
 
     private var board: MutableMap<Location, Tile>
-    // The active Player gets returned by refreshAfterChangeToNextPlayer
     private var actPlayer: Player
 
     private var possibleMovements = mutableListOf<CardView>()
@@ -53,11 +52,6 @@ class SaganiGameSceneController(
         chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 90))
 
         reloadCardViews(game, true)
-
-
-
-        updateActivePlayerLabel()
-
 
 
         //TODO Funktion
@@ -167,28 +161,9 @@ class SaganiGameSceneController(
             }
         }
 
-        saganiGameScene.simulationSpeedDropDown.apply {
-            selectedItem = "Normal"
-            selectedItemProperty.addListener { _, newValue ->
-                rootService.gameService.simulationTime = when (newValue) {
-                    "Fast" -> 200
-                    "Normal" -> 750
-                    "Slow" -> 2000
-                    "Slowest" -> 5000
-                    else -> error("Invalid simulation speed")
-                }
-            }
-        }
-
-
         initScene()
     }
 
-
-    private fun centerTilePane() {
-        saganiGameScene.tilePane.posX = centerTilePanePosX
-        saganiGameScene.tilePane.posY = centerTilePanePosY
-    }
 
     //TODO
     private fun confirmPlacement() {
@@ -209,7 +184,10 @@ class SaganiGameSceneController(
 //        game.let {  } //TODO: Hier richtig?
     }
 
-
+    private fun centerTilePane() {
+        saganiGameScene.tilePane.posX = centerTilePanePosX
+        saganiGameScene.tilePane.posY = centerTilePanePosY
+    }
 
     private fun initScene() {
         // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
@@ -265,22 +243,27 @@ class SaganiGameSceneController(
             val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
 
             if (tileView != null) {
-                initializeTileView(tile = it.value, tileView)
+                initializeTileView(tile = it.value, tileView, flip = false)
             }
         }
     }
 
-    private fun flipTileToFrontSide(tileView: CardView){
-        if (tileView.currentSide == CardView.CardSide.BACK){
-            tileView.showFront()
-        }
-    }
 
-    private fun initializeTileView(tile: Tile, tileView: CardView) {
+    private fun initializeTileView(tile: Tile, tileView: CardView, flip: Boolean = true) {
         val tileImageLoader = TileImageLoader()
 
         tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
         tileView.backVisual = ImageVisual(tileImageLoader.getBackImage(tile.id))
+
+        // cardMap.add(card to cardView)
+
+        if (flip) {
+            when (tileView.currentSide) {
+                CardView.CardSide.BACK -> tileView.showFront()
+                CardView.CardSide.FRONT -> tileView.showBack()
+            }
+
+        }
     }
 
 
@@ -294,12 +277,6 @@ class SaganiGameSceneController(
         return board.containsKey(Location(x, y))
     }
 
-    fun updateActivePlayerLabel() {
-        // assuming GameModel has a method to get the current active player's name
-        val game = checkNotNull(rootService.currentGame)
-        val activePlayerName = game.actPlayer.name
-        saganiGameScene.playerName.text = "Active Player: $activePlayerName"
-    }
 
     private fun drawPossiblePlacements() {/* Player has not yet placed a tile -> place in the middle of the board (centerPosInTilePane) */
         if (board.isEmpty()) {
@@ -421,8 +398,7 @@ class SaganiGameSceneController(
     }
 
     private fun executeTileMove() {
-        initializeTileView(selectedTile, chosenTileView)
-        flipTileToFrontSide(chosenTileView)
+        initializeTileView(selectedTile, chosenTileView, true)
     }
 
     // ToDo:
