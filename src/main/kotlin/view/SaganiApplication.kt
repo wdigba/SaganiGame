@@ -99,11 +99,19 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
             exit()
         }
     }
+    private val kIMenuScene:KIMenuScene=KIMenuScene(rootService).apply {
+        startButton.onMouseClicked ={
+
+        }
+        backButton.onMouseClicked ={
+            this@SaganiApplication.showMenuScene(newGameMenuScene)
+        }
+    }
 
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene(rootService).apply {
         playWithKIButton.onMouseClicked = {
             hideMenuScene()
-            this@SaganiApplication.showGameScene(saganiGameScene)
+            this@SaganiApplication.showMenuScene(kIMenuScene)
         }
         playWithOthersButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(configurationScene)
