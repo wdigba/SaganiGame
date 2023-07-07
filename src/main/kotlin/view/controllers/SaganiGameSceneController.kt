@@ -130,11 +130,6 @@ class SaganiGameSceneController(
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[index].id))
                     flip()
                 }
-                // onMouseClicked = {
-                //     chosenOfferDisplay = 1
-                //     selectedTile = game.offerDisplay[index]
-                //      drawPossiblePlacements()
-                // }
             }
         }
 
@@ -143,10 +138,6 @@ class SaganiGameSceneController(
                 chosenOfferDisplay = 0
                 selectedTile = game.offerDisplay[0]
                 drawPossiblePlacements()
-//                println(possibleMovements.size)
-
-                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
-                // println(board.size)
             }
         }
         saganiGameScene.offer2.apply {
@@ -154,10 +145,6 @@ class SaganiGameSceneController(
                 chosenOfferDisplay = 1
                 selectedTile = game.offerDisplay[1]
                 drawPossiblePlacements()
-//                println(possibleMovements.size)
-
-                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
-                // println(board.size)
             }
         }
         saganiGameScene.offer3.apply {
@@ -165,10 +152,6 @@ class SaganiGameSceneController(
                 chosenOfferDisplay = 2
                 selectedTile = game.offerDisplay[2]
                 drawPossiblePlacements()
-//                println(possibleMovements.size)
-
-                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
-                // println(board.size)
             }
         }
         saganiGameScene.offer4.apply {
@@ -187,10 +170,6 @@ class SaganiGameSceneController(
                 chosenOfferDisplay = 4
                 selectedTile = game.offerDisplay[4]
                 drawPossiblePlacements()
-//                println(possibleMovements.size)
-
-                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
-                // println(board.size)
             }
         }
 
