@@ -20,7 +20,7 @@ import view.StandardButton
 /**
  * A [MenuScene] for configuration of network games.
  */
-class NetworkScene(private val rootService: RootService) :
+class NetworkSceneAlt(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(

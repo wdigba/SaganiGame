@@ -20,20 +20,18 @@ class NewGameMenuScene :
         font = Font(size = 22)
     )
 
-
-
     val playWithOthersButton = StandardButton(
-        posX = 100, posY = 300,
+        posX = 100, posY = 200,
         text = "Play",
     )
 
     val ruleButton = StandardButton(
-        posX = 100, posY = 400,
+        posX = 100, posY = 300,
         text = "Rules",
     )
 
     val quitButton = StandardButton(
-        posX = 100, posY = 500,
+        posX = 100, posY = 400,
         text = "Quit",
     )
 

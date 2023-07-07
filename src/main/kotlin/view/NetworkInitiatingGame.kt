@@ -105,7 +105,7 @@ class NetworkInitiatingGame(private val rootService: RootService) :
         return true
     }
 
-    private val playerInput = mutableListOf(Pair(nameInput, keyInput))
+    private val playerInput = mutableListOf( Pair(nameInput, keyInput))
 
     /**
      * buttton to generate a key
@@ -140,11 +140,9 @@ class NetworkInitiatingGame(private val rootService: RootService) :
         opacity = 1.0
         startButton.isDisabled = true
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(
-            headlineLabel, nameLabel, nameInput,
+        addComponents(headlineLabel, nameLabel, nameInput,
             keyInput, keyLabel,
-            startButton, backButton, randomIDButton
-        )
+            startButton, backButton, randomIDButton)
     }
 
 
