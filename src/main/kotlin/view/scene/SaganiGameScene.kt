@@ -152,9 +152,9 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
     private val intermezzoLayout: LinearLayout<CardView> = LinearLayout(
         width = 100,
-        height = 800,
+        height = 630,
         posX = 1820,
-        posY = 150,
+        posY = 170,
         visual = ColorVisual(221, 161, 94)
     )
 
@@ -162,7 +162,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 200,
         height = 100,
         posX = 1800,
-        posY = 500,
+        posY = 450,
         text = "INTERMEZZO",
         font = Font(size = 30)
     ).apply {

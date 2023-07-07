@@ -40,7 +40,7 @@ class NetworkScene(private val rootService: RootService) :
         text = "Name:"
     )
 
-    private val nameInput: TextField = TextField(
+     val nameInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 160
     ).apply {
@@ -56,7 +56,7 @@ class NetworkScene(private val rootService: RootService) :
         posX = 50, posY = 205,
         text = "Your ID:"
     )
-    private val sessionIDInput: TextField = TextField(
+   val sessionIDInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 240
     ).apply {

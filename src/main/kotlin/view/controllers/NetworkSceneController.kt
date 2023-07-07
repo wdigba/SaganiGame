@@ -19,13 +19,13 @@ class NetworkSceneController(
 
         networkScene.nameInput.apply {
             onKeyTyped = {
-                networkScene.startButton.isDisabled = !startIsAvailable()
+                networkScene.startButton.isDisabled = startIsAvailable()
             }
         }
 
         networkScene.iDInput.apply {
             onKeyTyped = {
-                networkScene.startButton.isDisabled = !startIsAvailable()
+                networkScene.startButton.isDisabled = startIsAvailable()
             }
         }
 
