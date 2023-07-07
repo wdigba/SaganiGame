@@ -14,7 +14,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val rootService = RootService()
 
     private val playerConfigScene = PlayerConfigScene()
-    private val networkScene = NetworkScene(rootService)
+    private val networkScene = NetworkScene()
     private val saganiGameScene = SaganiGameScene()
     private val kiMenuScene = KIMenuScene()
     private val networkWaitingForPlayers = NetworkWaitingForPlayersScene(rootService)
@@ -57,7 +57,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         }
 
     private val networkConfigSceneController: NetworkSceneController =
-        NetworkSceneController(networkScene, rootService, this).apply {
+        NetworkSceneController(networkScene).apply {
 
             networkScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
