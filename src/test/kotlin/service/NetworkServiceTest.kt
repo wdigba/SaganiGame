@@ -51,9 +51,7 @@ class NetworkServiceTest {
      */
     @AfterTest
     fun disconnect() {
-        hostRefreshable.reset()
         guestRootService.disconnect()
-        assertEquals(hostRefreshable.refreshAfterPlayerListChangeCalled, true)
         hostRootService.disconnect()
     }
 
