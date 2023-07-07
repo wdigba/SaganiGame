@@ -4,6 +4,7 @@ import Location
 import entity.Player
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
+import view.controllers.LoadGameSceneController
 import view.controllers.NetworkSceneController
 import view.controllers.PlayerConfigSceneController
 import view.controllers.SaganiGameSceneController
@@ -15,6 +16,15 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val playerConfigScene = PlayerConfigScene()
     private val networkScene = NetworkScene(rootService)
     private val saganiGameScene = SaganiGameScene()
+
+    private val loadGameScene = LoadGameScene(rootService)
+
+
+    private val loadGameSceneController: LoadGameSceneController = LoadGameSceneController(loadGameScene, rootService).apply {
+        loadGameScene.backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(configurationScene)
+        }
+    }
 
 
     private val playerConfigSceneController: PlayerConfigSceneController =
@@ -44,7 +54,12 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         networkButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(networkScene)
         }
+        loadGameButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(loadGameScene)
+        }
     }
+
+
 
     private val scoreScene = ScoreScene(rootService).apply {
         backButton.onMouseClicked = {
@@ -89,12 +104,16 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this,
             networkConfigSceneController,
             playerConfigSceneController,
-            saganiGameSceneController
+            saganiGameSceneController,
+            loadGameSceneController
         )
     }
 
     override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
         this@SaganiApplication.hideMenuScene()
+    }
+    override fun refreshAfterLoadGame() {
+
     }
 }
 
