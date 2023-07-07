@@ -53,6 +53,11 @@ class SaganiGameSceneController(
         chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 90))
 
 
+
+        updateActivePlayerLabel()
+
+
+
         //TODO Funktion
         saganiGameScene.testButton.apply {
             onMouseClicked = {
@@ -237,6 +242,11 @@ class SaganiGameSceneController(
     }
 
 
+    private fun centerTilePane() {
+        saganiGameScene.tilePane.posX = centerTilePanePosX
+        saganiGameScene.tilePane.posY = centerTilePanePosY
+    }
+
     //TODO
     private fun confirmPlacement() {
 
@@ -254,11 +264,27 @@ class SaganiGameSceneController(
 
         refreshAfterPlaceTile(game.actPlayer, selectedTile, selectedPlacement)
         game.let { rootService.gameService.changeToNextPlayer() } //TODO: Hier richtig?
+        updateActivePlayerLabel()
     }
 
-    private fun centerTilePane() {
-        saganiGameScene.tilePane.posX = centerTilePanePosX
-        saganiGameScene.tilePane.posY = centerTilePanePosY
+    //Ladet alle Tiles vom Board und added in Scene
+    private fun loadBoardTiles() {
+
+        //toDo Show Front?
+
+        val game = checkNotNull(rootService.currentGame)  // TODO hier notwendig?
+        board = game.actPlayer.board
+
+        val tileImageLoader = TileImageLoader()
+
+        board.forEach {
+            val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
+
+            if (tileView != null) {
+                initializeTileView(tile = it.value, tileView, flip = false)
+            }
+        }
+
     }
 
     private fun initScene() {
@@ -344,6 +370,12 @@ class SaganiGameSceneController(
         return board.containsKey(Location(x, y))
     }
 
+    fun updateActivePlayerLabel() {
+        // assuming GameModel has a method to get the current active player's name
+        val game = checkNotNull(rootService.currentGame)
+        val activePlayerName = game.actPlayer.name
+        saganiGameScene.playerName.text = "Active Player: $activePlayerName"
+    }
 
     private fun drawPossiblePlacements() {/* Player has not yet placed a tile -> place in the middle of the board (centerPosInTilePane) */
         if (board.isEmpty()) {
