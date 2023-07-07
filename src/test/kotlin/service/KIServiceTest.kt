@@ -719,6 +719,9 @@ class KIServiceTest {
         var bestParameters = GameParams()
 
 
+        val initConfigForBob = GameParams()
+
+
         var i = 0
 
         repeat(trainingRounds + 1) {
@@ -729,11 +732,11 @@ class KIServiceTest {
 
             // set one random parameter to a random value
             when (Random.nextInt(5)) {
-                0 -> aliceParameters.discBlockedWeight = Random.nextDouble(-1.0, 4.0)
-                1 -> aliceParameters.arrowWeight = Random.nextDouble(-1.0, 4.0)
-                2 -> aliceParameters.discWeight = Random.nextDouble(-1.0, 4.0)
-                3 -> aliceParameters.arrowBlockedWeight = Random.nextDouble(-1.0, 4.0)
-                4 -> aliceParameters.checkDiscleftWeight = Random.nextDouble(-1.0, 4.0)
+                0 -> aliceParameters.discBlockedWeight = Random.nextDouble(0.0, 6.0)
+                1 -> aliceParameters.arrowWeight = Random.nextDouble(0.0, 6.0)
+                2 -> aliceParameters.discWeight = Random.nextDouble(0.0, 6.0)
+                3 -> aliceParameters.arrowBlockedWeight = Random.nextDouble(0.0, 6.0)
+                4 -> aliceParameters.checkDiscleftWeight = Random.nextDouble(0.0, 6.0)
             }
 
 
@@ -749,9 +752,11 @@ class KIServiceTest {
 
             val aliceAndBobsWins = playSomeGames(rootService, aliceParameters, bestParameters, i, playerNames, 15)
 
+            val initAliceAndBobsWins = playSomeGames(rootService, aliceParameters, initConfigForBob, i, playerNames, 10)
+
             if (i != trainingRounds) {
 
-                if (aliceAndBobsWins.first -2 > aliceAndBobsWins.second) {
+                if ((aliceAndBobsWins.first -2 > aliceAndBobsWins.second) && (initAliceAndBobsWins.first  > initAliceAndBobsWins.second)) {
                     bestParameters = aliceParameters.getCopy()
                     print("learning new params form alice after she won ${aliceAndBobsWins.first} times\n")
 
@@ -765,7 +770,7 @@ class KIServiceTest {
                 } else {
                     // If Alice's score is not better, revert the parameter change
                     aliceParameters = bestParameters.getCopy()
-                    print("reverting params to best params after bob won $aliceAndBobsWins.second times\n")
+                    print("reverting params to best params after bob won ${aliceAndBobsWins.second} times\n")
                 }
             } else {
                 print("Alice (init) has ${rootService.currentGame!!.players[0].discs.size} discs left\n")
@@ -884,13 +889,16 @@ class KIServiceTest {
     @Test
     fun `compare two parameter sets`(){
 
+
+
+
         val aliceParameters = GameParams()
 
         val bobParameters = GameParams()
 
-        bobParameters.arrowWeight = 0.5
-        bobParameters.discWeight = 3.0
-        bobParameters.arrowBlockedWeight = 1.0
+        bobParameters.arrowWeight = 2.1
+        bobParameters.discWeight = 4.0
+        bobParameters.arrowBlockedWeight = 1.8
         bobParameters.discBlockedWeight = 0.4
         bobParameters.checkDiscleftWeight = 1.0
 
