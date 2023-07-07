@@ -19,6 +19,7 @@ class SaganiGameSceneController(
 ) : Refreshable {
 
     private var board: MutableMap<Location, Tile>
+    // The active Player gets returned by refreshAfterChangeToNextPlayer
     private var actPlayer: Player
 
     private var possibleMovements = mutableListOf<CardView>()
