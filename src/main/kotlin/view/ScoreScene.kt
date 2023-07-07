@@ -10,6 +10,12 @@ import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
+/**
+ * [ScoreScene] shows each player's current points and when they get them.
+ * @property boardButtons connect [ScoreScene] to the board of the corresponding player
+ * @property backButton returns to the main scene.
+ * @property playerLabels show the players' points
+ */
 class ScoreScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
 

@@ -229,6 +229,29 @@ class ChangeToNextPlayerTest {
     }
 
     /**
+     * Test with placing tiles during intermezzo
+     */
+    @Test
+    fun intermezzoPlaceTileTest() {
+        // testData
+        var game = rootService.currentGame
+        assertNotNull(game)
+        game.intermezzoPlayers.add(game.players[0])
+        game.intermezzo = true
+        game.intermezzoStorage.add(game.stacks.removeFirst())
+        assertEquals(1, game.intermezzoPlayers.size)
+        assertEquals(1, game.intermezzoStorage.size)
+        // function call
+        rootService.gameService.changeToNextPlayer()
+        // tests
+        game = rootService.currentGame
+        assertNotNull(game)
+        assertFalse(game.intermezzo)
+        assertEquals(0, game.intermezzoPlayers.size)
+        assertEquals(1, game.intermezzoStorage.size)
+    }
+
+    /**
      * Test without game
      */
     @Test
