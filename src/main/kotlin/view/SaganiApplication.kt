@@ -19,7 +19,15 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val kiMenuScene = KIMenuScene()
     private val networkWaitingForPlayers = NetworkWaitingForPlayersScene(rootService)
 
-    private val initiatingGame: NetworkInitiatingGameScene = NetworkInitiatingGameScene(rootService).apply {
+    private val endScene:EndScene = EndScene(rootService).apply {
+        quitButton.onMouseClicked = {
+            exit()
+        }
+    }
+
+
+
+    private val initiatingGame: NetworkInitiatingGameScene = NetworkInitiatingGameScene().apply {
         backButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(networkInitiateOrJoin)
         }
