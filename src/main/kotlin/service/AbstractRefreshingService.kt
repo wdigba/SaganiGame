@@ -18,6 +18,5 @@ abstract class AbstractRefreshingService {
     /**
      * refresh GUI
      */
-    fun onAllRefreshables(method: Refreshable.() -> Unit) =
-        refreshables.forEach { it.method() }
+    fun onAllRefreshables(method: Refreshable.() -> Unit) = refreshables.forEach { it.method() }
 }

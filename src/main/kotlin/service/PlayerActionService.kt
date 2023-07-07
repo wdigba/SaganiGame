@@ -152,8 +152,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         for (direction in Direction.values()) {
             var filteredBoard = filterInDirection(player.board, direction, location)
             filteredBoard = filteredBoard.filterValues {
-                it.arrows.contains(Arrow(tile.element, Direction.values()[(direction.ordinal + 4) % 8]))
-                        && !it.flipped
+                it.arrows.contains(Arrow(tile.element, Direction.values()[(direction.ordinal + 4) % 8])) && !it.flipped
             }
             filteredBoard.values.forEach {
                 var flip = true
@@ -180,9 +179,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * [filterInDirection] returns a filtered Map of all tiles in the given direction from the given tile
      */
     fun filterInDirection(
-        board: MutableMap<Location, Tile>,
-        direction: Direction,
-        location: Location
+        board: MutableMap<Location, Tile>, direction: Direction, location: Location
     ): Map<Location, Tile> {
         return when (direction) {
             Direction.UP -> board.filterKeys {

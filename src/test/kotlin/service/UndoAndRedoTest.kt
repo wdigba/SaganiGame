@@ -11,6 +11,9 @@ class UndoAndRedoTest {
 
     private val rootService = RootService()
 
+    /**
+     * Prepare a game with three players
+     */
     @BeforeTest
     fun prepareGame() {
 

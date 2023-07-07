@@ -13,6 +13,9 @@ class CalculateWinnerTest {
 
     private val rootService = RootService()
 
+    /**
+     * Prepare a game with four players
+     */
     @BeforeTest
     fun prepareGame() {
 

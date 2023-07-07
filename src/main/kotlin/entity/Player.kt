@@ -19,6 +19,4 @@ data class Player(val name: String, val color: Color, val playerType: PlayerType
     var points: Pair<Int, Int> = Pair(0, 0)
     val discs: MutableList<Disc> = mutableListOf()
     val board: MutableMap<Location, Tile> = mutableMapOf()
-
-
 }

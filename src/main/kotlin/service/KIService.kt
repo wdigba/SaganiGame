@@ -12,12 +12,10 @@ class KIService(private val rootService: RootService) {
     // depth of searching for the tile placement
     private val range = 3
 
-
-
     var checkDiscleftWeight: Double = 1.0
     var arrowWeight: Double = 0.8
-    var discWeight: Double  = 2.0
-    var arrowBlockedWeight: Double  = 0.4
+    var discWeight: Double = 2.0
+    var arrowBlockedWeight: Double = 0.4
     var discBlockedWeight: Double = 0.7
 
     /**
@@ -284,27 +282,20 @@ class KIService(private val rootService: RootService) {
                 val score = calculateBoardScore(updatedScoreMap)
                 // get potential scores based on metrics
 
-
-
-
                 // add informartion about loosing points
                 var weight = 1.0 - (player.discs.size / 24.0)
 
-                var unsisifiedArrowPenalty =    0.0
+                var unsisifiedArrowPenalty = 0.0
 
-                if (checkDiscleftWeight == 0.0){
+                if (checkDiscleftWeight == 0.0) {
                     weight = 0.0
                 } else {
-
                     unsisifiedArrowPenalty = (tile.arrows.size - satisfiedArrows) / checkDiscleftWeight
-
-
                 }
 
-                val positionScore = score + arrowWeight * satisfiedArrowsMetrics + positionMetrics - unsisifiedArrowPenalty * weight
+                val positionScore =
+                    score + arrowWeight * satisfiedArrowsMetrics + positionMetrics - unsisifiedArrowPenalty * weight
                 potentialScores.add(TilePlacementInformation(tile, rotation, position, positionScore))
-
-
             }
         }
         return potentialScores
@@ -485,7 +476,8 @@ class KIService(private val rootService: RootService) {
         // influence rating of each parameter
 
         // total calculation based on satisfied metrics
-        val resultMetrics = arrowSatisfiedMetrics * arrowWeight - (arrowBlockedWeight * (arrowsBlockedMetrics.sum() / 3))
+        val resultMetrics =
+            arrowSatisfiedMetrics * arrowWeight - (arrowBlockedWeight * (arrowsBlockedMetrics.sum() / 3))
         +discsFreedMetrics * (discWeight - (playerDiscsCount / 24)) - (discBlockedWeight * (discsBlockedMetrics.sum() / 3))
 
         return resultMetrics

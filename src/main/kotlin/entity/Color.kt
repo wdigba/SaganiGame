@@ -7,8 +7,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 enum class Color {
-    WHITE,
-    BROWN,
-    GREY,
-    BLACK
+    WHITE, BROWN, GREY, BLACK
 }

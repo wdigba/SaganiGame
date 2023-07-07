@@ -14,7 +14,9 @@ import java.awt.Color
 import tools.aqua.bgw.components.uicomponents.ComboBox
 import tools.aqua.bgw.core.Alignment
 
-
+/**
+ * Custom [BoardGameScene] for the Sagani game.
+ */
 class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     /**
      * Upper Pane
@@ -95,7 +97,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         opacity = 0.3
     }
 
-    private val soundDiscs = TokenView(
+     val soundDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,
@@ -103,7 +105,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual(255, 255, 255)
     )
 
-    private val cacophonyDiscs = TokenView(
+   val cacophonyDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,
@@ -122,8 +124,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     val tilePane = Pane<ComponentView>(
         width = 4440,
         height = 4440,
-        posY = centerTilePanePosY,
-        posX = centerTilePanePosX,
+        posY = CENTER_TILE_PANE_POS_Y,
+        posX = CENTER_TILE_PANE_POS_X,
         visual = ColorVisual(Color.GRAY)
     )
 
@@ -134,10 +136,10 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
     //TODO
     var sampleTile = CardView(
-        width = standardTileViewWidth,
-        height = standardTileViewHeight,
-        posX = centerPosInTilePaneX - 100,
-        posY = centerPosInTilePaneY - 100,
+        width = STANDARD_TILE_VIEW_WIDTH,
+        height = STANDARD_TILE_VIEW_HEIGHT,
+        posX = CENTER_POS_IN_TILE_PANE_X - 100,
+        posY = CENTER_POS_IN_TILE_PANE_Y - 100,
         front = ColorVisual(255, 255, 255, 50)
     )
 
@@ -358,18 +360,6 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     //-----------------------------------------------------------------------
 
     init {
-
-        tilePane.add(sampleTile)
-
-        sampleTile.apply {
-            onMouseClicked = {
-                println("HELLO")
-            }
-        }
-
-
-
-
         background = ColorVisual(GameColor.chaletGreen)
         addComponents(
             tilePane,

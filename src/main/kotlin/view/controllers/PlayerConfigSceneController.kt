@@ -7,10 +7,12 @@ import view.Refreshable
 import view.SaganiApplication
 import view.scene.PlayerConfigScene
 
+/**
+ * Controller class of [PlayerConfigScene].
+ */
 class PlayerConfigSceneController(
     private val playerConfigScene: PlayerConfigScene,
     private val rootService: RootService,
-    private val saganiApplication: SaganiApplication,
 ) : Refreshable {
 
     /**
@@ -32,6 +34,49 @@ class PlayerConfigSceneController(
     private val comboBoxColors = mutableListOf<String>()
 
     init {
+
+        playerConfigScene.comboBoxKI1.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI1.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+        playerConfigScene.comboBoxKI2.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI2.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+        playerConfigScene.comboBoxKI3.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI3.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+        playerConfigScene.comboBoxKI4.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI4.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+
+        playerConfigScene.comboBox1.items = comboBoxColors
+        playerConfigScene.comboBox1.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.comboBox1.visual = returnColorfromString(newValue)
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+
+
+        playerConfigScene.comboBox2.items = comboBoxColors
+        playerConfigScene.comboBox2.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.comboBox2.visual = returnColorfromString(newValue)
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+
+        playerConfigScene.comboBox3.items = comboBoxColors
+        playerConfigScene.comboBox3.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.comboBox3.visual = returnColorfromString(newValue)
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+
+        playerConfigScene.comboBox4.items = comboBoxColors
+        playerConfigScene.comboBox4.selectedItemProperty.addListener { _, newValue ->
+            playerConfigScene.comboBox4.visual = returnColorfromString(newValue)
+            playerConfigScene.startButton.isDisabled = !startIsAvailable()
+        }
+
         // Farben aus der Entity Schicht übernehmen
         entity.Color.values().forEach {
             comboBoxColors.add(it.toString())
@@ -172,11 +217,13 @@ class PlayerConfigSceneController(
     private fun repositionButtonsPlus() {
         if (!playerConfigScene.player3Label.isVisible) {
             playerConfigScene.minusButton.isVisible = true
-            playerConfigScene.plusButton.reposition(320, 320)
+            playerConfigScene.plusButton.reposition(500, 320)
             playerConfigScene.player3Label.isVisible = true
             playerConfigScene.player3Input.isVisible = true
             playerConfigScene.color3Label.isVisible = true
             playerConfigScene.comboBox3.isVisible = true
+            playerConfigScene.comboBoxKI3.isVisible = true
+            playerConfigScene.kI3Label.isVisible = true
             playerInputs.add(
                 Triple(
                     playerConfigScene.player3Input,
@@ -187,12 +234,14 @@ class PlayerConfigSceneController(
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
 
         } else if (!playerConfigScene.player4Label.isVisible) {
-            playerConfigScene.minusButton.reposition(360, 400)
+            playerConfigScene.minusButton.reposition(550, 400)
             playerConfigScene.player4Input.isVisible = true
             playerConfigScene.player4Label.isVisible = true
             playerConfigScene.color4Label.isVisible = true
             playerConfigScene.comboBox4.isVisible = true
             playerConfigScene.plusButton.isVisible = false
+            playerConfigScene.comboBoxKI4.isVisible = true
+            playerConfigScene.kI4Label.isVisible = true
             playerInputs.add(
                 Triple(
                     playerConfigScene.player4Input,
@@ -213,6 +262,8 @@ class PlayerConfigSceneController(
             playerConfigScene.player4Input.isVisible = false
             playerConfigScene.color4Label.isVisible = false
             playerConfigScene.comboBox4.isVisible = false
+            playerConfigScene.comboBoxKI4.isVisible = false
+            playerConfigScene.kI4Label.isVisible = false
             playerInputs.remove(
                 Triple(
                     playerConfigScene.player4Input,
@@ -220,8 +271,8 @@ class PlayerConfigSceneController(
                     entity.PlayerType.HUMAN
                 )
             )
-            playerConfigScene.minusButton.reposition(360, 320)
-            playerConfigScene.plusButton.reposition(320, 320)
+            playerConfigScene.minusButton.reposition(550, 320)
+            playerConfigScene.plusButton.reposition(500, 320)
             playerConfigScene.plusButton.isVisible = true
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         } else if (playerConfigScene.player3Label.isVisible) {
@@ -230,6 +281,8 @@ class PlayerConfigSceneController(
             playerConfigScene.player3Input.isVisible = false
             playerConfigScene.color3Label.isVisible = false
             playerConfigScene.comboBox3.isVisible = false
+            playerConfigScene.comboBoxKI3.isVisible = false
+            playerConfigScene.kI3Label.isVisible = false
             playerInputs.remove(
                 Triple(
                     playerConfigScene.player3Input,
@@ -238,7 +291,7 @@ class PlayerConfigSceneController(
                 )
             )
             playerConfigScene.minusButton.isVisible = false
-            playerConfigScene.plusButton.reposition(320, 240)
+            playerConfigScene.plusButton.reposition(500, 240)
             playerConfigScene.plusButton.isVisible = true
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }

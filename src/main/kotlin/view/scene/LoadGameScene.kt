@@ -8,6 +8,9 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
+/**
+ * Custom [MenuScene] for the load game menu.
+ */
 class LoadGameScene(rootService: RootService):
     MenuScene(400, 1080), Refreshable {
 
