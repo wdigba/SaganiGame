@@ -23,12 +23,14 @@ class LoadGameSceneController(
     }
 
 
+    /**
+     * Check if the given path is valid.
+     */
     fun checkValidPath(path: String): String {
         val file = File(path)
 
-        if (!file.exists() || !file.isFile) {
-            throw IllegalArgumentException("Path does not exist or is not a file: $path")
-        }
+        require(file.exists()) { "Path does not exist" }
+        require(file.isFile) { "Path does not point to a file" }
 
         return Paths.get(path).toAbsolutePath().toString()
     }

@@ -14,6 +14,9 @@ import view.ZoomLevels.*
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Controller for the [SaganiGameScene].
+ */
 class SaganiGameSceneController(
     private val saganiGameScene: SaganiGameScene, private val rootService: RootService
 ) : Refreshable {
@@ -156,7 +159,7 @@ class SaganiGameSceneController(
                 // override chosenTileView to clear all possiblePlacements if this is not the first offering
                 // chosen this turn
                 chosenTileView = CardView(0, 0, 120, 120,
-                                            front = ColorVisual(225, 225, 225, 90))
+                    front = ColorVisual(225, 225, 225, 90))
                 clearPossibleMoves()
                 drawPossiblePlacements()
             }
@@ -420,8 +423,7 @@ class SaganiGameSceneController(
         val toCheckCardView = loadedBoardViews.get(Location(x, y))
         if (toCheckCardView?.frontVisual is ColorVisual) {
             return false
-        }
-        else if (toCheckCardView?.frontVisual is ImageVisual){
+        } else if (toCheckCardView?.frontVisual is ImageVisual) {
             return true
         }
 
@@ -430,6 +432,9 @@ class SaganiGameSceneController(
 
     }
 
+    /**
+     * Updates the active player label in the UI
+     */
     fun updateActivePlayerLabel() {
         // assuming GameModel has a method to get the current active player's name
         val game = checkNotNull(rootService.currentGame)
@@ -501,8 +506,6 @@ class SaganiGameSceneController(
                         executeTileMove()
                     }
                 }
-
-
 
 
             }

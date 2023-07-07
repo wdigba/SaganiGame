@@ -10,6 +10,9 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
+/**
+ * Custom [MenuScene] for the KI menu.
+ */
 class KIMenuScene:
     MenuScene(400, 1080), Refreshable {
 
@@ -26,11 +29,11 @@ class KIMenuScene:
         posY = 125,
         text = "Name:"
     )
-     val nameInput: TextField = TextField(
+    val nameInput: TextField = TextField(
         width = 150,
-         height = 35,
+        height = 35,
         posX = 70,
-         posY = 160
+        posY = 160
     )
 
     val backButton = StandardButton(

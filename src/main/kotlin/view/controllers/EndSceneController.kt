@@ -3,6 +3,9 @@ package view.controllers
 import service.RootService
 import view.scene.EndScene
 
+/**
+ * Controller for the [EndScene].
+ */
 class EndSceneController(private val endScene: EndScene, private val rootService: RootService) {
 
     init {

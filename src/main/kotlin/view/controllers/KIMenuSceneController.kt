@@ -2,6 +2,9 @@ package view.controllers
 
 import view.scene.KIMenuScene
 
+/**
+ * Controller for the [KIMenuScene].
+ */
 class KIMenuSceneController(private val kiMenuScene: KIMenuScene) {
 
     private val playerInput = mutableListOf( Pair(kiMenuScene.nameInput, kiMenuScene.kIInput))

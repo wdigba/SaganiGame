@@ -2,6 +2,9 @@ package view.controllers
 
 import view.scene.NetworkInitiatingGameScene
 
+/**
+ * Controller for the [NetworkInitiatingGameScene].
+ */
 class NetworkInitiatingGameSceneController(private val networkInitiatingGameScene: NetworkInitiatingGameScene) {
 
     private val playerInput = mutableListOf( Pair(networkInitiatingGameScene.nameInput, networkInitiatingGameScene.keyInput))
@@ -64,10 +67,9 @@ class NetworkInitiatingGameSceneController(private val networkInitiatingGameScen
                 }
 
 
-                    networkInitiatingGameScene.startButton.isDisabled = !startIsAvailable()
+                networkInitiatingGameScene.startButton.isDisabled = !startIsAvailable()
             }
         }
-
 
 
     }
