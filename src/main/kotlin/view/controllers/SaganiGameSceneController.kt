@@ -14,9 +14,6 @@ import view.ZoomLevels.*
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Controller class for [SaganiGameScene].
- */
 class SaganiGameSceneController(
     private val saganiGameScene: SaganiGameScene, private val rootService: RootService
 ) : Refreshable {
@@ -124,7 +121,7 @@ class SaganiGameSceneController(
         }
 
         saganiGameScene.cardStack.apply {
-            if (game.offerDisplay.size >=1) {
+            if (game.offerDisplay.size >= 1) {
                 saganiGameScene.cardStack.isDisabled = true
             }
             onMouseClicked = {
@@ -238,19 +235,31 @@ class SaganiGameSceneController(
 //        game.let {  } //TODO: Hier richtig?
     }
 
+    /**
+     * clears the board represented by loadedBoardViews and re-loads it with empty CardViews
+     */
+    private fun resetLoadedBoardViews() {
 
-    private fun initScene() {
+        //loadedBoardViews.clear()
+
         // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
-
+        // Daniel Gast: changed to step and height/width of 60 -> 4440/120 = 37 Tiles
+        //              To get 36 Tiles in each direction 4440/(72+1) = 60.82 ~ 61px
         for (x in 0..TILE_PANE_WIDTH.toInt() step 120) {
             for (y in 0..TILE_PANE_HEIGHT.toInt() step 120) {
                 loadedBoardViews.put(
                     Location(x, y), CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50))
                 )
+
             }
         }
 
+    }
 
+    private fun initScene() {
+
+        // reset board
+        resetLoadedBoardViews()
         // saganiGameScene.i.addAll(loadedBoardViews.values)
 
         for (tile in loadedBoardViews) {
@@ -263,11 +272,44 @@ class SaganiGameSceneController(
 
 
         //TODO: SampleTile Weg?
-        // saganiGameScene.sampleTile.isVisible = true
+        //saganiGameScene.sampleTile.isVisible = true
         //saganiGameScene.sampleTile.isFocusable = true
 
+        val game = rootService.currentGame
+        checkNotNull(game) { "game was null in initScene()" }
 
-        loadBoardTiles()
+        game.actPlayer.board[Pair(0, 0)] = game.stacks.removeFirst()
+        game.actPlayer.board[Pair(1, 0)] = game.stacks.removeFirst()
+        game.actPlayer.board[Pair(1, 1)] = game.stacks.removeFirst()
+        println("added Tiles")
+        loadBoardTiles(game.actPlayer.board)
+        println(game.actPlayer.board)
+        println("loaded board")
+        println(CENTER_POS_IN_TILE_PANE_X.toInt())
+        println(CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 0)
+        println(CENTER_POS_IN_TILE_PANE_Y.toInt() + 120 * 0)
+        println(
+            loadedBoardViews[Pair(
+                CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 0,
+                CENTER_POS_IN_TILE_PANE_Y.toInt() + 120 * 0
+            )]?.frontVisual
+        )
+        println(game.actPlayer.board[Pair(0, 0)])
+        println(
+            loadedBoardViews[Pair(
+                CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 1,
+                CENTER_POS_IN_TILE_PANE_Y.toInt() + 120 * 0
+            )]?.frontVisual
+        )
+        println(game.actPlayer.board[Pair(1, 0)])
+        println(
+            loadedBoardViews[Pair(
+                CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 1,
+                CENTER_POS_IN_TILE_PANE_Y.toInt() + 120 * 1
+            )]?.frontVisual
+        )
+        println(game.actPlayer.board[Pair(1, 1)])
+        println(game.actPlayer.name)
 
         /*
            if (!tilePlaced) {
@@ -279,22 +321,38 @@ class SaganiGameSceneController(
            loadBoardTiles()*/
     }
 
-    //Ladet alle Tiles vom Board und added in Scene
-    private fun loadBoardTiles() {
+    /**
+     * Takes a [Player] board as Input and loads it to loadedBoardViews
+     */
+    private fun loadBoardTiles(board: MutableMap<Pair<Int, Int>, Tile>) {
 
-        //toDo Show Front?
 
-        val game = checkNotNull(rootService.currentGame)  // TODO hier notwendig?
-        board = game.actPlayer.board
+        //val tileImageLoader = TileImageLoader()
 
-        val tileImageLoader = TileImageLoader()
+        // clear current board
+        resetLoadedBoardViews()
 
+        // Pane is 4440px wide, equals
         board.forEach {
-            val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
+            //(120 * 18) +
+            val tileView = loadedBoardViews.get(
+                Location(
+                    CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * it.key.first,
+                    CENTER_POS_IN_TILE_PANE_Y.toInt() + 120 * it.key.second
+                )
+            )
+
 
             if (tileView != null) {
                 initializeTileView(tile = it.value, tileView)
+                tileView.isVisible = true
+                tileView.isDisabled = false
+
+                saganiGameScene.tilePane.add(tileView)
+
             }
+
+
         }
     }
 
@@ -360,10 +418,19 @@ class SaganiGameSceneController(
             // x = it.key.first
             // y = it.key.second
             //Checks bottom
-            if (!isOccupied(it.key.first + 120, it.key.second)) {
+            if (!isOccupied(
+                    CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120 ,
+                    CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120 +120
+                )
+            ) {
 
                 val currentView = checkNotNull(
-                    loadedBoardViews.get(Location(it.key.first + 120, it.key.second))
+                    loadedBoardViews.get(
+                        Location(
+                            CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120,
+                            CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120 +120
+                        )
+                    )
                 ) { "Something went wrong!" }
 
                 possibleMovements += currentView
@@ -380,10 +447,17 @@ class SaganiGameSceneController(
             }
 
             //Checks right
-            if (!isOccupied(it.key.first, it.key.second + 120)) {
+            if (!isOccupied(
+                    CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120 + 120,
+                    CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120
+                )
+            ) {
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
-                        Location(it.key.first, it.key.second + 120)
+                        Location(
+                            CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120 + 120,
+                            CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120
+                        )
                     )
                 ) { "Something went wrong!" }
 
@@ -401,10 +475,17 @@ class SaganiGameSceneController(
 
             }
             //checks top
-            if (!isOccupied(it.key.first - 120, it.key.second)) {
+            if (!isOccupied(
+                    CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120,
+                    CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120 - 120
+                )
+            ) {
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
-                        Location(it.key.first - 120, it.key.second)
+                        Location(
+                            CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120,
+                            CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120 - 120
+                        )
                     )
                 ) { "Something went wrong!" }
 
@@ -422,17 +503,23 @@ class SaganiGameSceneController(
             }
 
             //checks left
-            if (!isOccupied(it.key.first, it.key.second - 120)) {
+            if (!isOccupied(
+                    CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120 -120,
+                    CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120
+                )
+            ) {
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
-                        Location(it.key.first, it.key.second - 120)
+                        Location(
+                            CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120 - 120,
+                            CENTER_POS_IN_TILE_PANE_Y.toInt() + it.key.second * 120
+                        )
                     )
                 ) { "Something went wrong!" }
 
                 possibleMovements += currentView
                 currentView.isVisible = true
                 currentView.isDisabled = false
-
                 currentView.apply {
                     onMouseClicked = {
                         chosenTileView = currentView
@@ -445,6 +532,8 @@ class SaganiGameSceneController(
 
         for (tile in possibleMovements) {
             saganiGameScene.tilePane.add(tile)
+           tile.isVisible = true
+            tile.isDisabled = false
         }
     }
 
