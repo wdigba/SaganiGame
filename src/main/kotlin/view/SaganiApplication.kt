@@ -13,29 +13,22 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val rootService = RootService()
 
     private val playerConfigScene = PlayerConfigScene()
-    private val networkScene = NetworkScene()
+    private val networkScene = NetworkScene(rootService)
     private val saganiGameScene = SaganiGameScene()
 
 
     private val playerConfigSceneController: PlayerConfigSceneController =
         PlayerConfigSceneController(playerConfigScene, rootService, this).apply {
+
+
             playerConfigScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
-        }
-        //TODO: nur zu Testzwecken
-        startButton.onMouseClicked = {
-            this@SaganiApplication.hideMenuScene()
-        }
-        backButton.onMouseClicked = {
-            this@SaganiApplication.showMenuScene(configurationScene)
-        }
 
-    }
-    private val networkConfigScene: NetworkScene = NetworkScene(rootService).apply {
-
+        }
     private val networkConfigSceneController: NetworkSceneController =
         NetworkSceneController(networkScene, rootService, this).apply {
+
             networkScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
@@ -48,8 +41,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         backButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
-        networkButton.onMouseClicked ={
-            this@SaganiApplication.showMenuScene(networkConfigScene)
         networkButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(networkScene)
         }
@@ -84,23 +75,10 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         }
         ruleButton.onMouseClicked = {
             hideMenuScene()
-            this@SaganiApplication.showGameScene(ruleScene)
+            this@SaganiApplication.showMenuScene(ruleScene)
         }
         quitButton.onMouseClicked = {
             exit()
-        }
-    }
-
-    private val scoreScene = ScoreScene(rootService).apply {
-        backButton.onMouseClicked = {
-            hideMenuScene()
-            this@SaganiApplication.showGameScene(saganiGameScene)
-        }
-        boardButtons.forEach {
-            it.onMouseClicked = {
-                hideMenuScene()
-                // show chosen board scene
-            }
         }
     }
 
@@ -113,7 +91,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             playerConfigSceneController,
             saganiGameSceneController
         )
-        rootService.addEachRefreshable(networkConfigScene)
     }
 
     override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {

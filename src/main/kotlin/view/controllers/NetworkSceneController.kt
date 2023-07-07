@@ -12,7 +12,7 @@ class NetworkSceneController(
     private val saganiApplication: SaganiApplication,
 ) : Refreshable {
 
-    private val playerInput = mutableListOf(Pair(networkScene.nameInput, networkScene.iDInput))
+    private val playerInput = mutableListOf(Pair(networkScene.nameInput, networkScene.sessionIDInput))
 
     init {
 
@@ -23,7 +23,7 @@ class NetworkSceneController(
             }
         }
 
-        networkScene.iDInput.apply {
+        networkScene.sessionIDInput.apply {
             onKeyTyped = {
                 networkScene.startButton.isDisabled = startIsAvailable()
             }
