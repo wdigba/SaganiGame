@@ -21,13 +21,20 @@ class NetworkServiceTest {
     private lateinit var hostRootService: RootService
     private lateinit var guestRootService: RootService
 
+    private lateinit var hostRefreshable: TestRefreshable
+    private lateinit var guestRefreshable: TestRefreshable
+
     /**
      * Initializes both connections and start the game.
      */
     @BeforeTest
     fun initConnections() {
+        hostRefreshable = TestRefreshable()
         hostRootService = RootService()
+        hostRootService.addEachRefreshable(hostRefreshable)
+        guestRefreshable = TestRefreshable()
         guestRootService = RootService()
+        guestRootService.addEachRefreshable(guestRefreshable)
 
         hostRootService.networkService.hostGame("Test Host")
         hostRootService.waitForState(ConnectionState.WAITING_FOR_GUESTS)
@@ -36,6 +43,7 @@ class NetworkServiceTest {
 
         guestRootService.networkService.joinGame("Test Guest", sessionID)
         guestRootService.waitForState(ConnectionState.WAITING_FOR_INIT)
+        assertEquals(hostRefreshable.refreshAfterPlayerListChangeCalled, true)
     }
 
     /**
@@ -43,8 +51,10 @@ class NetworkServiceTest {
      */
     @AfterTest
     fun disconnect() {
-        hostRootService.disconnect()
+        hostRefreshable.reset()
         guestRootService.disconnect()
+        assertEquals(hostRefreshable.refreshAfterPlayerListChangeCalled, true)
+        hostRootService.disconnect()
     }
 
     /**
