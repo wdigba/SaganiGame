@@ -25,6 +25,7 @@ interface Refreshable {
      */
     fun refreshAfterChangeToNextPlayer(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {}
 
+
     /**
      * refresh Gui after CalculateWinner()
      */

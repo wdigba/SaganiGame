@@ -78,7 +78,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 100,
         height = 100,
         posX = 20,
-        posY = 20,
+        posY = 200,
         front = ColorVisual(255, 255, 255, 50)
     ).apply {
         opacity = 0.3
@@ -87,7 +87,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 100,
         height = 100,
         posX = 20,
-        posY = 150,
+        posY = 330,
         front = ColorVisual(255, 255, 255, 50)
     ).apply {
         opacity = 0.3
@@ -97,7 +97,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 50,
         height = 50,
         posX = 20,
-        posY = 400,
+        posY = 450,
         visual = ColorVisual(255, 255, 255)
     )
 
@@ -105,7 +105,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 50,
         height = 50,
         posX = 20,
-        posY = 600,
+        posY = 650,
         visual = ColorVisual.RED
     )
 
@@ -115,33 +115,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
      * Tile Pane
      */
     //----------------------------------------------------------
-    private val upperPane = Pane<ComponentView>(
-        0,
-        0,
-        upperPaneWidth,
-        upperPaneHeight,
-        visual = ColorVisual(Color.CYAN))
 
-    private val bottomPane = Pane<ComponentView>(
-        0,
-        0,
-        bottomPaneWidth,
-        bottomPaneHeight,
-        visual = ColorVisual(Color.MAGENTA))
-
-    private val leftPane = Pane<ComponentView>(
-        0,
-        0,
-        leftPaneWidth,
-        leftPaneHeight,
-        visual = ColorVisual(Color.ORANGE))
-
-    private val rightPane = Pane<ComponentView>(
-        0,
-        0,
-        rightPaneWidth,
-        rightPaneHeight,
-        visual = ColorVisual(Color.PINK))
 
     val tilePane = Pane<ComponentView>(
         width = 4440,
@@ -150,6 +124,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         posX = centerTilePanePosX,
         visual = ColorVisual(Color.GRAY)
     )
+
 
     //--> 1600
     // 838
@@ -174,21 +149,20 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     //----------------------------------
     //Intermezzo
 
-    // TODO: Intermezzo Offer abstände schön
 
     private val intermezzoLayout: LinearLayout<CardView> = LinearLayout(
         width = 100,
         height = 800,
-        posX = 100,
-        posY = 20,
+        posX = 1820,
+        posY = 150,
         visual = ColorVisual(221, 161, 94)
     )
 
     private val intermezzoLabel = Label(
         width = 200,
         height = 100,
-        posX = 50,
-        posY = 400,
+        posX = 1800,
+        posY = 500,
         text = "INTERMEZZO",
         font = Font(size = 30)
     ).apply {
@@ -199,29 +173,29 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     val intermezzoOffer1 = CardView(
         width = 120,
         height = 120,
-        posX = 10,
-        posY = 50,
+        posX = 1750,
+        posY = 200,
         front = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer2 = CardView(
         width = 120,
         height = 120,
-        posX = 10,
-        posY = 256,
+        posX = 1750,
+        posY = 350,
         front = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer3 = CardView(
         width = 120,
         height = 120,
-        posX = 10,
-        posY = 462,
+        posX = 1750,
+        posY = 500,
         front = ColorVisual(GameColor.chaletGreen)
     )
     val intermezzoOffer4 = CardView(
         width = 120,
         height = 120,
-        posX = 10,
-        posY = 670,
+        posX = 1750,
+        posY = 650,
         front = ColorVisual(GameColor.chaletGreen)
     )
 
@@ -232,35 +206,43 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
      * Bottom Pane
      */
     //-------------------------------------
-    private val undoButton = StandardButton(
+    private val bottomPaneLayout: LinearLayout<CardView> = LinearLayout(
+        width = 1920,
+        height = 80,
+        posX = 0,
+        posY = 1000,
+        visual = ColorVisual(221, 161, 94)
+    )
+
+     val undoButton = StandardButton(
         width = 100,
         height = 50,
         posX = 20,
-        posY = 20,
+        posY = 1020,
         text = "UNDO"
     )
 
-    private val redoButton = StandardButton(
+    val redoButton = StandardButton(
         width = 100,
         height = 50,
         posX = 130,
-        posY = 20,
+        posY = 1020,
         text = "REDO"
     )
 
-    private val scoreButton = StandardButton(
+     val scoreButton = StandardButton(
         width = 100,
         height = 50,
         posX = 240,
-        posY = 20,
+        posY = 1020,
         text = "SCORE"
     )
 
-    private val rotateButton = StandardButton(
+     val rotateButton = StandardButton(
         width = 100,
         height = 50,
         posX = 350,
-        posY = 20,
+        posY = 1020,
         text = "ROTATE"
     )
 
@@ -268,7 +250,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 100,
         height = 50,
         posX = 460,
-        posY = 20,
+        posY = 1020,
         text = "TEST"
     )
 
@@ -276,7 +258,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 100,
         height = 50,
         posX = 1780,
-        posY = 20,
+        posY = 1020,
         text = "CONF"
     )
 
@@ -284,7 +266,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 50,
         height = 50,
         posX = 1500,
-        posY = 20,
+        posY = 1020,
         text = "+"
     )
 
@@ -292,7 +274,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 50,
         height = 50,
         posX = 1560,
-        posY = 20,
+        posY = 1020,
         text = "-"
     )
 
@@ -300,7 +282,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 80,
         height = 50,
         posX = 700,
-        posY = 20,
+        posY = 1020,
         text = "LEFT"
     )
 
@@ -308,14 +290,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 80,
         height = 50,
         posX = 790,
-        posY = 20,
+        posY = 1020,
         text = "UP"
     )
     val moveDownButton = StandardButton(
         width = 90,
         height = 50,
         posX = 880,
-        posY = 20,
+        posY = 1020,
         text = "DOWN"
     )
 
@@ -323,7 +305,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 80,
         height = 50,
         posX = 980,
-        posY = 20,
+        posY = 1020,
         text = "RIGHT"
     )
 
@@ -331,111 +313,52 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         width = 80,
         height = 50,
         posX = 1200,
-        posY = 20,
+        posY = 1020,
         text = "HOME"
     )
 
-
     //-----------------------------------------------------------------------
-
-    /**
-     * Panes
-     */
-    //-----------------------------------------------------------------------
-
-    //private val cameraPane = CameraPane(0, 0, 756, 134, target = targetPane)
-
-
-    private val outerGridPane = GridPane<ComponentView>(columns = 1, rows = 3, layoutFromCenter = false)
-     val innerGridPane = GridPane<ComponentView>(columns = 3, rows = 1, layoutFromCenter = false)
-
-
-    //-----------------------------------------------------------------------
-
 
     init {
-        //WIP !
 
-//        val game = rootService.currentGame
-//        checkNotNull(game)
-//        game.stacks.size
-
-        initViewStructure()
-
-        val upperPaneList = mutableListOf<ComponentView>(cardStack, offer1, offer2, offer3, offer4, offer5)
-
-        val leftPaneList = mutableListOf<ComponentView>(smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs)
-
-        val rightPaneList = mutableListOf(
-            intermezzoLayout, intermezzoLabel, intermezzoOffer1, intermezzoOffer2, intermezzoOffer3,
-            intermezzoOffer4
-        )
-
-       // innerGridPane.set(1,0,sampleTile)
-
-        val bottomPaneList =
-            mutableListOf<ComponentView>(
-                redoButton,
-                undoButton,
-                scoreButton,
-                confirmButton,
-                rotateButton,
-                testButton,
-                zoomInButton,
-                zoomOutButton,
-                moveLeftButton,
-                moveUpButton,
-                moveDownButton,
-                moveRightButton,
-                homeButton
-            )
-
-       // tilePane.add(sampleTile)
+        tilePane.add(sampleTile)
 
         sampleTile.apply {
             onMouseClicked = {
-                println("HEELLOO")
+                println("HELLO")
             }
         }
 
-        addComponentsToPane(upperPane, upperPaneList)
-        addComponentsToPane(leftPane, leftPaneList)
-        addComponentsToPane(rightPane, rightPaneList)
-        addComponentsToPane(bottomPane, bottomPaneList)
+
 
 
         background = ColorVisual(GameColor.chaletGreen)
-        addComponents(tilePane, outerGridPane)
+        addComponents(
+            tilePane,
+            bottomPaneLayout,
+            redoButton,
+            undoButton,
+            scoreButton,
+            confirmButton,
+            rotateButton,
+            testButton,
+            zoomInButton,
+            zoomOutButton,
+            moveLeftButton,
+            moveUpButton,
+            moveDownButton,
+            moveRightButton,
+            homeButton,
+            intermezzoLayout, intermezzoLabel, intermezzoOffer1, intermezzoOffer2, intermezzoOffer3,
+            intermezzoOffer4,
+            smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,
+            cardStack, offer1, offer2, offer3, offer4, offer5
+        )
     }
 
     /**
      * Properly initializes the rows and columns of the GridPanes and puts the panes together.
      */
-    private fun initViewStructure() {
-        outerGridPane.setRowHeight(0, 162)
-        outerGridPane.setRowHeight(1, 838)
-        outerGridPane.setRowHeight(2, 80)
 
-
-        outerGridPane[0, 2] = bottomPane
-        outerGridPane[0, 1] = innerGridPane
-        outerGridPane[0, 0] = upperPane
-
-
-        innerGridPane.setColumnWidth(0, 150)
-        innerGridPane.setColumnWidth(1, 1600)
-        innerGridPane.setColumnWidth(2, 170)
-
-        innerGridPane[0, 0] = leftPane
-        innerGridPane[2, 0] = rightPane
-
-
-    }
-
-    private fun addComponentsToPane(pane: Pane<ComponentView>, componentList: MutableList<ComponentView>) {
-        for (component in componentList) {
-            pane.add(component)
-        }
-    }
 
 }

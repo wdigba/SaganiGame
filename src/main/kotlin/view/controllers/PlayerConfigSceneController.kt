@@ -42,15 +42,18 @@ class PlayerConfigSceneController(
 
                 // Convert PlayerInputs to necessary input for startNewGame
                 val playerInfos: MutableList<Triple<String, entity.Color, entity.PlayerType>> = mutableListOf()
+
+
                 for (input in playerInputs) {
                     playerInfos.add(
                         Triple(
-                            input.first.toString(),
-                            enumValueOf<entity.Color>(input.second.toString()),
+                            input.first.text,
+                            enumValueOf<entity.Color>(input.second.selectedItem!!),
                             input.third
                         )
                     )
                 }
+
 
 //                val playerNames = mutableListOf<String>()
 //                for (input in playerInputs) {

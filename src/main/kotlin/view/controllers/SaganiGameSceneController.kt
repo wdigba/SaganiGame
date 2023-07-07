@@ -8,8 +8,8 @@ import entity.Player
 import entity.PlayerType
 import entity.Tile
 import service.TileImageLoader
+
 import tools.aqua.bgw.components.gamecomponentviews.CardView
-import tools.aqua.bgw.event.KeyCode
 import tools.aqua.bgw.visual.ColorVisual
 import tools.aqua.bgw.visual.ImageVisual
 import view.*
@@ -23,9 +23,7 @@ class SaganiGameSceneController(
 
     private var board: MutableMap<Location, Tile>
 
-    //private var possibleMovements = mutableListOf<PossibleMovements>()
     private var possibleMovements = mutableListOf<CardView>()
-
 
     private var loadedBoardTiles = mutableMapOf<Location, Tile>()
 
@@ -105,11 +103,17 @@ class SaganiGameSceneController(
             }
         }
 
+        //TODO
         saganiGameScene.homeButton.apply {
             onMouseClicked = {
                 centerTilePane()
             }
         }
+
+        saganiGameScene.scoreButton.apply {
+
+        }
+
 
         val offers = listOf(
             saganiGameScene.offer1,
@@ -136,7 +140,7 @@ class SaganiGameSceneController(
 
         saganiGameScene.offer1.apply {
             onMouseClicked = {
-//                chosenOfferDisplay = 1
+                chosenOfferDisplay = 0
                 selectedTile = game.offerDisplay[0]
                 drawPossiblePlacements()
 //                println(possibleMovements.size)
@@ -145,6 +149,51 @@ class SaganiGameSceneController(
                 // println(board.size)
             }
         }
+        saganiGameScene.offer2.apply {
+            onMouseClicked = {
+                chosenOfferDisplay = 1
+                selectedTile = game.offerDisplay[1]
+                drawPossiblePlacements()
+//                println(possibleMovements.size)
+
+                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
+                // println(board.size)
+            }
+        }
+        saganiGameScene.offer3.apply {
+            onMouseClicked = {
+                chosenOfferDisplay = 2
+                selectedTile = game.offerDisplay[2]
+                drawPossiblePlacements()
+//                println(possibleMovements.size)
+
+                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
+                // println(board.size)
+            }
+        }
+        saganiGameScene.offer4.apply {
+            onMouseClicked = {
+                chosenOfferDisplay = 3
+                selectedTile = game.offerDisplay[3]
+                drawPossiblePlacements()
+//                println(possibleMovements.size)
+
+                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
+                // println(board.size)
+            }
+        }
+        saganiGameScene.offer5.apply {
+            onMouseClicked = {
+                chosenOfferDisplay = 4
+                selectedTile = game.offerDisplay[4]
+                drawPossiblePlacements()
+//                println(possibleMovements.size)
+
+                // board.put(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()),selectedTile)
+                // println(board.size)
+            }
+        }
+
 
         saganiGameScene.sampleTile.apply {
             onMouseClicked = {
@@ -201,7 +250,7 @@ class SaganiGameSceneController(
     private fun confirmPlacement() {
 
         val game = rootService.currentGame
-        checkNotNull(game)
+        checkNotNull(game){"Something went wrong"}
 
         saganiGameScene.tilePane.removeAll(possibleMovements)
         possibleMovements.clear()
@@ -209,9 +258,11 @@ class SaganiGameSceneController(
         val selectedPlacement =
             Location(selectedTilePlacement.posX.toInt() - 2060, selectedTilePlacement.posY.toInt() - 2060)
 
-        rootService.playerActionService.placeTile(selectedTile, selectedTile.direction, selectedPlacement)
+        rootService.playerActionService.placeTile(game.offerDisplay[chosenOfferDisplay], selectedTile.direction, selectedPlacement)
+        chosenOfferDisplay = -1
 
         refreshAfterPlaceTile(game.actPlayer, selectedTile, selectedPlacement)
+        game.let { rootService.gameService.changeToNextPlayer() } //TODO: Hier richtig?
     }
 
     private fun centerTilePane() {
@@ -309,7 +360,7 @@ class SaganiGameSceneController(
 
 
     private fun drawPossiblePlacements() {/* Player has not yet placed a tile -> place in the middle of the board (centerPosInTilePane) */
-        if (board.size == 0) {
+        if (board.isEmpty()) {
             val centerCardView =
                 loadedBoardViews.get(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()))
 
@@ -319,18 +370,17 @@ class SaganiGameSceneController(
                 centerCardView.isVisible = true
                 centerCardView.isDisabled = false
                 centerCardView.isFocusable = true
+
                 centerCardView.apply {
                     onMouseClicked = {
                         chosenTileView = centerCardView
                         println(centerCardView.posX)
                         executeTileMove()
+
                     }
                 }
             }
 
-        }
-        for (tile in possibleMovements) {
-            saganiGameScene.innerGridPane.set(1, 0, tile)
         }
 
         //TODO: Fehler Abfangen wenn ein Tile am Rand gesetzt wird. da sonst koordinate negativ
@@ -341,16 +391,15 @@ class SaganiGameSceneController(
             // y = it.key.second
             //Checks bottom
             if (!isOccupied(it.key.first + 120, it.key.second)) {
+
                 val currentView = checkNotNull(
-                    loadedBoardViews.get(
-                        Location(
-                            it.key.first + 120, it.key.second
-                        )
-                    )
+                    loadedBoardViews.get(Location(it.key.first + 120, it.key.second))
                 ) { "Something went wrong!" }
+
                 possibleMovements += currentView
                 currentView.isVisible = true
                 currentView.isDisabled = false
+
                 currentView.apply {
                     onMouseClicked = {
                         chosenTileView = currentView
@@ -359,18 +408,19 @@ class SaganiGameSceneController(
                     }
                 }
             }
+
             //Checks right
             if (!isOccupied(it.key.first, it.key.second + 120)) {
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
-                        Location(
-                            it.key.first, it.key.second + 120
-                        )
+                        Location(it.key.first, it.key.second + 120)
                     )
                 ) { "Something went wrong!" }
+
                 possibleMovements += currentView
                 currentView.isVisible = true
                 currentView.isDisabled = false
+
                 currentView.apply {
                     onMouseClicked = {
                         chosenTileView = currentView
@@ -384,14 +434,14 @@ class SaganiGameSceneController(
             if (!isOccupied(it.key.first - 120, it.key.second)) {
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
-                        Location(
-                            it.key.first - 120, it.key.second
-                        )
+                        Location(it.key.first - 120, it.key.second)
                     )
                 ) { "Something went wrong!" }
+
                 possibleMovements += currentView
                 currentView.isVisible = true
                 currentView.isDisabled = false
+
                 currentView.apply {
                     onMouseClicked = {
                         chosenTileView = currentView
@@ -400,18 +450,19 @@ class SaganiGameSceneController(
                     }
                 }
             }
+
             //checks left
             if (!isOccupied(it.key.first, it.key.second - 120)) {
                 val currentView = checkNotNull(
                     loadedBoardViews.get(
-                        Location(
-                            it.key.first, it.key.second - 120
-                        )
+                        Location(it.key.first, it.key.second - 120)
                     )
                 ) { "Something went wrong!" }
+
                 possibleMovements += currentView
                 currentView.isVisible = true
                 currentView.isDisabled = false
+
                 currentView.apply {
                     onMouseClicked = {
                         chosenTileView = currentView
@@ -422,63 +473,20 @@ class SaganiGameSceneController(
             }
         }
 
-        /*
-                for(view in possibleMovements){
-                    view.apply {
-                        onMouseClicked = {
-                            chosenTileView = view
-                            println(view.posX )
-                            executeTileMove()
-                        }
-                    }
-                }*/
-
-        /*
-        possibleMovements.forEach { space ->
-            space.apply {
-                /* Place tile on a valid space */
-                onMouseClicked = {
-                    testPlacement(this.x, this.y)
-                }
-                onKeyPressed = { key ->
-                    when (key.keyCode) {
-                        KeyCode.ENTER -> testPlacement(this.x, this.y)
-                        KeyCode.SPACE -> testPlacement(this.x, this.y)
-                        else -> {}
-                    }
-                }
-            }
+        for (tile in possibleMovements) {
+            saganiGameScene.tilePane.add(tile)
         }
-        */
-
-
     }
 
     private fun executeTileMove() {
-
         initializeTileView(selectedTile, chosenTileView, true)
-
     }
-
-    /*
-    private fun testPlacement(x: Int, y: Int) {
-        tilePlaced = true
-        //ToDo: testTile()
-
-        // hier darf Tile nicht direkt geplaced werden
-        saganiGameScene.sampleTile.reposition(x, y)
-        saganiGameScene.sampleTile.apply {
-            showBack()
-        }
-
-        //TODO: Rotate?
-    }*/
 
     override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
 
-        // Search for the tile and reload offerstack, offers or intermezzo
+        // Search for the tile and reload offer stack, offers or intermezzo
         val game = rootService.currentGame
-        checkNotNull(game)
+        checkNotNull(game){"Something went wrong!"}
 
         val offers = listOf(
             saganiGameScene.offer1,

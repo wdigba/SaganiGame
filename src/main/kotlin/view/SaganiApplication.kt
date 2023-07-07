@@ -1,5 +1,7 @@
 package view
 
+import Location
+import entity.Player
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
 import view.controllers.NetworkSceneController
@@ -7,20 +9,19 @@ import view.controllers.PlayerConfigSceneController
 import view.controllers.SaganiGameSceneController
 import view.scene.*
 
-class SaganiApplication : BoardGameApplication("SoPra Game") {
+class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val rootService = RootService()
 
     private val playerConfigScene = PlayerConfigScene()
     private val networkScene = NetworkScene()
     private val saganiGameScene = SaganiGameScene()
 
+
+
     private val playerConfigSceneController: PlayerConfigSceneController =
         PlayerConfigSceneController(playerConfigScene, rootService, this).apply {
 
-            //TODO: nur zu Testzwecken
-            playerConfigScene.startButton.onMouseClicked = {
-                this@SaganiApplication.hideMenuScene()
-            }
+
             playerConfigScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
@@ -29,10 +30,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
     private val networkConfigSceneController: NetworkSceneController =
         NetworkSceneController(networkScene, rootService, this).apply {
 
-            //TODO: nur zu Testzwecken
-            networkScene.startButton.onMouseClicked = {
-                this@SaganiApplication.hideMenuScene()
-            }
             networkScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
@@ -50,8 +47,19 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
         }
     }
 
+    private val scoreScene = ScoreScene(rootService).apply {
+        backButton.onMouseClicked={
+            this@SaganiApplication.hideMenuScene()
+        }
+    }
+
     private val saganiGameSceneController: SaganiGameSceneController =
-        SaganiGameSceneController(saganiGameScene, rootService)
+        SaganiGameSceneController(saganiGameScene, rootService).apply {
+            saganiGameScene.scoreButton.onMouseClicked = {
+                this@SaganiApplication.showMenuScene(scoreScene)
+            }
+        }
+
     private val ruleScene: RuleScene = RuleScene(rootService)
 
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene().apply {
@@ -74,7 +82,16 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
     init {
         this.showMenuScene(newGameMenuScene)
         this.showGameScene(saganiGameScene)
-        rootService.addEachRefreshable(NetworkConfigScene)
+        rootService.addEachRefreshable(
+            this,
+            networkConfigSceneController,
+            playerConfigSceneController,
+            saganiGameSceneController
+        )
+    }
+
+    override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
+        this@SaganiApplication.hideMenuScene()
     }
 }
 

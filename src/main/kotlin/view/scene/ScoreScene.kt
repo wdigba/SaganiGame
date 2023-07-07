@@ -37,24 +37,24 @@ class ScoreScene(private val rootService: RootService) :
         width = 200, height = 35,
         posX = 50, posY = 355,
     )
-    private val backButton = StandardButton(
+     val backButton = StandardButton(
         posX = 50, posY = 465,
         width = 140,
         text = "Go Back"
     )
-    private val board1Button = Button(
+    val board1Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 205
     )
-    private val board2Button = Button(
+     val board2Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 255
     )
-    private val board3Button = Button(
+    val board3Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 305
     )
-    private val board4Button = Button(
+    val board4Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 355
     )
