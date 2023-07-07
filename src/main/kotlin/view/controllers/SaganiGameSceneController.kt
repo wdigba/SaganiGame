@@ -3,10 +3,7 @@ package view.controllers
 import service.RootService
 import view.scene.SaganiGameScene
 import Location
-import entity.Color
-import entity.Player
-import entity.PlayerType
-import entity.Tile
+import entity.*
 import service.TileImageLoader
 
 import tools.aqua.bgw.components.gamecomponentviews.CardView
@@ -22,6 +19,8 @@ class SaganiGameSceneController(
 ) : Refreshable {
 
     private var board: MutableMap<Location, Tile>
+    // The active Player gets returned by refreshAfterChangeToNextPlayer
+    private var actPlayer: Player
 
     private var possibleMovements = mutableListOf<CardView>()
 
@@ -48,9 +47,12 @@ class SaganiGameSceneController(
         rootService.gameService.startNewGame(playerList)
 
         val game = checkNotNull(rootService.currentGame) { "There is no game." }
-        board = game.actPlayer.board
+        actPlayer = game.actPlayer
+        board = actPlayer.board
         selectedTile = game.offerDisplay[0]
         chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 90))
+
+        reloadCardViews(game, true)
 
 
 
@@ -118,25 +120,6 @@ class SaganiGameSceneController(
 
         }
 
-
-        val offers = listOf(
-            saganiGameScene.offer1,
-            saganiGameScene.offer2,
-            saganiGameScene.offer3,
-            saganiGameScene.offer4,
-            saganiGameScene.offer5
-        )
-
-        offers.forEachIndexed { index, offer ->
-            offer.apply {
-                if (game.offerDisplay.size > index) {
-                    frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
-                    backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[index].id))
-                    flip()
-                }
-            }
-        }
-
         saganiGameScene.offer1.apply {
             onMouseClicked = {
                 chosenOfferDisplay = 0
@@ -184,31 +167,6 @@ class SaganiGameSceneController(
             }
         }
 
-        // TODo: Karte in die Mitte legen
-        saganiGameScene.cardStack.apply {
-            if (game.stacks.size > 0) {
-                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[0].id))
-                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
-            }
-        }
-
-        saganiGameScene.smallCardStack1.apply {
-            if (game.stacks.size in 25..48) {
-                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
-                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
-            } else if (rootService.currentGame!!.stacks.size > 48) {
-                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 48].id))
-                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 48].id))
-            }
-        }
-
-        saganiGameScene.smallCardStack2.apply {
-            if (game.stacks.size > 48) {
-                frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
-                backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
-            }
-        }
-
         saganiGameScene.simulationSpeedDropDown.apply {
             selectedItem = "Normal"
             selectedItemProperty.addListener { _, newValue ->
@@ -222,21 +180,6 @@ class SaganiGameSceneController(
             }
         }
 
-        val intermezzoOffers = listOf(
-            saganiGameScene.intermezzoOffer1,
-            saganiGameScene.intermezzoOffer2,
-            saganiGameScene.intermezzoOffer3,
-            saganiGameScene.intermezzoOffer4
-        )
-
-        intermezzoOffers.forEachIndexed { index, intermezzo ->
-            intermezzo.apply {
-                if (game.intermezzoStorage.size > index) {
-                    frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
-                    backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
-                }
-            }
-        }
 
         initScene()
     }
@@ -262,9 +205,8 @@ class SaganiGameSceneController(
         rootService.playerActionService.placeTile(game.offerDisplay[chosenOfferDisplay], selectedTile.direction, selectedPlacement)
         chosenOfferDisplay = -1
 
-        refreshAfterPlaceTile(game.actPlayer, selectedTile, selectedPlacement)
-        game.let { rootService.gameService.changeToNextPlayer() } //TODO: Hier richtig?
-        updateActivePlayerLabel()
+//        rootService.gameService.changeToNextPlayer()
+//        game.let {  } //TODO: Hier richtig?
     }
 
 
@@ -483,12 +425,22 @@ class SaganiGameSceneController(
         flipTileToFrontSide(chosenTileView)
     }
 
-    override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
+    // ToDo:
 
-        // Search for the tile and reload offer stack, offers or intermezzo
+    override fun refreshAfterChangeToNextPlayer(
+        player: Player,
+        validLocations: Set<Location>,
+        intermezzo: Boolean
+    ) {
         val game = rootService.currentGame
-        checkNotNull(game){"Something went wrong!"}
+        checkNotNull(game)
+        // activ Player gets returned by refreshAfterChangeToNextPlayer
+        actPlayer = player
+        reloadCardViews(game)
+    }
 
+    fun reloadCardViews(game: Sagani, flipped: Boolean = false) {
+        // Search for the tile and reload offer stack, offers or intermezzo
         val offers = listOf(
             saganiGameScene.offer1,
             saganiGameScene.offer2,
@@ -503,9 +455,11 @@ class SaganiGameSceneController(
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[index].id))
                 } else {
+                    println(game.offerDisplay.size)
+                    frontVisual = ColorVisual.LIGHT_GRAY
                     backVisual = ColorVisual.LIGHT_GRAY
                 }
-
+                if (flipped) flip()
             }
         }
 
