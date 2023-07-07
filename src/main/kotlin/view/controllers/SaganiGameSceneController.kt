@@ -204,6 +204,19 @@ class SaganiGameSceneController(
             }
         }
 
+        saganiGameScene.simulationSpeedDropDown.apply {
+            selectedItem = "Normal"
+            selectedItemProperty.addListener { _, newValue ->
+                rootService.gameService.simulationTime = when (newValue) {
+                    "Fast" -> 200
+                    "Normal" -> 750
+                    "Slow" -> 2000
+                    "Slowest" -> 5000
+                    else -> error("Invalid simulation speed")
+                }
+            }
+        }
+
         val intermezzoOffers = listOf(
             saganiGameScene.intermezzoOffer1,
             saganiGameScene.intermezzoOffer2,

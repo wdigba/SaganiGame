@@ -11,6 +11,7 @@ import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 import view.*
 import java.awt.Color
+import tools.aqua.bgw.components.uicomponents.ComboBox
 
 
 class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
@@ -312,9 +313,25 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     val homeButton = StandardButton(
         width = 80,
         height = 50,
-        posX = 1200,
+        posX = 1120,
         posY = 1020,
         text = "HOME"
+    )
+
+    val simulationSpeedLabel = Label(
+        width = 70,
+        height = 50,
+        posX = 1210,
+        posY = 1020,
+        text = "Speed:"
+    )
+
+    val simulationSpeedDropDown = ComboBox(
+        width = 100,
+        height = 50,
+        posX = 1270,
+        posY = 1020,
+        items = listOf("Fast", "Normal", "Slow", "Slowest")
     )
 
     //-----------------------------------------------------------------------
@@ -352,7 +369,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             intermezzoLayout, intermezzoLabel, intermezzoOffer1, intermezzoOffer2, intermezzoOffer3,
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,
-            cardStack, offer1, offer2, offer3, offer4, offer5
+            cardStack, offer1, offer2, offer3, offer4, offer5,
+            simulationSpeedLabel, simulationSpeedDropDown
         )
     }
 
