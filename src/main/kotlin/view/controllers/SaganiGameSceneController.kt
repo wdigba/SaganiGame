@@ -267,25 +267,7 @@ class SaganiGameSceneController(
         updateActivePlayerLabel()
     }
 
-    //Ladet alle Tiles vom Board und added in Scene
-    private fun loadBoardTiles() {
 
-        //toDo Show Front?
-
-        val game = checkNotNull(rootService.currentGame)  // TODO hier notwendig?
-        board = game.actPlayer.board
-
-        val tileImageLoader = TileImageLoader()
-
-        board.forEach {
-            val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
-
-            if (tileView != null) {
-                initializeTileView(tile = it.value, tileView, flip = false)
-            }
-        }
-
-    }
 
     private fun initScene() {
         // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
@@ -327,21 +309,36 @@ class SaganiGameSceneController(
            loadBoardTiles()*/
     }
 
-    private fun initializeTileView(tile: Tile, tileView: CardView, flip: Boolean = true) {
+    //Ladet alle Tiles vom Board und added in Scene
+    private fun loadBoardTiles() {
+
+        //toDo Show Front?
+
+        val game = checkNotNull(rootService.currentGame)  // TODO hier notwendig?
+        board = game.actPlayer.board
+
+        val tileImageLoader = TileImageLoader()
+
+        board.forEach {
+            val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
+
+            if (tileView != null) {
+                initializeTileView(tile = it.value, tileView)
+            }
+        }
+    }
+
+    private fun flipTileToFrontSide(tileView: CardView){
+        if (tileView.currentSide == CardView.CardSide.BACK){
+            tileView.showFront()
+        }
+    }
+
+    private fun initializeTileView(tile: Tile, tileView: CardView) {
         val tileImageLoader = TileImageLoader()
 
         tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
         tileView.backVisual = ImageVisual(tileImageLoader.getBackImage(tile.id))
-
-        // cardMap.add(card to cardView)
-
-        if (flip) {
-            when (tileView.currentSide) {
-                CardView.CardSide.BACK -> tileView.showFront()
-                CardView.CardSide.FRONT -> tileView.showBack()
-            }
-
-        }
     }
 
 
@@ -482,7 +479,8 @@ class SaganiGameSceneController(
     }
 
     private fun executeTileMove() {
-        initializeTileView(selectedTile, chosenTileView, true)
+        initializeTileView(selectedTile, chosenTileView)
+        flipTileToFrontSide(chosenTileView)
     }
 
     override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
