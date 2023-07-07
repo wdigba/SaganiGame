@@ -267,25 +267,7 @@ class SaganiGameSceneController(
         updateActivePlayerLabel()
     }
 
-    //Ladet alle Tiles vom Board und added in Scene
-    private fun loadBoardTiles() {
 
-        //toDo Show Front?
-
-        val game = checkNotNull(rootService.currentGame)  // TODO hier notwendig?
-        board = game.actPlayer.board
-
-        val tileImageLoader = TileImageLoader()
-
-        board.forEach {
-            val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
-
-            if (tileView != null) {
-                initializeTileView(tile = it.value, tileView, flip = false)
-            }
-        }
-
-    }
 
     private fun initScene() {
         // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
