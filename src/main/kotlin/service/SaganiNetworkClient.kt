@@ -88,8 +88,8 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
             when (response.status) {
                 CreateGameResponseStatus.SUCCESS -> {
-                    networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
                     sessionID = response.sessionID
+                    networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
                 }
 
                 else -> disconnectAndError(response.status)
@@ -136,6 +136,11 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             }
 
             otherPlayers += notification.sender
+
+            networkService.onAllRefreshables {
+                val players = listOf(playerName) + otherPlayers
+                refreshAfterPlayerListChange(players)
+            }
         }
     }
 
@@ -146,6 +151,11 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
     override fun onPlayerLeft(notification: PlayerLeftNotification) {
         BoardGameApplication.runOnGUIThread {
             otherPlayers -= notification.sender
+
+            networkService.onAllRefreshables {
+                val players = listOf(playerName) + otherPlayers
+                refreshAfterPlayerListChange(players)
+            }
         }
     }
 
@@ -271,8 +281,6 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
             networkService.rootService.playerActionService.placeTile(
                 tile, direction, position, false
             )
-
-            lastTurnChecksum = null
         }
     }
 
@@ -322,6 +330,16 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
                     game.players[0], setOf(Location(0, 0)), false
                 )
             }
+
+            // If it's our turn, and we are an AI, calculate the next move
+            if (networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
+                if (this.playerType == PlayerType.RANDOM_AI) {
+                    networkService.rootService.kIServiceRandom.calculateRandomMove()
+                } else if (this.playerType == PlayerType.BEST_AI) {
+                    networkService.rootService.kIService.playBestMove()
+                }
+            }
+
         }
     }
 

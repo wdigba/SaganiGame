@@ -1,12 +1,14 @@
-package view
+package view.scene
 
-import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.StandardButton
 
-class NewGameMenuScene(private val rootService: RootService) :
+class ConfigurationScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -15,24 +17,19 @@ class NewGameMenuScene(private val rootService: RootService) :
         font = Font(size = 22)
     )
 
-    val playWithKIButton = StandardButton(
+    val networkButton = StandardButton(
         posX = 100, posY = 200,
-        text = "Play with KI",
+        text = "Network game"
     )
 
-    val playWithOthersButton = StandardButton(
+    val playersButton = StandardButton(
         posX = 100, posY = 300,
-        text = "Play with others",
+        text = "Add players",
     )
 
-    val ruleButton = StandardButton(
+    val backButton = StandardButton(
         posX = 100, posY = 400,
-        text = "Rules",
-    )
-
-    val quitButton = StandardButton(
-        posX = 100, posY = 500,
-        text = "Quit",
+        text = "Go Back",
     )
 
     init {
@@ -40,8 +37,9 @@ class NewGameMenuScene(private val rootService: RootService) :
         background = ColorVisual(GameColor.cornSilk)
         addComponents(
             headlineLabel,
-            playWithKIButton, playWithOthersButton, ruleButton, quitButton
+            networkButton, playersButton, backButton
         )
+
     }
 
 }

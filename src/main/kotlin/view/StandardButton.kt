@@ -7,7 +7,7 @@ import tools.aqua.bgw.visual.ColorVisual
 import tools.aqua.bgw.visual.Visual
 
 /**
- * Custum Button class that extends [Button]
+ * Custom Button class that extends [Button]
  */
 
 class StandardButton(
