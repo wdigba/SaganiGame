@@ -19,16 +19,13 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
 
     private val playerConfigSceneController: PlayerConfigSceneController =
         PlayerConfigSceneController(playerConfigScene, rootService, this).apply {
-
-
             playerConfigScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
-
         }
+
     private val networkConfigSceneController: NetworkSceneController =
         NetworkSceneController(networkScene, rootService, this).apply {
-
             networkScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
