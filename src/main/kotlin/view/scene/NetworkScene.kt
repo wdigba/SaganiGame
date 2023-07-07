@@ -1,4 +1,4 @@
-package view
+package view.scene
 
 import Location
 import edu.udo.cs.sopra.ntf.ConnectionState
@@ -13,6 +13,9 @@ import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.StandardButton
 
 /**
  * A [MenuScene] for configuration of network games.
@@ -40,7 +43,7 @@ class NetworkScene(private val rootService: RootService) :
         text = "Name:"
     )
 
-    private val nameInput: TextField = TextField(
+     val nameInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 160
     ).apply {
@@ -56,7 +59,7 @@ class NetworkScene(private val rootService: RootService) :
         posX = 50, posY = 205,
         text = "Your ID:"
     )
-    private val sessionIDInput: TextField = TextField(
+   val sessionIDInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 240
     ).apply {

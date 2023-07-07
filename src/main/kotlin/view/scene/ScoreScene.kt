@@ -1,4 +1,4 @@
-package view
+package view.scene
 
 import Location
 import entity.Color
@@ -9,6 +9,9 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.StandardButton
 
 /**
  * [ScoreScene] shows each player's current points and when they get them.
@@ -40,30 +43,30 @@ class ScoreScene(private val rootService: RootService) :
         width = 200, height = 35,
         posX = 50, posY = 355,
     )
-    val backButton = StandardButton(
+     val backButton = StandardButton(
         posX = 50, posY = 465,
         width = 140,
         text = "Go Back"
     )
-    private val board1Button = Button(
+    val board1Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 205
     )
-    private val board2Button = Button(
+     val board2Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 255
     )
-    private val board3Button = Button(
+    val board3Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 305
     )
-    private val board4Button = Button(
+    val board4Button = Button(
         width = 50, height = 35,
         posX = 300, posY = 355
     )
 
     private val playerLabels = listOf(player1Label, player2Label, player3Label, player4Label)
-    val boardButtons = listOf(board1Button, board2Button, board3Button, board4Button)
+    private val boardButtons = listOf(board1Button, board2Button, board3Button, board4Button)
 
     init {
         opacity = 1.0
