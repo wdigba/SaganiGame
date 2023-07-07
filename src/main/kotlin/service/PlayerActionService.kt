@@ -152,6 +152,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         rootService.networkService.client?.location = null
         rootService.networkService.client?.tile = null
 
+        val player = if (currentGame.intermezzo) {
+            currentGame.players.find { it.color == currentGame.intermezzoPlayers[0].color }!!
+        } else {
+            currentGame.players.find { it.color == currentGame.actPlayer.color }!!
+        }
+        println("${player.name} - Skipping intermezzo turn")
         // change to next player
         rootService.gameService.changeToNextPlayer()
     }

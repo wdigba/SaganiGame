@@ -144,7 +144,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
             val players = listOf(
                 Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER),
-                Triple(networkService.client!!.playerName, Color.GREY, PlayerType.RANDOM_AI)
+                Triple(networkService.client!!.playerName, Color.GREY, playerType)
             )
             networkService.rootService.gameService.startNewGame(players)
         }

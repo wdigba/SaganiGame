@@ -7,8 +7,8 @@ typealias Location = Pair<Int, Int>
 fun main(args: Array<String>) {
     val rootService = RootService()
     val secondRoot = RootService()
-    val sessionID = "gruppe7"
-    val saveGame = false
+    val sessionID = "baum2"
+    val saveGame = true
     if ("--host" in args) {
         rootService.networkService.hostGame("Host", sessionID)
     } else if ("--client" in args) {
