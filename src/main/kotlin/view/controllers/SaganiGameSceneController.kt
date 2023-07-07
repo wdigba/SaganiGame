@@ -103,7 +103,6 @@ class SaganiGameSceneController(
             }
         }
 
-        //TODO
         saganiGameScene.homeButton.apply {
             onMouseClicked = {
                 centerTilePane()
@@ -245,8 +244,8 @@ class SaganiGameSceneController(
     }
 
     private fun centerTilePane() {
-        saganiGameScene.tilePane.posX = centerPosInTilePaneX
-        saganiGameScene.tilePane.posY = centerPosInTilePaneY
+        saganiGameScene.tilePane.posX = centerTilePanePosX
+        saganiGameScene.tilePane.posY = centerTilePanePosY
     }
 
     private fun initScene() {
