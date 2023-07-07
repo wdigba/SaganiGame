@@ -4,10 +4,7 @@ import Location
 import entity.Player
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
-import view.controllers.LoadGameSceneController
-import view.controllers.NetworkSceneController
-import view.controllers.PlayerConfigSceneController
-import view.controllers.SaganiGameSceneController
+import view.controllers.*
 import view.scene.*
 
 class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
@@ -20,11 +17,19 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val loadGameScene = LoadGameScene(rootService)
 
 
+
     private val loadGameSceneController: LoadGameSceneController = LoadGameSceneController(loadGameScene, rootService).apply {
         loadGameScene.backButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(configurationScene)
         }
     }
+    private val saveGameScene = SaveGameScene(rootService).apply {
+        backButton.onMouseClicked = {
+            //this@SaganiApplication.showGameScene(saganiGameScene)
+            // not working properly
+        }
+    }
+    private val saveGameSceneController = SaveGameSceneController(saveGameScene, rootService)
 
 
     private val playerConfigSceneController: PlayerConfigSceneController =
@@ -65,12 +70,16 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         backButton.onMouseClicked = {
             this@SaganiApplication.hideMenuScene()
         }
+
     }
 
     private val saganiGameSceneController: SaganiGameSceneController =
         SaganiGameSceneController(saganiGameScene, rootService).apply {
             saganiGameScene.scoreButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(scoreScene)
+            }
+            saganiGameScene.saveGameButton.onMouseClicked = {
+                this@SaganiApplication.showMenuScene(saveGameScene)
             }
         }
 
@@ -105,7 +114,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             networkConfigSceneController,
             playerConfigSceneController,
             saganiGameSceneController,
-            loadGameSceneController
+            loadGameSceneController,
+            saveGameSceneController
         )
     }
 

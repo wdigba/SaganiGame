@@ -335,6 +335,13 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         items = listOf("Fast", "Normal", "Slow", "Slowest")
     )
 
+    val saveGameButton = StandardButton(
+        width = 80,
+        height = 50,
+        posX = 1400,
+        posY = 1020,
+        text = "Save"
+    )
 
     val playerName = Label (
         width = 200,
@@ -384,7 +391,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown,
+            simulationSpeedLabel, simulationSpeedDropDown,saveGameButton,
             playerName
         )
     }
