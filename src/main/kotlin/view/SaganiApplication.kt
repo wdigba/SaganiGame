@@ -17,16 +17,16 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val networkScene = NetworkScene(rootService)
     private val saganiGameScene = SaganiGameScene()
     private val kiMenuScene = KIMenuScene()
-    private val networkWaitingForPlayers = NetworkWaitingForPlayers(rootService)
+    private val networkWaitingForPlayers = NetworkWaitingForPlayersScene(rootService)
 
-    private val initiatingGame:NetworkInitiatingGame = NetworkInitiatingGame(rootService).apply {
+    private val initiatingGame: NetworkInitiatingGameScene = NetworkInitiatingGameScene(rootService).apply {
         backButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(networkInitiateOrJoin)
         }
     }
 
 
-    private val networkInitiateOrJoin = NetworkInitiateOrJoin(rootService).apply {
+    private val networkInitiateOrJoin = NetworkInitiateOrJoinScene().apply {
         joinButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(networkWaitingForPlayers)
         }

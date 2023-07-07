@@ -3,7 +3,7 @@ package view.controllers
 import service.RootService
 import view.Refreshable
 import view.SaganiApplication
-import view.NetworkScene
+import view.scene.NetworkScene
 
 
 class NetworkSceneController(

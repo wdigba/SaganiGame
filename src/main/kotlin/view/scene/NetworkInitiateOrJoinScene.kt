@@ -1,15 +1,18 @@
-package view
+package view.scene
 
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.StandardButton
 
 /**
- * [NetworkInitiateOrJoin] offers possibility to choose between two options, join someone's game or start own game.
+ * [NetworkInitiateOrJoinScene] offers possibility to choose between two options, join someone's game or start own game.
  */
 
-class NetworkInitiateOrJoin :
+class NetworkInitiateOrJoinScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
