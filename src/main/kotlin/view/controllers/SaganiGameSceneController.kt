@@ -19,6 +19,7 @@ class SaganiGameSceneController(
 ) : Refreshable {
 
     private var board: MutableMap<Location, Tile>
+
     // The active Player gets returned by refreshAfterChangeToNextPlayer
     private var actPlayer: Player
 
@@ -57,7 +58,6 @@ class SaganiGameSceneController(
 
 
         updateActivePlayerLabel()
-
 
 
         //TODO Funktion
@@ -120,6 +120,27 @@ class SaganiGameSceneController(
 
         }
 
+        saganiGameScene.cardStack.apply {
+            if (game.offerDisplay.size >=1) {
+                saganiGameScene.cardStack.isDisabled = true
+            }
+            onMouseClicked = {
+                saganiGameScene.offer1.isDisabled = true
+                saganiGameScene.offer2.isDisabled = true
+                saganiGameScene.offer3.isDisabled = true
+                saganiGameScene.offer4.isDisabled = true
+                saganiGameScene.offer5.isDisabled = true
+
+                saganiGameScene.soundDiscs.isDisabled = true
+                saganiGameScene.cacophonyDiscs.isDisabled = true
+
+                flipTileToFrontSide(saganiGameScene.cardStack)
+                selectedTile = game.stacks[0]
+                drawPossiblePlacements()
+
+            }
+        }
+
         saganiGameScene.offer1.apply {
             onMouseClicked = {
                 chosenOfferDisplay = 0
@@ -142,6 +163,7 @@ class SaganiGameSceneController(
             }
         }
         saganiGameScene.offer4.apply {
+
             onMouseClicked = {
                 chosenOfferDisplay = 3
                 selectedTile = game.offerDisplay[3]
@@ -194,7 +216,7 @@ class SaganiGameSceneController(
     private fun confirmPlacement() {
 
         val game = rootService.currentGame
-        checkNotNull(game){"Something went wrong"}
+        checkNotNull(game) { "Something went wrong" }
 
         saganiGameScene.tilePane.removeAll(possibleMovements)
         possibleMovements.clear()
@@ -202,13 +224,16 @@ class SaganiGameSceneController(
         val selectedPlacement =
             Location(selectedTilePlacement.posX.toInt() - 2060, selectedTilePlacement.posY.toInt() - 2060)
 
-        rootService.playerActionService.placeTile(game.offerDisplay[chosenOfferDisplay], selectedTile.direction, selectedPlacement)
+        rootService.playerActionService.placeTile(
+            game.offerDisplay[chosenOfferDisplay],
+            selectedTile.direction,
+            selectedPlacement
+        )
         chosenOfferDisplay = -1
 
 //        rootService.gameService.changeToNextPlayer()
 //        game.let {  } //TODO: Hier richtig?
     }
-
 
 
     private fun initScene() {
@@ -270,8 +295,8 @@ class SaganiGameSceneController(
         }
     }
 
-    private fun flipTileToFrontSide(tileView: CardView){
-        if (tileView.currentSide == CardView.CardSide.BACK){
+    private fun flipTileToFrontSide(tileView: CardView) {
+        if (tileView.currentSide == CardView.CardSide.BACK) {
             tileView.showFront()
         }
     }

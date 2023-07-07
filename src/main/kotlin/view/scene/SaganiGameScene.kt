@@ -95,7 +95,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         opacity = 0.3
     }
 
-    private val soundDiscs = TokenView(
+     val soundDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,
@@ -103,7 +103,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual(255, 255, 255)
     )
 
-    private val cacophonyDiscs = TokenView(
+   val cacophonyDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,

@@ -15,6 +15,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val saganiGameScene = SaganiGameScene()
 
     private val loadGameScene = LoadGameScene(rootService)
+    private val saveGameScene = SaveGameScene(rootService)
 
 
 
@@ -23,13 +24,15 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this@SaganiApplication.showMenuScene(configurationScene)
         }
     }
-    private val saveGameScene = SaveGameScene(rootService).apply {
-        backButton.onMouseClicked = {
-            //this@SaganiApplication.showGameScene(saganiGameScene)
-            // not working properly
+
+    private val saveGameSceneController = SaveGameSceneController(saveGameScene, rootService).apply {
+        saveGameScene.backButton.onMouseClicked = {
+            this@SaganiApplication.hideMenuScene()
+        }
+        saveGameScene.saveGameButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
     }
-    private val saveGameSceneController = SaveGameSceneController(saveGameScene, rootService)
 
 
     private val playerConfigSceneController: PlayerConfigSceneController =
@@ -63,8 +66,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this@SaganiApplication.showMenuScene(loadGameScene)
         }
     }
-
-
 
     private val scoreScene = ScoreScene(rootService).apply {
         backButton.onMouseClicked = {
