@@ -39,7 +39,7 @@ class NetworkScene(private val rootService: RootService) :
     private val IDLabel = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
-        text = "Your ID:"
+        text = "Host ID:"
     )
     private val IDInput: TextField = TextField(
         width = 150, height = 35,
