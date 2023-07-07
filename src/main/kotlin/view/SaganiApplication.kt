@@ -23,6 +23,16 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
         }
+        //TODO: nur zu Testzwecken
+        startButton.onMouseClicked = {
+            this@SaganiApplication.hideMenuScene()
+        }
+        backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(configurationScene)
+        }
+
+    }
+    private val networkConfigScene: NetworkScene = NetworkScene(rootService).apply {
 
     private val networkConfigSceneController: NetworkSceneController =
         NetworkSceneController(networkScene, rootService, this).apply {
@@ -38,6 +48,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         backButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
+        networkButton.onMouseClicked ={
+            this@SaganiApplication.showMenuScene(networkConfigScene)
         networkButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(networkScene)
         }
@@ -72,10 +84,23 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         }
         ruleButton.onMouseClicked = {
             hideMenuScene()
-            this@SaganiApplication.showMenuScene(ruleScene)
+            this@SaganiApplication.showGameScene(ruleScene)
         }
         quitButton.onMouseClicked = {
             exit()
+        }
+    }
+
+    private val scoreScene = ScoreScene(rootService).apply {
+        backButton.onMouseClicked = {
+            hideMenuScene()
+            this@SaganiApplication.showGameScene(saganiGameScene)
+        }
+        boardButtons.forEach {
+            it.onMouseClicked = {
+                hideMenuScene()
+                // show chosen board scene
+            }
         }
     }
 
@@ -88,6 +113,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             playerConfigSceneController,
             saganiGameSceneController
         )
+        rootService.addEachRefreshable(networkConfigScene)
     }
 
     override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
