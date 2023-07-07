@@ -1,17 +1,15 @@
 package view
 
-import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
 /**
- * [NetworkInitiateOrJoin] offers possibility to choose between two options-
- * join someone's game or start own game.
+ * [NetworkInitiateOrJoin] offers possibility to choose between two options, join someone's game or start own game.
  */
 
-class NetworkInitiateOrJoin(private val rootService: RootService) :
+class NetworkInitiateOrJoin :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -40,7 +38,7 @@ class NetworkInitiateOrJoin(private val rootService: RootService) :
     init {
         opacity = 1.0
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(headlineLabel, initiateButton, joinButton, backButton)
+        addComponents(headlineLabel,initiateButton, joinButton, backButton)
     }
 
 }
