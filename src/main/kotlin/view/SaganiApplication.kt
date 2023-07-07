@@ -4,6 +4,7 @@ import Location
 import entity.Player
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
+import view.controllers.KIMenuSceneController
 import view.controllers.NetworkSceneController
 import view.controllers.PlayerConfigSceneController
 import view.controllers.SaganiGameSceneController
@@ -15,7 +16,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val playerConfigScene = PlayerConfigScene()
     private val networkScene = NetworkScene(rootService)
     private val saganiGameScene = SaganiGameScene()
-
+    private val kiMenuScene = KIMenuScene()
 
     private val playerConfigSceneController: PlayerConfigSceneController =
         PlayerConfigSceneController(playerConfigScene, rootService, this).apply {
@@ -26,7 +27,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             }
 
         }
-    /*private val networkConfigSceneController: NetworkSceneController =
+    private val networkConfigSceneController: NetworkSceneController =
         NetworkSceneController(networkScene, rootService, this).apply {
 
             networkScene.backButton.onMouseClicked = {
@@ -34,7 +35,11 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             }
         }
 
-         */
+    private val kiMenuSceneController:KIMenuSceneController = KIMenuSceneController(kiMenuScene).apply {
+
+    }
+
+
 
     private val configurationScene: ConfigurationScene = ConfigurationScene().apply {
         playersButton.onMouseClicked = {
@@ -47,7 +52,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this@SaganiApplication.showMenuScene(networkScene)
         }
     }
-    private val kIMenuScene:KIMenuScene=KIMenuScene(rootService).apply {
+    private val kIMenuScene: KIMenuScene = KIMenuScene().apply {
         startButton.onMouseClicked ={
 
         }

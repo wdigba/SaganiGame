@@ -1,45 +1,37 @@
 package view.controllers
 
-import service.RootService
-import view.Refreshable
-import view.SaganiApplication
-import view.NetworkScene
+import view.scene.KIMenuScene
 
+class KIMenuSceneController(private val kiMenuScene: KIMenuScene) {
 
-class NetworkSceneController(
-    private val networkScene: NetworkScene,
-    private val rootService: RootService,
-    private val saganiApplication: SaganiApplication,
-) : Refreshable {
-
-    private val playerInput = mutableListOf(Pair(networkScene.nameInput, networkScene.iDInput))
+    private val playerInput = mutableListOf( Pair(kiMenuScene.nameInput, kiMenuScene.kIInput))
 
     init {
+        kiMenuScene.startButton.isDisabled = true
+
+        kiMenuScene.kIInput.items = kiMenuScene.comboBoxKIArt
+        kiMenuScene.kIInput.selectedItemProperty.addListener { _, newValue ->
+            kiMenuScene.startButton.isDisabled = false
+        }
 
 
-        networkScene.nameInput.apply {
+
+        kiMenuScene.nameInput.apply {
+            componentStyle = "-fx-background-color: #C8CAA7"
             onKeyTyped = {
-                networkScene.startButton.isDisabled = startIsAvailable()
+                kiMenuScene.startButton.isDisabled = !startIsAvailable()
             }
         }
 
-        networkScene.iDInput.apply {
-            onKeyTyped = {
-                networkScene.startButton.isDisabled = startIsAvailable()
-            }
-        }
-
-        networkScene.backButton.apply {
+        kiMenuScene.backButton.apply {
             onMouseClicked = {
                 for (input in playerInput) {
                     input.first.text = ""
                 }
             }
-
         }
 
-        networkScene.startButton.apply {
-
+        kiMenuScene.startButton.apply {
             onMouseClicked = {
                 val playerNames = mutableListOf<String>()
                 for (input in playerInput) {
@@ -54,6 +46,8 @@ class NetworkSceneController(
                 //rootService.gameService.startNewGame()
             }
         }
+
+
     }
 
     private fun startIsAvailable(): Boolean {
@@ -66,11 +60,12 @@ class NetworkSceneController(
         // If player has name ID must not be empty
         for (input in playerInput) {
             if (input.first.text.trim() != "") {
-                if (input.second.text.trim() == "")
-                    return false
+                if (input.second.selectedItem != ""){
+                    return false}
             }
         }
         return true
     }
+
 
 }

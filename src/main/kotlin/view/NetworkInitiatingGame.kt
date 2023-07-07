@@ -20,12 +20,12 @@ class NetworkInitiatingGame(private val rootService: RootService) :
         font = Font(size = 22)
     )
 
-    private val NameLabel = Label(
+    private val nameLabel = Label(
         width = 100, height = 35,
         posX = 50, posY = 125,
         text = "Name:"
     )
-    private val NameInput: TextField = TextField(
+    private val nameInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 160
     ).apply {
@@ -35,12 +35,12 @@ class NetworkInitiatingGame(private val rootService: RootService) :
         }
     }
 
-    private val KeyLabel = Label(
+    private val keyLabel = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
         text = "Key:"
     )
-    private val KeyInput: TextField = TextField(
+    private val keyInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 240
     ).apply {
@@ -105,7 +105,7 @@ class NetworkInitiatingGame(private val rootService: RootService) :
         return true
     }
 
-    private val playerInput = mutableListOf( Pair(NameInput, KeyInput))
+    private val playerInput = mutableListOf( Pair(nameInput, keyInput))
 
     /**
      * buttton to generate a key
@@ -140,8 +140,8 @@ class NetworkInitiatingGame(private val rootService: RootService) :
         opacity = 1.0
         startButton.isDisabled = true
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(headlineLabel, NameLabel, NameInput,
-            KeyInput, KeyLabel,
+        addComponents(headlineLabel, nameLabel, nameInput,
+            keyInput, keyLabel,
             startButton, backButton, randomIDButton)
     }
 
