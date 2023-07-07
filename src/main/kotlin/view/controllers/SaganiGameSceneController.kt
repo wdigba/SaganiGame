@@ -208,8 +208,8 @@ class SaganiGameSceneController(
 
 
     private fun centerTilePane() {
-        saganiGameScene.tilePane.posX = centerTilePanePosX
-        saganiGameScene.tilePane.posY = centerTilePanePosY
+        saganiGameScene.tilePane.posX = CENTER_TILE_PANE_POS_X
+        saganiGameScene.tilePane.posY = CENTER_TILE_PANE_POS_Y
     }
 
     //TODO
@@ -239,8 +239,8 @@ class SaganiGameSceneController(
     private fun initScene() {
         // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
 
-        for (x in 0..tilePaneWidth.toInt() step 120) {
-            for (y in 0..tilePaneHeight.toInt() step 120) {
+        for (x in 0..TILE_PANE_WIDTH.toInt() step 120) {
+            for (y in 0..TILE_PANE_HEIGHT.toInt() step 120) {
                 loadedBoardViews.put(
                     Location(x, y), CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50))
                 )
@@ -329,7 +329,7 @@ class SaganiGameSceneController(
     private fun drawPossiblePlacements() {/* Player has not yet placed a tile -> place in the middle of the board (centerPosInTilePane) */
         if (board.isEmpty()) {
             val centerCardView =
-                loadedBoardViews.get(Location(centerPosInTilePaneX.toInt(), centerPosInTilePaneY.toInt()))
+                loadedBoardViews.get(Location(CENTER_POS_IN_TILE_PANE_X.toInt(), CENTER_POS_IN_TILE_PANE_Y.toInt()))
 
 
             if (centerCardView != null) {
