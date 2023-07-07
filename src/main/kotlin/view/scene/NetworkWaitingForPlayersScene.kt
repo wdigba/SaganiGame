@@ -1,14 +1,12 @@
-package view
+package view.scene
 
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
+import view.Refreshable
 
-/**
- * A scene that is displayed while waiting for other players to join.
- */
-class NetworkWaitingForPlayers(private val rootService: RootService) :
+class NetworkWaitingForPlayersScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -16,7 +14,6 @@ class NetworkWaitingForPlayers(private val rootService: RootService) :
         text = "Waiting for others",
         font = Font(size = 22)
     )
-
     init {
         addComponents(headlineLabel)
     }
