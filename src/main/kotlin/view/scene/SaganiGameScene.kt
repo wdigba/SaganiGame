@@ -12,6 +12,7 @@ import tools.aqua.bgw.visual.ColorVisual
 import view.*
 import java.awt.Color
 import tools.aqua.bgw.components.uicomponents.ComboBox
+import tools.aqua.bgw.core.Alignment
 
 
 class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
@@ -334,6 +335,19 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         items = listOf("Fast", "Normal", "Slow", "Slowest")
     )
 
+
+    val playerName = Label (
+        width = 200,
+        height = 50,
+        posX = 1400,
+        posY = 40,
+        text = "Active Player: ${""}",
+        font = Font(size = 18, color = GameColor.cornSilk),
+        alignment = Alignment.CENTER,
+        isWrapText = true,
+        visual = ColorVisual.TRANSPARENT,
+    )
+
     //-----------------------------------------------------------------------
 
     init {
@@ -370,7 +384,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown
+            simulationSpeedLabel, simulationSpeedDropDown,
+            playerName
         )
     }
 
