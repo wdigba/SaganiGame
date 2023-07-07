@@ -1,31 +1,29 @@
 package view.controllers
 
-import service.RootService
 import view.Refreshable
-import view.SaganiApplication
 import view.scene.NetworkScene
 
 
 class NetworkSceneController(
-    private val networkScene: NetworkScene,
-    private val rootService: RootService,
-    private val saganiApplication: SaganiApplication,
-) : Refreshable {
+    private val networkScene: NetworkScene) : Refreshable {
 
     private val playerInput = mutableListOf(Pair(networkScene.nameInput, networkScene.iDInput))
+
 
     init {
 
 
         networkScene.nameInput.apply {
+            componentStyle = "-fx-background-color: #C8CAA7"
             onKeyTyped = {
                 networkScene.startButton.isDisabled = startIsAvailable()
             }
         }
 
         networkScene.iDInput.apply {
+            componentStyle = "-fx-background-color: #C8CAA7"
             onKeyTyped = {
-                networkScene.startButton.isDisabled = startIsAvailable()
+                networkScene.startButton.isDisabled = !startIsAvailable()
             }
         }
 
@@ -35,11 +33,9 @@ class NetworkSceneController(
                     input.first.text = ""
                 }
             }
-
         }
 
         networkScene.startButton.apply {
-
             onMouseClicked = {
                 val playerNames = mutableListOf<String>()
                 for (input in playerInput) {
