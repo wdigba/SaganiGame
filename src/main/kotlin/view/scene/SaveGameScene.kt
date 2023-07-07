@@ -10,6 +10,9 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
+/**
+ * Custom [MenuScene] for the save game menu.
+ */
 class SaveGameScene(rootService: RootService) : MenuScene(400, 1080), Refreshable {
 
     val saveGameButton = StandardButton(

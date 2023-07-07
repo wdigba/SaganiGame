@@ -7,6 +7,9 @@ import view.Refreshable
 import view.SaganiApplication
 import view.scene.PlayerConfigScene
 
+/**
+ * Controller class of [PlayerConfigScene].
+ */
 class PlayerConfigSceneController(
     private val playerConfigScene: PlayerConfigScene,
     private val rootService: RootService,

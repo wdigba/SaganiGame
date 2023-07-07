@@ -5,7 +5,9 @@ import view.Refreshable
 import view.SaganiApplication
 import view.scene.NetworkScene
 
-
+/**
+ * Controller for the [NetworkScene].
+ */
 class NetworkSceneController(
     private val networkScene: NetworkScene,
     private val rootService: RootService,

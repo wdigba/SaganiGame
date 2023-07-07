@@ -5,6 +5,10 @@ import view.*
 import view.scene.LoadGameScene
 import java.io.File
 import java.nio.file.Paths
+
+/**
+ * Controller for the [LoadGameScene].
+ */
 class LoadGameSceneController(
     private val loadGameScene: LoadGameScene,
     private val rootService: RootService,

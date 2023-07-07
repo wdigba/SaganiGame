@@ -9,7 +9,9 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
-
+/**
+ * Custom [MenuScene] for the player configuration menu.
+ */
 class PlayerConfigScene :
     MenuScene(400, 1080), Refreshable {
 

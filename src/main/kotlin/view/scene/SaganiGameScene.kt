@@ -14,7 +14,9 @@ import java.awt.Color
 import tools.aqua.bgw.components.uicomponents.ComboBox
 import tools.aqua.bgw.core.Alignment
 
-
+/**
+ * Custom [BoardGameScene] for the Sagani game.
+ */
 class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     /**
      * Upper Pane

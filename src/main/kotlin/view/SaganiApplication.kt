@@ -7,6 +7,9 @@ import tools.aqua.bgw.core.BoardGameApplication
 import view.controllers.*
 import view.scene.*
 
+/**
+ * The main application class that starts the game.
+ */
 class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val rootService = RootService()
 
@@ -16,7 +19,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
 
     private val loadGameScene = LoadGameScene(rootService)
     private val saveGameScene = SaveGameScene(rootService)
-
 
 
     private val loadGameSceneController: LoadGameSceneController = LoadGameSceneController(loadGameScene, rootService).apply {
@@ -123,6 +125,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
         this@SaganiApplication.hideMenuScene()
     }
+
     override fun refreshAfterLoadGame() {
 
     }

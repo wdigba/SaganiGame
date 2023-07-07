@@ -19,19 +19,19 @@ class EndScene(private val rootService: RootService) :
         width = 300, height = 50, posX = 50, posY = 50,
         font = Font(size = 22)
     )
-    private val Player1Label = Label(
+    private val player1Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
     )
-    private val Player2Label = Label(
+    private val player2Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 255,
     )
-    private val Player3Label = Label(
+    private val player3Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 305,
     )
-    private val Player4Label = Label(
+    private val player4Label = Label(
         width = 100, height = 35,
         posX = 50, posY = 355,
     )
@@ -42,7 +42,7 @@ class EndScene(private val rootService: RootService) :
         val game = rootService.currentGame
         checkNotNull(game) {"No started game found."}
 
-        val playerLabels = listOf(Player1Label, Player2Label, Player3Label, Player4Label)
+        val playerLabels = listOf(player1Label, player2Label, player3Label, player4Label)
 
         val sortedPlayers = game.players.sortedByDescending{it.points.first}
 
@@ -62,17 +62,17 @@ class EndScene(private val rootService: RootService) :
      * fun [onAllRefreshables] clears the labels after creating a new game (so that if you play another round the points table is empty)
      */
     fun onAllRefreshables() {
-        Player1Label.text = ""
+        player1Label.text = ""
 
-        Player2Label.text = ""
+        player2Label.text = ""
 
-        Player3Label.text = ""
+        player3Label.text = ""
 
-        Player4Label.text = ""
+        player4Label.text = ""
         showPlayerPoints()
     }
 
-    val QuitButton = StandardButton(
+    val quitButton = StandardButton(
         posX = 50, posY = 465,
         width = 140,
         text = "Quit",
@@ -87,7 +87,7 @@ class EndScene(private val rootService: RootService) :
         opacity = 1.0
 
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(winnerLabel, Player4Label, Player3Label, Player2Label, Player1Label, QuitButton, newGameButton)
+        addComponents(winnerLabel, player4Label, player3Label, player2Label, player1Label, quitButton, newGameButton)
     }
 
 

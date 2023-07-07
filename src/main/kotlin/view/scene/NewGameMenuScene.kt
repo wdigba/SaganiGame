@@ -1,6 +1,5 @@
 package view.scene
 
-import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
@@ -9,6 +8,9 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
+/**
+ * Custom [MenuScene] for the new game menu.
+ */
 class NewGameMenuScene :
     MenuScene(400, 1080), Refreshable {
 

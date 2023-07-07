@@ -14,6 +14,9 @@ import view.ZoomLevels.*
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Controller class for [SaganiGameScene].
+ */
 class SaganiGameSceneController(
     private val saganiGameScene: SaganiGameScene, private val rootService: RootService
 ) : Refreshable {
