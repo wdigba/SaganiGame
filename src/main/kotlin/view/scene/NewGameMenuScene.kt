@@ -20,14 +20,11 @@ class NewGameMenuScene :
         font = Font(size = 22)
     )
 
-    val playWithKIButton = StandardButton(
-        posX = 100, posY = 200,
-        text = "Play with KI",
-    )
+
 
     val playWithOthersButton = StandardButton(
         posX = 100, posY = 300,
-        text = "Play with others",
+        text = "Play",
     )
 
     val ruleButton = StandardButton(
@@ -45,7 +42,7 @@ class NewGameMenuScene :
         background = ColorVisual(GameColor.cornSilk)
         addComponents(
             headlineLabel,
-            playWithKIButton, playWithOthersButton, ruleButton, quitButton
+            playWithOthersButton, ruleButton, quitButton
         )
     }
 
