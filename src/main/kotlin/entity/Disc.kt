@@ -7,6 +7,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 enum class Disc {
-    SOUND,
-    CACOPHONY
+    SOUND, CACOPHONY
 }

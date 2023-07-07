@@ -54,9 +54,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // refresh GUI
         onAllRefreshables {
             refreshAfterStartNewGame(
-                game.players[0],
-                setOf(Location(0, 0)),
-                false
+                game.players[0], setOf(Location(0, 0)), false
             )
         }
 
@@ -93,18 +91,14 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 if (tiles[line][row] != "NONE") {
                     arrows.add(
                         Arrow(
-                            Element.valueOf(tiles[line][row]),
-                            Direction.values()[row - 2]
+                            Element.valueOf(tiles[line][row]), Direction.values()[row - 2]
                         )
                     )
                 }
             }
             stacks.add(
                 Tile(
-                    tiles[line][0].toInt(),
-                    tiles[line][10].toInt(),
-                    Element.valueOf(tiles[line][1]),
-                    arrows
+                    tiles[line][0].toInt(), tiles[line][10].toInt(), Element.valueOf(tiles[line][1]), arrows
                 )
             )
         }
@@ -124,10 +118,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      *          the arrows, that are being fulfilled, including the arrows of newTile
      */
     fun calculatePoints(
-        player: Player,
-        newTile: Tile,
-        tileDirection: Direction,
-        location: Location
+        player: Player, newTile: Tile, tileDirection: Direction, location: Location
     ): MutableList<Int> {
         // Get old values
         val discPile = player.discs.size
@@ -141,8 +132,12 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         for (direction in Direction.values()) {
             var filteredBoard = rootService.playerActionService.filterInDirection(player.board, direction, location)
             filteredBoard = filteredBoard.filterValues {
-                it.arrows.contains(Arrow(newTile.element, Direction.values()[(direction.ordinal + 4) % 8]))
-                        && !it.flipped
+                it.arrows.contains(
+                    Arrow(
+                        newTile.element,
+                        Direction.values()[(direction.ordinal + 4) % 8]
+                    )
+                ) && !it.flipped
             }
             filteredBoard.values.forEach {
                 it.arrows.forEach { arrow ->
@@ -288,9 +283,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // determine next player
         if (nextPlayer == null) {
-            nextPlayer = currentGame.players[
-                (currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size
-            ]
+            nextPlayer =
+                currentGame.players[(currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size]
             currentGame.actPlayer = nextPlayer
         }
 
