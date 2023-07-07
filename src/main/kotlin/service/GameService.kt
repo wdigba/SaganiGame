@@ -249,14 +249,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                     currentGame.lastRound = true
                 }
             }
-            // check if player has needed amount of points to end the game
-            currentGame.players.forEach {
-                if (it.points.first >= 105 - currentGame.players.size * 15) {
-                    currentGame.lastRound = true
-                }
+        }
+        // check if player has needed amount of points to end the game
+        currentGame.players.forEach {
+            if (it.points.first >= 105 - currentGame.players.size * 15) {
+                currentGame.lastRound = true
             }
         }
-
 
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
             rootService.networkService.client?.sendTurnMessage(player)
