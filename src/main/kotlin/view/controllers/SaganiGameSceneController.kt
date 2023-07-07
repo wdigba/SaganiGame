@@ -54,18 +54,12 @@ class SaganiGameSceneController(
 
         reloadCardViews(game, true)
 
-
-
         updateActivePlayerLabel()
-
-
 
         //TODO Funktion
         saganiGameScene.testButton.apply {
             onMouseClicked = {
-                val selectedPlacement =
-                    Location(selectedTilePlacement.posX.toInt() - 2060, selectedTilePlacement.posY.toInt() - 2060)
-                refreshAfterPlaceTile(game.actPlayer, selectedTile, selectedPlacement)
+                updateActivePlayerLabel()
             }
         }
 
@@ -425,7 +419,9 @@ class SaganiGameSceneController(
         flipTileToFrontSide(chosenTileView)
     }
 
-    // ToDo:
+    override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
+        updateActivePlayerLabel()
+    }
 
     override fun refreshAfterChangeToNextPlayer(
         player: Player,
@@ -437,6 +433,7 @@ class SaganiGameSceneController(
         // activ Player gets returned by refreshAfterChangeToNextPlayer
         actPlayer = player
         reloadCardViews(game)
+        updateActivePlayerLabel()
     }
 
     fun reloadCardViews(game: Sagani, flipped: Boolean = false) {
