@@ -1,4 +1,4 @@
-package view
+package view.scene
 
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
@@ -6,6 +6,9 @@ import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.StandardButton
 
 /**
  * [NetworkScene] creates scene to join someone's game using existing key

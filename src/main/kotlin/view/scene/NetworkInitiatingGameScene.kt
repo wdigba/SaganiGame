@@ -1,4 +1,4 @@
-package view
+package view.scene
 
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
@@ -6,12 +6,15 @@ import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import view.GameColor
+import view.Refreshable
+import view.StandardButton
 
 /**
- * [NetworkInitiatingGame] creates scene for initiating game
+ * [NetworkInitiatingGameScene] creates scene for initiating game
  */
 
-class NetworkInitiatingGame(private val rootService: RootService) :
+class NetworkInitiatingGameScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
