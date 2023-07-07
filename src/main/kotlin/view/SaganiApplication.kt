@@ -17,7 +17,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val saganiGameScene = SaganiGameScene()
 
 
-
     private val playerConfigSceneController: PlayerConfigSceneController =
         PlayerConfigSceneController(playerConfigScene, rootService, this).apply {
 
@@ -48,7 +47,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     }
 
     private val scoreScene = ScoreScene(rootService).apply {
-        backButton.onMouseClicked={
+        backButton.onMouseClicked = {
             this@SaganiApplication.hideMenuScene()
         }
     }
@@ -60,7 +59,11 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             }
         }
 
-    private val ruleScene: RuleScene = RuleScene(rootService)
+    private val ruleScene: RuleScene = RuleScene(rootService).apply {
+        backButton.apply {
+            onMouseClicked = { this@SaganiApplication.showMenuScene(newGameMenuScene) }
+        }
+    }
 
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene().apply {
         playWithKIButton.onMouseClicked = {
@@ -72,7 +75,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         }
         ruleButton.onMouseClicked = {
             hideMenuScene()
-            this@SaganiApplication.showGameScene(ruleScene)
+            this@SaganiApplication.showMenuScene(ruleScene)
         }
         quitButton.onMouseClicked = {
             exit()
