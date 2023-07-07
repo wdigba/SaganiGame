@@ -315,27 +315,22 @@ class SaganiGameSceneController(
             val tileView = loadedBoardViews.get(Location(it.key.first, it.key.second))
 
             if (tileView != null) {
-                initializeTileView(tile = it.value, tileView, flip = false)
+                initializeTileView(tile = it.value, tileView)
             }
         }
     }
 
+    private fun flipTileToFrontSide(tileView: CardView){
+        if (tileView.currentSide == CardView.CardSide.BACK){
+            tileView.showFront()
+        }
+    }
 
-    private fun initializeTileView(tile: Tile, tileView: CardView, flip: Boolean = true) {
+    private fun initializeTileView(tile: Tile, tileView: CardView) {
         val tileImageLoader = TileImageLoader()
 
         tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
         tileView.backVisual = ImageVisual(tileImageLoader.getBackImage(tile.id))
-
-        // cardMap.add(card to cardView)
-
-        if (flip) {
-            when (tileView.currentSide) {
-                CardView.CardSide.BACK -> tileView.showFront()
-                CardView.CardSide.FRONT -> tileView.showBack()
-            }
-
-        }
     }
 
 
@@ -470,7 +465,8 @@ class SaganiGameSceneController(
     }
 
     private fun executeTileMove() {
-        initializeTileView(selectedTile, chosenTileView, true)
+        initializeTileView(selectedTile, chosenTileView)
+        flipTileToFrontSide(chosenTileView)
     }
 
     override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
