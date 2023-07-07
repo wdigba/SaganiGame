@@ -358,18 +358,6 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     //-----------------------------------------------------------------------
 
     init {
-
-        tilePane.add(sampleTile)
-
-        sampleTile.apply {
-            onMouseClicked = {
-                println("HELLO")
-            }
-        }
-
-
-
-
         background = ColorVisual(GameColor.chaletGreen)
         addComponents(
             tilePane,
