@@ -1,11 +1,13 @@
 package view
 
-import service.RootService
+import service.*
+import tools.aqua.bgw.components.uicomponents.Button
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import tools.aqua.bgw.visual.ImageVisual
 
 /**
  * [RuleScene] describes generally the idea of the game

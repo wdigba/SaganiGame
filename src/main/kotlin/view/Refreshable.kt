@@ -1,8 +1,13 @@
 package view
 
 import Location
+import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Player
 import entity.Tile
+import service.RootService
+import tools.aqua.bgw.core.Scene
+import tools.aqua.bgw.visual.ImageVisual
+import view.scene.SaganiGameScene
 
 /**
  * [Refreshable] enables to refresh GUI in service layer functions
@@ -19,6 +24,7 @@ interface Refreshable {
      * @param validLocations: Set of all valid locations for next player's board
      */
     fun refreshAfterChangeToNextPlayer(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {}
+
 
     /**
      * refresh Gui after CalculateWinner()
@@ -52,4 +58,18 @@ interface Refreshable {
      * refresh Gui after redo()
      */
     fun refreshAfterRedo() {}
+
+    /**
+     * refresh Gui after a connection state change
+     *
+     * @param newState The new connection state
+     */
+    fun refreshAfterConnectionStateChange(newState: ConnectionState) {}
+
+    /**
+     * refresh Gui after a player connects or disconnects.
+     *
+     * @param currentPlayers The list of players after the change
+     */
+    fun refreshAfterPlayerListChange(currentPlayers: List<String>) {}
 }
