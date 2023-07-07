@@ -28,7 +28,7 @@ class SaveAndLoadTest {
     /**
      * Saves the [Sagani] object in currentGame to a file. Then loads the file and compares the two
      */
-   /* @Test
+    @Test
     fun saveAndReloadMultipleGames() {
 
         // store a copy of the Sagani object to compare with after reloading
@@ -57,12 +57,12 @@ class SaveAndLoadTest {
         // NotSame means they are different instances
         assertNotSame(oldGame, rootService.currentGame)
 
-    }*/
+    }
 
     /**
      * Saves and reloads a single [Sagani] object
      */
-  /*  @Test
+    @Test
     fun saveAndReloadSingleGame() {
 
         // store a copy of the Sagani object to compare with after reloading
@@ -89,12 +89,12 @@ class SaveAndLoadTest {
         assertNull(game.lastTurn)
         assertNull(game.nextTurn)
 
-    }*/
+    }
 
     /**
      * Checks if loaded [Sagani] game chain is still in correct order
      */
-  /*  @Test
+    @Test
     fun checkIfOrderIsPreserved() {
 
         // store a copy of the Sagani object to compare with after reloading
@@ -146,7 +146,7 @@ class SaveAndLoadTest {
         assertEquals(game.players[2], game.actPlayer)
         assertEquals(1, game.intermezzoStorage.size)
 
-    }*/
+    }
 
     /**
      * During saving process the chain of games is iterates through. This tests if after saving the currentGame
