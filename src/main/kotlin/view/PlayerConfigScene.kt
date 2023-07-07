@@ -12,7 +12,7 @@ import tools.aqua.bgw.visual.ColorVisual
  */
 
 class PlayerConfigScene(private val rootService: RootService) :
-    MenuScene(400, 1080), Refreshable {
+    MenuScene(700, 1080), Refreshable {
 
     private val headlineLabel = Label(
         width = 300, height = 50, posX = 50, posY = 50,
@@ -41,6 +41,37 @@ class PlayerConfigScene(private val rootService: RootService) :
             startButton.isDisabled = !startIsAvailable()
         }
     }
+    private val kI1Label = Label(
+        width = 150, height = 35,
+        posX = 320, posY = 125,
+        text = "Who is playing?"
+    )
+    private val kI2Label = Label(
+        width = 150, height = 35,
+        posX = 320, posY = 205,
+        text = "Who is playing?"
+    )
+    private val kI3Label = Label(
+        width = 150, height = 35,
+        posX = 320, posY = 285,
+        text = "Who is playing?"
+    )
+    private val kI4Label = Label(
+        width = 150, height = 35,
+        posX = 320, posY = 365,
+        text = "Who is playing?"
+    )
+    val comboBoxKIArt = mutableListOf("Human", "Random KI", "Smart KI")
+
+    private val comboBoxKI1 =
+        ComboBox<String>(posX = 320, posY = 160, width = 150)
+    private val comboBoxKI2 =
+        ComboBox<String>(posX = 320, posY = 240, width = 150)
+    private val comboBoxKI3 =
+        ComboBox<String>(posX = 320, posY = 320, width = 150)
+    private val comboBoxKI4 =
+        ComboBox<String>(posX = 320, posY = 400, width = 150)
+
 
     val comboBoxColors = mutableListOf("White", "Gray", "Brown", "Black")
 
@@ -165,7 +196,7 @@ class PlayerConfigScene(private val rootService: RootService) :
 
     private val plusButton = Button(
         width = 35, height = 35,
-        posX = 320, posY = 240,
+        posX = 480, posY = 240,
         text = "+", font = Font(size = 14), alignment = Alignment.CENTER
     ).apply {
         visual = ColorVisual(GameColor.paleLeaf)
@@ -176,7 +207,7 @@ class PlayerConfigScene(private val rootService: RootService) :
 
     private val minusButton = Button(
         width = 35, height = 35,
-        posX = 360, posY = 320,
+        posX = 520, posY = 320,
         text = "-", font = Font(size = 20), alignment = Alignment.CENTER
     ).apply {
         visual = ColorVisual(GameColor.paleLeaf)
@@ -232,6 +263,23 @@ class PlayerConfigScene(private val rootService: RootService) :
         color4Label.isVisible = false
         comboBox3.isVisible = false
         comboBox4.isVisible = false
+        kI3Label.isVisible =false
+        kI4Label.isVisible = false
+        comboBoxKI4.isVisible=false
+        comboBoxKI3.isVisible=false
+
+        comboBoxKI1.items=comboBoxKIArt
+        comboBoxKI1.selectedItemProperty.addListener{_, newValue ->
+            startButton.isDisabled = !startIsAvailable()}
+        comboBoxKI2.items=comboBoxKIArt
+        comboBoxKI2.selectedItemProperty.addListener{_, newValue ->
+            startButton.isDisabled = !startIsAvailable()}
+        comboBoxKI3.items=comboBoxKIArt
+        comboBoxKI3.selectedItemProperty.addListener{_, newValue ->
+            startButton.isDisabled = !startIsAvailable()}
+        comboBoxKI4.items=comboBoxKIArt
+        comboBoxKI4.selectedItemProperty.addListener{_, newValue ->
+            startButton.isDisabled = !startIsAvailable()}
 
         comboBox1.items = comboBoxColors
         comboBox1.selectedItemProperty.addListener { _, newValue ->
@@ -266,7 +314,9 @@ class PlayerConfigScene(private val rootService: RootService) :
             player3Label, player3Input, color3Label, comboBox3,
             player4Label, player4Input, color4Label, comboBox4,
             startButton, backButton, plusButton, minusButton,
-            randomNamesButton
+            randomNamesButton,
+            comboBoxKI1,comboBoxKI2,comboBoxKI3,comboBoxKI4,
+            kI1Label,kI2Label,kI3Label,kI4Label
         )
     }
 
@@ -274,21 +324,25 @@ class PlayerConfigScene(private val rootService: RootService) :
     private fun repositionButtonsPlus() {
         if (!player3Label.isVisible) {
             minusButton.isVisible = true
-            plusButton.reposition(320, 320)
+            plusButton.reposition(480, 320)
             player3Label.isVisible = true
             player3Input.isVisible = true
             color3Label.isVisible = true
             comboBox3.isVisible = true
+            comboBoxKI3.isVisible=true
+            kI3Label.isVisible=true
             playerInputs.add(Pair(player3Input, comboBox3))
             startButton.isDisabled = !startIsAvailable()
 
         } else if (!player4Label.isVisible) {
-            minusButton.reposition(360, 400)
+            minusButton.reposition(520, 400)
             player4Input.isVisible = true
             player4Label.isVisible = true
             color4Label.isVisible = true
             comboBox4.isVisible = true
             plusButton.isVisible = false
+            comboBoxKI4.isVisible=true
+            kI4Label.isVisible=true
             playerInputs.add(Pair(player4Input, comboBox4))
             startButton.isDisabled = !startIsAvailable()
         }
@@ -303,9 +357,11 @@ class PlayerConfigScene(private val rootService: RootService) :
             player4Input.isVisible = false
             color4Label.isVisible = false
             comboBox4.isVisible = false
+            comboBoxKI4.isVisible=false
+            kI4Label.isVisible=false
             playerInputs.remove(Pair(player4Input, comboBox4))
-            minusButton.reposition(360, 320)
-            plusButton.reposition(320, 320)
+            minusButton.reposition(520, 320)
+            plusButton.reposition(480, 320)
             plusButton.isVisible = true
             startButton.isDisabled = !startIsAvailable()
         } else if (player3Label.isVisible) {
@@ -314,9 +370,11 @@ class PlayerConfigScene(private val rootService: RootService) :
             player3Input.isVisible = false
             color3Label.isVisible = false
             comboBox3.isVisible = false
+            comboBoxKI3.isVisible=false
+            kI3Label.isVisible=false
             playerInputs.remove(Pair(player3Input, comboBox3))
             minusButton.isVisible = false
-            plusButton.reposition(320, 240)
+            plusButton.reposition(480, 240)
             plusButton.isVisible = true
             startButton.isDisabled = !startIsAvailable()
         }

@@ -109,10 +109,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game") {
     }
 
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene(rootService).apply {
-        playWithKIButton.onMouseClicked = {
-            hideMenuScene()
-            this@SaganiApplication.showMenuScene(kIMenuScene)
-        }
+
         playWithOthersButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(configurationScene)
         }
