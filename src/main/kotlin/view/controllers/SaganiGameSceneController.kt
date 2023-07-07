@@ -205,6 +205,12 @@ class SaganiGameSceneController(
             }
         }
 
+        saganiGameScene.rotateButton.apply {
+            onMouseClicked = {
+                //Rotates the chosen Tile 90 degrees clockwise
+                chosenTileView.rotate(90)
+            }
+        }
 
         initScene()
     }
