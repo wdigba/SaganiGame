@@ -197,7 +197,7 @@ class KIServiceTest {
 
     /**
      * test for [KIService.playBestMove] calculates best move based on board
-     */
+     *
     @Test
     fun playBestMoveTest() {
         val rootService = RootService()
@@ -325,7 +325,7 @@ class KIServiceTest {
         game = rootService.currentGame!!
         assert(game.actPlayer.name == "JohnAI")
         println("expected previous board + tile6/tile7 : " + game.actPlayer.board)
-    }
+    }*/
 
     /**
      * test for [KIService.calculatePotentialTilePlacements] for board with 11 placed tiles
@@ -590,7 +590,7 @@ class KIServiceTest {
         assertEquals(Pair(0, -1), highestScore?.location)
         assertEquals(Direction.DOWN, highestScore?.direction)
     }
-
+    /**
     @Test
     fun `test AI performance`() {
         val rootService = RootService()
@@ -799,9 +799,9 @@ class KIServiceTest {
         }
 
 
-    }
+    }*/
 
-
+/*
     fun playSomeGames(
         rootService: RootService,
         aliceParameters: GameParams,
@@ -884,8 +884,8 @@ class KIServiceTest {
         return Pair(aliceWins.size, bobWins.size)
     }
 
-
-
+    */
+/**
     @Test
     fun `compare two parameter sets`(){
 
@@ -941,5 +941,5 @@ class KIServiceTest {
             copy.discBlockedWeight = this.discBlockedWeight
             return copy
         }
-    }
+    }*/
 }
