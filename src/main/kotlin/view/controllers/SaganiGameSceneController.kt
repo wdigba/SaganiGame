@@ -39,7 +39,6 @@ class SaganiGameSceneController(
     private var tilePlaced = false
     private var currentZoom = LEVEL1
 
-    private var chosenOfferDisplay = -1
     private var chosenTileView: CardView
     private val tileImageLoader = TileImageLoader()
 
@@ -64,8 +63,11 @@ class SaganiGameSceneController(
 
         //TODO Funktion
         saganiGameScene.testButton.apply {
+            val game = rootService.currentGame
+            checkNotNull(game)
             onMouseClicked = {
                 updateActivePlayerLabel()
+                reloadCardViews(game)
             }
         }
 
@@ -130,7 +132,7 @@ class SaganiGameSceneController(
 
         saganiGameScene.cardStack.apply {
             if (game.offerDisplay.size >= 1) {
-                saganiGameScene.cardStack.isDisabled = true
+                saganiGameScene.cardStack.isDisabled = false
             }
             onMouseClicked = {
                 saganiGameScene.offer1.isDisabled = true
@@ -151,7 +153,6 @@ class SaganiGameSceneController(
 
         saganiGameScene.offer1.apply {
             onMouseClicked = {
-                chosenOfferDisplay = 0
                 selectedTile = game.offerDisplay[0]
                 // override chosenTileView to clear all possiblePlacements if this is not the first offering
                 // chosen this turn
@@ -163,7 +164,6 @@ class SaganiGameSceneController(
         }
         saganiGameScene.offer2.apply {
             onMouseClicked = {
-                chosenOfferDisplay = 1
                 selectedTile = game.offerDisplay[1]
                 // override chosenTileView to clear all possiblePlacements if this is not the first offering
                 // chosen this turn
@@ -175,7 +175,6 @@ class SaganiGameSceneController(
         }
         saganiGameScene.offer3.apply {
             onMouseClicked = {
-                chosenOfferDisplay = 2
                 selectedTile = game.offerDisplay[2]
                 // override chosenTileView to clear all possiblePlacements if this is not the first offering
                 // chosen this turn
@@ -188,7 +187,6 @@ class SaganiGameSceneController(
         saganiGameScene.offer4.apply {
 
             onMouseClicked = {
-                chosenOfferDisplay = 3
                 selectedTile = game.offerDisplay[3]
                 // override chosenTileView to clear all possiblePlacements if this is not the first offering
                 // chosen this turn
@@ -204,7 +202,6 @@ class SaganiGameSceneController(
         }
         saganiGameScene.offer5.apply {
             onMouseClicked = {
-                chosenOfferDisplay = 4
                 selectedTile = game.offerDisplay[4]
                 // override chosenTileView to clear all possiblePlacements if this is not the first offering
                 // chosen this turn
@@ -258,11 +255,10 @@ class SaganiGameSceneController(
             Location(selectedTilePlacement.posX.toInt() - 2060, selectedTilePlacement.posY.toInt() - 2060)
 
         rootService.playerActionService.placeTile(
-            game.offerDisplay[chosenOfferDisplay],
+            selectedTile,
             selectedTile.direction,
             selectedPlacement
         )
-        chosenOfferDisplay = -1
 
 //        rootService.gameService.changeToNextPlayer()
 //        game.let {  } //TODO: Hier richtig?
