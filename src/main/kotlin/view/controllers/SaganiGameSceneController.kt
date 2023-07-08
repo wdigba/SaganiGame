@@ -577,7 +577,7 @@ class SaganiGameSceneController(
             // x = it.key.first
             // y = it.key.second
             val bottomX = CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120
-            val bottomY = CENTER_POS_IN_TILE_PANE_Y.toInt() - it.key.first * 120 + 120
+            val bottomY = CENTER_POS_IN_TILE_PANE_Y.toInt() - it.key.second * 120 + 120
             val rightX = CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120 + 120
             val rightY = CENTER_POS_IN_TILE_PANE_Y.toInt() - it.key.second * 120
             val topX = CENTER_POS_IN_TILE_PANE_X.toInt() + it.key.first * 120
