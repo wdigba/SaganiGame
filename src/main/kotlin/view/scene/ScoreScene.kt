@@ -20,49 +20,49 @@ import view.StandardButton
  * @property playerLabels show the players' points
  */
 class ScoreScene(private val rootService: RootService) :
-    MenuScene(400, 1080), Refreshable {
+    MenuScene(600, 1080), Refreshable {
 
     private val headlineLabel = Label(
-        width = 300, height = 50, posX = 50, posY = 50,
+        width = 500, height = 50, posX = 50, posY = 50,
         text = "Score Board",
         font = Font(size = 22)
     )
     private val player1Label = Label(
-        width = 200, height = 35,
+        width = 400, height = 35,
         posX = 50, posY = 205,
     )
     private val player2Label = Label(
-        width = 200, height = 35,
+        width = 400, height = 35,
         posX = 50, posY = 255,
     )
     private val player3Label = Label(
-        width = 200, height = 35,
+        width = 400, height = 35,
         posX = 50, posY = 305,
     )
     private val player4Label = Label(
-        width = 200, height = 35,
+        width = 400, height = 35,
         posX = 50, posY = 355,
     )
-     val backButton = StandardButton(
+    val backButton = StandardButton(
         posX = 50, posY = 465,
         width = 140,
         text = "Go Back"
     )
     val board1Button = Button(
         width = 50, height = 35,
-        posX = 300, posY = 205
+        posX = 500, posY = 205
     )
-     val board2Button = Button(
+    val board2Button = Button(
         width = 50, height = 35,
-        posX = 300, posY = 255
+        posX = 500, posY = 255
     )
     val board3Button = Button(
         width = 50, height = 35,
-        posX = 300, posY = 305
+        posX = 500, posY = 305
     )
     val board4Button = Button(
         width = 50, height = 35,
-        posX = 300, posY = 355
+        posX = 500, posY = 355
     )
 
     private val playerLabels = listOf(player1Label, player2Label, player3Label, player4Label)
@@ -79,7 +79,7 @@ class ScoreScene(private val rootService: RootService) :
     /**
      * [showPlayersScore] sets text fields in playerLabels with current scores
      */
-    private fun showPlayersScore() {
+    fun showPlayersScore() {
         // use current game state
         val game = rootService.currentGame
         checkNotNull(game) { "There is no game." }
@@ -89,7 +89,7 @@ class ScoreScene(private val rootService: RootService) :
         }
     }
 
-    private fun showBoardButtons() {
+    fun showBoardButtons() {
         // use current game state
         val game = rootService.currentGame
         checkNotNull(game) { "There is no game." }
@@ -117,11 +117,11 @@ class ScoreScene(private val rootService: RootService) :
             it.text = ""
             it.isVisible = false
             it.isDisabled = true
+            // show current score board
+            // showPlayersScore()
+            // show and enable boardButtons
+            // showBoardButtons()
         }
-        // show current score board
-        showPlayersScore()
-        // show and enable boardButtons
-        showBoardButtons()
     }
 
     /**
@@ -137,41 +137,43 @@ class ScoreScene(private val rootService: RootService) :
             it.isDisabled = true
         }
         // show current score board
-        showPlayersScore()
+        // showPlayersScore()
         // show and enable boardButtons
-        showBoardButtons()
+        // showBoardButtons()
     }
+    /*
+        /**
+         * [refreshAfterChangeToNextPlayer] refreshes score board.
+         */
+        override fun refreshAfterChangeToNextPlayer(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
+            // show current score board
+            showPlayersScore()
+        }
 
-    /**
-     * [refreshAfterChangeToNextPlayer] refreshes score board.
-     */
-    override fun refreshAfterChangeToNextPlayer(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
-        // show current score board
-        showPlayersScore()
-    }
+        /**
+         * [refreshAfterRedo] refreshes score board.
+         */
+        override fun refreshAfterRedo() {
+            // show current score board
+            showPlayersScore()
+        }
 
-    /**
-     * [refreshAfterRedo] refreshes score board.
-     */
-    override fun refreshAfterRedo() {
-        // show current score board
-        showPlayersScore()
-    }
+        /**
+         * [refreshAfterUndo] refreshes score board.
+         */
+        override fun refreshAfterUndo() {
+            // show current score board
+            showPlayersScore()
+        }
 
-    /**
-     * [refreshAfterUndo] refreshes score board.
-     */
-    override fun refreshAfterUndo() {
-        // show current score board
-        showPlayersScore()
-    }
+        /**
+         * [refreshAfterCalculateWinner] refreshes score board.
+         */
+        override fun refreshAfterCalculateWinner() {
+            // show final score board
+            showPlayersScore()
+            showBoardButtons()
+        }
 
-    /**
-     * [refreshAfterCalculateWinner] refreshes score board.
      */
-    override fun refreshAfterCalculateWinner() {
-        // show final score board
-        showPlayersScore()
-        showBoardButtons()
-    }
 }

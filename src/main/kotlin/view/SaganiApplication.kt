@@ -19,12 +19,11 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val kiMenuScene = KIMenuScene()
     private val networkWaitingForPlayers = NetworkWaitingForPlayersScene(rootService)
 
-    private val endScene:EndScene = EndScene(rootService).apply {
+    private val endScene: EndScene = EndScene(rootService).apply {
         quitButton.onMouseClicked = {
             exit()
         }
     }
-
 
 
     private val initiatingGame: NetworkInitiatingGameScene = NetworkInitiatingGameScene().apply {
@@ -64,10 +63,9 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             }
         }
 
-    private val kiMenuSceneController:KIMenuSceneController = KIMenuSceneController(kiMenuScene).apply {
+    private val kiMenuSceneController: KIMenuSceneController = KIMenuSceneController(kiMenuScene).apply {
 
     }
-
 
 
     private val configurationScene: ConfigurationScene = ConfigurationScene().apply {
@@ -82,10 +80,10 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         }
     }
     private val kIMenuScene: KIMenuScene = KIMenuScene().apply {
-        startButton.onMouseClicked ={
+        startButton.onMouseClicked = {
 
         }
-        backButton.onMouseClicked ={
+        backButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
     }
@@ -100,6 +98,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val saganiGameSceneController: SaganiGameSceneController =
         SaganiGameSceneController(saganiGameScene, rootService).apply {
             saganiGameScene.scoreButton.onMouseClicked = {
+                scoreScene.showPlayersScore()
+                scoreScene.showBoardButtons()
                 this@SaganiApplication.showMenuScene(scoreScene)
             }
         }
