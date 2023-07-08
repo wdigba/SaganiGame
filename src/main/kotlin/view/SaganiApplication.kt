@@ -4,10 +4,7 @@ import Location
 import entity.Player
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
-import view.controllers.KIMenuSceneController
-import view.controllers.NetworkSceneController
-import view.controllers.PlayerConfigSceneController
-import view.controllers.SaganiGameSceneController
+import view.controllers.*
 import view.scene.*
 
 class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
@@ -18,6 +15,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val saganiGameScene = SaganiGameScene()
     private val kiMenuScene = KIMenuScene()
     private val networkWaitingForPlayers = NetworkWaitingForPlayersScene(rootService)
+    private val scoreScene = ScoreScene()
 
     private val endScene: EndScene = EndScene(rootService).apply {
         quitButton.onMouseClicked = {
@@ -89,8 +87,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     }
 
 
-    private val scoreScene = ScoreScene(rootService).apply {
-        backButton.onMouseClicked = {
+    private val scoreSceneController = ScoreSceneController(scoreScene, rootService).apply {
+        scoreScene.backButton.onMouseClicked = {
             this@SaganiApplication.hideMenuScene()
         }
     }
@@ -98,8 +96,6 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val saganiGameSceneController: SaganiGameSceneController =
         SaganiGameSceneController(saganiGameScene, rootService).apply {
             saganiGameScene.scoreButton.onMouseClicked = {
-                scoreScene.showPlayersScore()
-                scoreScene.showBoardButtons()
                 this@SaganiApplication.showMenuScene(scoreScene)
             }
         }
@@ -131,7 +127,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this,
             //networkConfigSceneController,
             playerConfigSceneController,
-            saganiGameSceneController
+            saganiGameSceneController,
+            scoreSceneController
         )
     }
 
