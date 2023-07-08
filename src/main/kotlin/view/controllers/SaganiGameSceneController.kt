@@ -7,12 +7,14 @@ import entity.*
 import service.TileImageLoader
 
 import tools.aqua.bgw.components.gamecomponentviews.CardView
+import tools.aqua.bgw.components.gamecomponentviews.TokenView
 import tools.aqua.bgw.visual.ColorVisual
 import tools.aqua.bgw.visual.ImageVisual
 import view.*
 import view.ZoomLevels.*
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 /**
  * Controller for the [SaganiGameScene].
@@ -271,7 +273,8 @@ class SaganiGameSceneController(
      */
     private fun resetLoadedBoardViews() {
 
-        //loadedBoardViews.clear()
+        loadedBoardViews.clear()
+        saganiGameScene.tilePane.clear()
 
         // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
         // Daniel Gast: changed to step and height/width of 60 -> 4440/120 = 37 Tiles
@@ -281,6 +284,7 @@ class SaganiGameSceneController(
                 loadedBoardViews.put(
                     Location(x, y), CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50))
                 )
+                saganiGameScene.tilePane.add(CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50)))
 
             }
         }
@@ -310,36 +314,18 @@ class SaganiGameSceneController(
         checkNotNull(game) { "game was null in initScene()" }
 
         game.actPlayer.board[Pair(0, 0)] = game.stacks.removeFirst()
+        game.actPlayer.board[Pair(0, 0)]?.discs?.add(Disc.CACOPHONY)
         game.actPlayer.board[Pair(1, 0)] = game.stacks.removeFirst()
+        game.actPlayer.board[Pair(1, 0)]?.discs?.add(Disc.SOUND)
         game.actPlayer.board[Pair(1, 1)] = game.stacks.removeFirst()
+        game.actPlayer.board[Pair(1, 1)]?.arrows?.forEach { it.disc.add(Disc.SOUND) }
+
+
         println("added Tiles")
         loadBoardTiles(game.actPlayer.board)
         println(game.actPlayer.board)
         println("loaded board")
-        println(CENTER_POS_IN_TILE_PANE_X.toInt())
-        println(CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 0)
-        println(CENTER_POS_IN_TILE_PANE_Y.toInt() - 120 * 0)
-        println(
-            loadedBoardViews[Pair(
-                CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 0,
-                CENTER_POS_IN_TILE_PANE_Y.toInt() - 120 * 0
-            )]?.frontVisual
-        )
-        println(game.actPlayer.board[Pair(0, 0)])
-        println(
-            loadedBoardViews[Pair(
-                CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 1,
-                CENTER_POS_IN_TILE_PANE_Y.toInt() - 120 * 0
-            )]?.frontVisual
-        )
-        println(game.actPlayer.board[Pair(1, 0)])
-        println(
-            loadedBoardViews[Pair(
-                CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * 1,
-                CENTER_POS_IN_TILE_PANE_Y.toInt() - 120 * 1
-            )]?.frontVisual
-        )
-        println(game.actPlayer.board[Pair(1, 1)])
+        print("Active player is: ")
         println(game.actPlayer.name)
 
         /*
@@ -373,7 +359,7 @@ class SaganiGameSceneController(
                 )
             )
 
-
+            // push Tile image to tilePane
             if (tileView != null) {
                 initializeTileView(tile = it.value, tileView)
                 tileView.showFront()
@@ -382,6 +368,107 @@ class SaganiGameSceneController(
                 tileView.isDisabled = false
 
                 saganiGameScene.tilePane.add(tileView)
+
+            }
+
+            // CENTER_POS_IN_TILE_PANE_X.toInt() + 120 * it.key.first gets to top left corner of disc,
+            // STANDARD_TILE_VIEW_WIDTH/2 gets close center of disc, 20 accounts with size of token
+            val tokenSize = 20
+            val tileSize = 120
+            val centerViewX = (CENTER_POS_IN_TILE_PANE_X.toInt() + tileSize * it.key.first
+                    + STANDARD_TILE_VIEW_WIDTH / 2 - tokenSize / 2 )
+            val centerViewY = (CENTER_POS_IN_TILE_PANE_Y.toInt() - tileSize * it.key.second
+                    + STANDARD_TILE_VIEW_HEIGHT / 2 - tokenSize / 2)
+
+            // add unassigned Discs to Tile center
+            it.value.discs.forEach { disc ->
+                // Random.nextInt introduces some jitter so that multiple discs can be seen
+                if (disc == Disc.SOUND) {
+                    saganiGameScene.tilePane.add(
+                        TokenView(
+                            width = tokenSize,
+                            height = tokenSize,
+                            posX = centerViewX + Random.nextInt(-5, 5),
+                            posY = centerViewY + Random.nextInt(-5, 5),
+                            visual = ColorVisual.WHITE
+                        )
+                    )
+                }
+                else {
+                    saganiGameScene.tilePane.add(
+                        TokenView(
+                            width = tokenSize,
+                            height = tokenSize,
+                            posX = centerViewX + Random.nextInt(-5, 5),
+                            posY = centerViewY + Random.nextInt(-5, 5),
+                            visual = ColorVisual.RED
+                        )
+                    )
+                }
+            }
+
+            val solvedArrowFactor = 0.325
+            // add disc to each arrow if it is "solved"
+            it.value.arrows.forEach { arrow ->
+
+                if (arrow.disc.size > 0) {
+
+                    val solvedArrowX : Double
+                    val solvedArrowY : Double
+                    // find coordinates based on direction ... if there is time change to when() { ...}
+                    if ( arrow.direction == Direction.UP ) {
+                        solvedArrowX = centerViewX
+                        solvedArrowY = centerViewY - tileSize * solvedArrowFactor
+                    } else if ( arrow.direction == Direction.UP_RIGHT ) {
+                        solvedArrowX = centerViewX + tileSize * solvedArrowFactor
+                        solvedArrowY = centerViewY - tileSize * solvedArrowFactor
+                    } else if ( arrow.direction == Direction.RIGHT ) {
+                        solvedArrowX = centerViewX + tileSize * solvedArrowFactor
+                        solvedArrowY = centerViewY
+                    } else if ( arrow.direction == Direction.DOWN_RIGHT ) {
+                        solvedArrowX = centerViewX + tileSize * solvedArrowFactor
+                        solvedArrowY = centerViewY + tileSize * solvedArrowFactor
+                    } else if ( arrow.direction == Direction.DOWN) {
+                        solvedArrowX = centerViewX
+                        solvedArrowY = centerViewY + tileSize * solvedArrowFactor
+                    } else if ( arrow.direction == Direction.DOWN_LEFT) {
+                        solvedArrowX = centerViewX - tileSize * solvedArrowFactor
+                        solvedArrowY = centerViewY + tileSize * solvedArrowFactor
+                    } else if ( arrow.direction == Direction.LEFT) {
+                        solvedArrowX = centerViewX - tileSize * solvedArrowFactor
+                        solvedArrowY = centerViewY
+                    } else if ( arrow.direction == Direction.UP_LEFT) {
+                        solvedArrowX = centerViewX - tileSize * solvedArrowFactor
+                        solvedArrowY = centerViewY - tileSize * solvedArrowFactor
+                    } else {
+                        // this should never happen
+                        solvedArrowX = centerViewX + 10
+                        solvedArrowY = centerViewY + 10
+                    }
+
+                    if (arrow.disc.first() == Disc.SOUND) {
+                        saganiGameScene.tilePane.add(
+                            TokenView(
+                                width = tokenSize,
+                                height = tokenSize,
+                                posX = solvedArrowX ,
+                                posY = solvedArrowY ,
+                                visual = ColorVisual.WHITE
+                            )
+                        )
+                    }
+                    else {
+                        saganiGameScene.tilePane.add(
+                            TokenView(
+                                width = tokenSize,
+                                height = tokenSize,
+                                posX = solvedArrowX,
+                                posY = solvedArrowY,
+                                visual = ColorVisual.RED
+                            )
+                        )
+                    }
+                }
 
             }
 
