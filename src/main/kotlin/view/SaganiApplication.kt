@@ -76,6 +76,9 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         networkButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(networkInitiateOrJoin)
         }
+        loadGameButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(loadGameScene)
+        }
     }
     private val kIMenuScene: KIMenuScene = KIMenuScene().apply {
         startButton.onMouseClicked = {
@@ -93,10 +96,37 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         }
     }
 
+    private val loadGameScene = LoadGameScene().apply {
+        backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(configurationScene)
+        }
+        loadGameButton.onMouseClicked = {
+            val game = checkNotNull(rootService.gameService)
+            val path = checkValidPath(pathInput.text)
+            game.loadGame(path)
+            this@SaganiApplication.hideMenuScene()
+        }
+    }
+
+    private val saveGameScene = SaveGameScene().apply {
+        backButton.onMouseClicked = {
+            this@SaganiApplication.hideMenuScene()
+        }
+        saveGameButton.onMouseClicked = {
+            val game = checkNotNull(rootService.gameService)
+            val path = checkValidPath(pathInput.text)
+            game.saveGame(path)
+            this@SaganiApplication.hideMenuScene()
+        }
+    }
+
     private val saganiGameSceneController: SaganiGameSceneController =
         SaganiGameSceneController(saganiGameScene, rootService).apply {
             saganiGameScene.scoreButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(scoreScene)
+            }
+            saganiGameScene.saveGameButton.onMouseClicked = {
+                this@SaganiApplication.showMenuScene(saveGameScene)
             }
         }
 

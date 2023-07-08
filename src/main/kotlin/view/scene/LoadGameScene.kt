@@ -1,17 +1,19 @@
 package view.scene
-import service.RootService
-import tools.aqua.bgw.components.uicomponents.*
+import tools.aqua.bgw.components.uicomponents.Label
+import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 import view.GameColor
 import view.Refreshable
 import view.StandardButton
+import java.io.File
+import java.nio.file.Paths
 
 /**
  * Custom [MenuScene] for the load game menu.
  */
-class LoadGameScene(rootService: RootService):
+class LoadGameScene:
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -61,5 +63,17 @@ class LoadGameScene(rootService: RootService):
             loadGameButton,
             backButton
         )
+    }
+
+    /**
+     * Check if the given path is valid.
+     */
+    fun checkValidPath(path: String): String {
+        val file = File(path)
+
+        require(file.exists()) { "Path does not exist" }
+        require(file.isFile) { "Path does not point to a file" }
+
+        return Paths.get(path).toAbsolutePath().toString()
     }
 }

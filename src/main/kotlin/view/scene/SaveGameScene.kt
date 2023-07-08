@@ -1,8 +1,7 @@
 package view.scene
 
-import service.RootService
-import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.components.uicomponents.Label
+import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
@@ -13,7 +12,7 @@ import view.StandardButton
 /**
  * Custom [MenuScene] for the save game menu.
  */
-class SaveGameScene(rootService: RootService) : MenuScene(400, 1080), Refreshable {
+class SaveGameScene : MenuScene(400, 1080), Refreshable {
 
     val saveGameButton = StandardButton(
         posX = 100, posY = 200,
@@ -40,5 +39,10 @@ class SaveGameScene(rootService: RootService) : MenuScene(400, 1080), Refreshabl
             ),
             pathInput, saveGameButton, backButton
         )
+    }
+
+    fun checkValidPath(path: String): String {
+        // for future implementation
+        return path
     }
 }
