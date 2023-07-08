@@ -1,17 +1,16 @@
 package view.controllers
 
-import service.RootService
-import view.scene.SaganiGameScene
 import Location
 import entity.*
+import service.RootService
 import service.TileImageLoader
-
 import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.components.gamecomponentviews.TokenView
 import tools.aqua.bgw.visual.ColorVisual
 import tools.aqua.bgw.visual.ImageVisual
 import view.*
-import view.ZoomLevels.*
+import view.ZoomLevels.LEVEL1
+import view.scene.SaganiGameScene
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
@@ -116,8 +115,16 @@ class SaganiGameSceneController(
             }
         }
 
-        saganiGameScene.scoreButton.apply {
+        saganiGameScene.undoButton.apply {
+            onMouseClicked = {
+                rootService.gameService.undo()
+            }
+        }
 
+        saganiGameScene.redoButton.apply {
+            onMouseClicked = {
+                rootService.gameService.redo()
+            }
         }
 
         //Rotate can only affect the currently placed tileView saved in chosenTileView
