@@ -344,10 +344,22 @@ class SaganiGameSceneController(
     private fun loadBoardTiles(board: MutableMap<Pair<Int, Int>, Tile>) {
 
 
-        //val tileImageLoader = TileImageLoader()
 
         // clear current board
         resetLoadedBoardViews()
+
+        // check if board is not from actPlayer. In this case a different label needs to
+        // be pushed to saganiGameScene.playerName
+        val game = checkNotNull(rootService.currentGame)
+        val ownerPlayer = game.players.filter {it.board == board}
+        // assuming there is only one element in list -> board objects should be unique
+        if ( ownerPlayer.first() != game.actPlayer ) {
+            saganiGameScene.playerName.text = "Board owner: ${ownerPlayer.first().name}"
+        }
+        else {
+            updateActivePlayerLabel()
+        }
+
 
         // Pane is 4440px wide, equals
         board.forEach {
@@ -696,6 +708,31 @@ class SaganiGameSceneController(
         flipTileToFrontSide(chosenTileView)
 
         clearPossibleMoves()
+    }
+
+    /**
+     * After Undo or Redo rootService.currentGame points towards a different Sagani object
+     * So we get a pointer for the current game and redraw everything
+     */
+    override fun refreshAfterRedo() {
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        // reload the board. active Player label will be set in loadBoardTiles() as well
+        loadBoardTiles(game.actPlayer.board)
+        // don't know if this is necessary
+        board = game.actPlayer.board
+
+        // reload offering tiles, intermezzo and stack
+        reloadCardViews(game)
+
+    }
+
+    /**
+     * Logic identical to refresnAfterRedo -> just get new currentGame and reload everything
+     */
+    override fun refreshAfterUndo() {
+        refreshAfterRedo()
     }
 
     override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
