@@ -437,14 +437,19 @@ class SaganiGameSceneController(
 
         // check if board is not from actPlayer. In this case a different label needs to
         // be pushed to saganiGameScene.playerName
-        val ownerPlayer = game.players.filter { it.board == board }
+        val ownerPlayer = (game.players.filter { it.board == board }).first()
         // assuming there is only one element in list -> board objects should be unique
-        if (ownerPlayer.first() != actPlayer) {
-            saganiGameScene.playerName.text = "Board owner: ${ownerPlayer.first().name}"
+        if (ownerPlayer != actPlayer) {
+            saganiGameScene.playerName.text = "Board owner: ${ownerPlayer.name}"
         } else {
             updateActivePlayerLabel()
         }
 
+        // count and display cacaphony and sound discs
+        val soundDiscs = ( ownerPlayer.discs.filter { it == Disc.SOUND } ).size
+        val cacaphonyDiscs = ( ownerPlayer.discs.filter { it == Disc.CACOPHONY } ).size
+        saganiGameScene.soundDiscCount.text = "$soundDiscs"
+        saganiGameScene.cacophonyDiscCount.text = "$cacaphonyDiscs"
 
         // Pane is 4440px wide, equals
         board.forEach {

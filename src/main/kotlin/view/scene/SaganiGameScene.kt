@@ -105,6 +105,17 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual(255, 255, 255)
     )
 
+    val soundDiscCount =  Label(
+        width = 200,
+        height = 50,
+        posX = 0,
+        posY = 450,
+        text = "0",
+        font = Font(size = 18, color = GameColor.cornSilk),
+        alignment = Alignment.CENTER,
+        isWrapText = true,
+        visual = ColorVisual.TRANSPARENT)
+
     val cacophonyDiscs = TokenView(
         width = 50,
         height = 50,
@@ -112,6 +123,17 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         posY = 650,
         visual = ColorVisual.RED
     )
+    val cacophonyDiscCount =  Label(
+        width = 200,
+        height = 50,
+        posX = 0,
+        posY = 650,
+        text = "0",
+        font = Font(size = 18, color = GameColor.cornSilk),
+        alignment = Alignment.CENTER,
+        isWrapText = true,
+        visual = ColorVisual.TRANSPARENT)
+
 
     //---------------------------------------------------------
 
@@ -379,7 +401,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             homeButton,
             intermezzoLayout, intermezzoLabel, intermezzoOffer1, intermezzoOffer2, intermezzoOffer3,
             intermezzoOffer4,
-            smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,
+            smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
             simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
             playerName
