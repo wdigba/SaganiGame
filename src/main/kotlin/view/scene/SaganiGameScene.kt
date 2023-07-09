@@ -12,7 +12,6 @@ import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 import view.*
-import java.awt.Color
 
 /**
  * Custom [BoardGameScene] for the Sagani game.
@@ -148,7 +147,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         height = TILE_PANE_HEIGHT,
         posY = CENTER_TILE_PANE_POS_Y,
         posX = CENTER_TILE_PANE_POS_X,
-        visual = ColorVisual(Color.GRAY)
+        visual = ColorVisual(GameColor.chaletGreen)
     )
 
 
@@ -368,7 +367,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     )
 
     val playerName = Label(
-        width = 200,
+        width = 250,
         height = 50,
         posX = 1400,
         posY = 40,
