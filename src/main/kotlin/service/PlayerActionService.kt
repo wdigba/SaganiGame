@@ -75,14 +75,19 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         // place tile
         player.board[location] = tile
 
+        println("Before relocate discs: discs = ${player.discs.size} points = ${player.points.first}")
+
         // relocate discs, flip solved tiles and get points (other tiles)
         relocateDiscs(player, tile, location, currentGame.turnCount)
+
+        println("After relocate discs: discs = ${player.discs.size} points = ${player.points.first}")
 
         // place discs if confirmed and use cacophony discs if necessary
         repeat(tile.arrows.size) {
             if (player.discs.isEmpty()) {
                 player.discs.add(Disc.CACOPHONY)
                 player.points = Pair(player.points.first - 2, currentGame.turnCount)
+                println("${player.name} - Bought a cacophony disc for 2 points")
             }
             tile.discs.add(player.discs.removeFirst())
         }
@@ -99,11 +104,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
         // if solved, flip it and get points
-        if (fulfilledArrowCount == tile.arrows.size) {
+        if (fulfilledArrowCount == tile.arrows.size && !tile.flipped) {
             tile.arrows.forEach { player.discs.add(it.disc.removeFirst()) }
             player.points = Pair(player.points.first + tile.points, currentGame.turnCount)
             tile.flipped = true
-            println("${player.name} - Tile ${tile.id} (${tile.arrows.size} discs) got flipped")
+            println("${player.name} - Tile ${tile.id} (${tile.arrows.size} discs) got flipped (+${tile.points} points) - placeTile")
         }
 
         println("${player.name} - After: ${player.points.first} score, ${player.discs.size} discs, ${player.board.size} tiles")
@@ -184,13 +189,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                         flip = (arrow.disc.size == 1)
                     }
                 }
-                if (flip) {
+                if (flip && !it.flipped) {
                     it.arrows.forEach { arrow ->
                         player.discs.add(arrow.disc.removeFirst())
                     }
                     player.points = Pair(player.points.first + it.points, turnCount)
                     it.flipped = true
-                    println("${player.name} - Tile ${tile.id} (${tile.arrows.size} discs) got flipped")
+                    println("${player.name} - Tile ${it.id} (${it.arrows.size} discs) got flipped (+${it.points} points) - relocateDiscs")
                 }
             }
         }

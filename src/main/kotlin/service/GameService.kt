@@ -268,6 +268,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         } else {
             // Check Checksum
             rootService.networkService.client?.lastTurnChecksum?.let {
+                println(it)
                 check(it.score == player.points.first) {
                     "Checksum: Score did not match. ${it.score} != ${player.points.first}"
                 }
