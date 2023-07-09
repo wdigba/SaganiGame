@@ -278,11 +278,16 @@ class SaganiGameSceneController(
                 (CENTER_POS_IN_TILE_PANE_Y.toInt()  - chosenTileView.posY.toInt())/120)
 
         println(selectedPlacement)
-
+        val chosenDirection : Direction = when(chosenTileView.rotation) {
+            90.0 -> Direction.RIGHT
+            180.0 -> Direction.DOWN
+            270.0 -> Direction.LEFT
+            else -> Direction.UP
+        }
         // ToDo tile not always in offerDisplay
         rootService.playerActionService.placeTile(
             game.offerDisplay[chosenOfferDisplay],
-            selectedTile.direction,
+            chosenDirection,
             selectedPlacement
         )
         chosenOfferDisplay = -1
@@ -587,6 +592,15 @@ class SaganiGameSceneController(
 
         tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
         tileView.backVisual = ImageVisual(tileImageLoader.getBackImage(tile.id))
+
+
+        when(tile.direction) {
+            Direction.RIGHT -> tileView.rotation = 90.0
+            Direction.DOWN -> tileView.rotation = 180.0
+            Direction.LEFT -> tileView.rotation = 270.0
+            else -> tileView.rotation = 0.0
+        }
+
     }
 
 
