@@ -51,6 +51,9 @@ class SaganiGameSceneController(
         )
         rootService.gameService.startNewGame(playerList)
 
+        // deactivate confirm button
+        saganiGameScene.confirmButton.isDisabled = true
+
         game = checkNotNull(rootService.currentGame) { "There is no game." }
         actPlayer = game.actPlayer
         board = actPlayer.board
@@ -292,6 +295,8 @@ class SaganiGameSceneController(
         )
         chosenOfferDisplay = -1
 
+        // deactivate confirm button until a new offering is clicked
+        saganiGameScene.confirmButton.isDisabled = true
 //        rootService.gameService.changeToNextPlayer()
 //        game.let {  } //TODO: Hier richtig?
     }
@@ -661,7 +666,7 @@ class SaganiGameSceneController(
                         chosenTileView = centerCardView
                         println(centerCardView.posX)
                         executeTileMove()
-
+                        saganiGameScene.confirmButton.isDisabled = false
                     }
                 }
             }
@@ -701,6 +706,7 @@ class SaganiGameSceneController(
                         chosenTileView = currentView
                         println(currentView.posX)
                         executeTileMove()
+                        saganiGameScene.confirmButton.isDisabled = false
                     }
                 }
 
@@ -722,6 +728,7 @@ class SaganiGameSceneController(
                         chosenTileView = currentView
                         println(currentView.posX)
                         executeTileMove()
+                        saganiGameScene.confirmButton.isDisabled = false
                     }
                 }
 
@@ -745,6 +752,7 @@ class SaganiGameSceneController(
                         chosenTileView = currentView
                         println(currentView.posX)
                         executeTileMove()
+                        saganiGameScene.confirmButton.isDisabled = false
                     }
                 }
 
@@ -767,6 +775,7 @@ class SaganiGameSceneController(
                         chosenTileView = currentView
                         println(currentView.posX)
                         executeTileMove()
+                        saganiGameScene.confirmButton.isDisabled = false
                     }
                 }
 
@@ -878,10 +887,12 @@ class SaganiGameSceneController(
                 if (game.offerDisplay.size > index) {
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.offerDisplay[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.offerDisplay[index].id))
+                    offer.isDisabled = false
                 } else {
                     println(game.offerDisplay.size)
                     frontVisual = ColorVisual.LIGHT_GRAY
                     backVisual = ColorVisual.LIGHT_GRAY
+                    offer.isDisabled = true
                 }
                 if (flipped) flip()
             }
@@ -899,7 +910,14 @@ class SaganiGameSceneController(
                 if (game.intermezzoStorage.size > index) {
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
+                    intermezzo.isDisabled = false
                 }
+                else {
+                    frontVisual = ColorVisual.LIGHT_GRAY
+                    backVisual = ColorVisual.LIGHT_GRAY
+                    intermezzo.isDisabled = true
+                }
+
             }
         }
 
