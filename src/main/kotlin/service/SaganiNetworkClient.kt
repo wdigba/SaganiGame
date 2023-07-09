@@ -131,7 +131,10 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      */
     override fun onPlayerJoined(notification: PlayerJoinedNotification) {
         BoardGameApplication.runOnGUIThread {
-            check(networkService.connectionState == ConnectionState.WAITING_FOR_GUESTS) {
+            check(
+                networkService.connectionState == ConnectionState.WAITING_FOR_GUESTS
+                        || networkService.connectionState == ConnectionState.WAITING_FOR_INIT
+            ) {
                 "Received a player joined notification in an unexpected connection state."
             }
 
@@ -142,11 +145,13 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
                 refreshAfterPlayerListChange(players)
             }
 
-            val players = listOf(
-                Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER),
-                Triple(networkService.client!!.playerName, Color.GREY, playerType)
-            )
-            networkService.rootService.gameService.startNewGame(players)
+            if (networkService.connectionState == ConnectionState.WAITING_FOR_GUESTS) {
+                val players = listOf(
+                    Triple(networkService.client!!.playerName, Color.GREY, playerType),
+                    Triple(otherPlayers.first(), Color.WHITE, PlayerType.NETWORK_PLAYER)
+                )
+                networkService.rootService.gameService.startNewGame(players)
+            }
         }
     }
 
