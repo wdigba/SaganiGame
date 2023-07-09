@@ -103,6 +103,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             tile.arrows.forEach { player.discs.add(it.disc.removeFirst()) }
             player.points = Pair(player.points.first + tile.points, currentGame.turnCount)
             tile.flipped = true
+            println("${player.name} - Tile ${tile.id} (${tile.arrows.size} discs) got flipped")
         }
 
         println("${player.name} - After: ${player.points.first} score, ${player.discs.size} discs, ${player.board.size} tiles")
@@ -189,6 +190,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                     }
                     player.points = Pair(player.points.first + it.points, turnCount)
                     it.flipped = true
+                    println("${player.name} - Tile ${tile.id} (${tile.arrows.size} discs) got flipped")
                 }
             }
         }

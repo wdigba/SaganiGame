@@ -9,12 +9,12 @@ typealias Location = Pair<Int, Int>
 fun main(args: Array<String>) {
     val rootService = RootService()
     val secondRoot = RootService()
-    val sessionID = "baum4"
+    val sessionID = "12345"
     val saveGame = true
     if ("--host" in args) {
-        rootService.networkService.hostGame("Host", sessionID)
+        rootService.networkService.hostGame("Niklas", sessionID)
     } else if ("--client" in args) {
-        rootService.networkService.joinGame("Client", sessionID)
+        rootService.networkService.joinGame("Niklas", sessionID)
     } else if ("--both" in args) {
         rootService.networkService.hostGame("Host")
         Thread.sleep(1000)

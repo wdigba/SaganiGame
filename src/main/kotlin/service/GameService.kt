@@ -20,7 +20,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * The time in milliseconds that the AI waits before calculating its move.
      * Default is the medium speed setting representing 750ms.
      */
-    var simulationTime = 750
+    var simulationTime = 300
 
     /**
      * [startNewGame] creates a new game
