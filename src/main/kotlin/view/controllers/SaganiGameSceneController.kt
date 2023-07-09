@@ -914,6 +914,8 @@ class SaganiGameSceneController(
         this.intermezzo = intermezzo
         reloadCardViews(game)
         loadBoardTiles(board)
+
+        println(actPlayer.playerType)
     }
 
     override fun refreshAfterLoadGame() {

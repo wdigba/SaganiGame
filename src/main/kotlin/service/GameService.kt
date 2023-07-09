@@ -459,7 +459,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
 
         val jsonBuilder = Json { allowStructuredMapKeys = true }
-
+        //
         val loadGame = FileInputStream(File(path)).use {
             jsonBuilder.decodeFromStream<String>(it)
         }
@@ -470,7 +470,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         var newGame: Sagani
         for (gameString in loadGame.split(";")) {
 
-            newGame = Json.decodeFromString(gameString)
+            newGame = jsonBuilder.decodeFromString(gameString)
 
             if (iterGame != null) {
 

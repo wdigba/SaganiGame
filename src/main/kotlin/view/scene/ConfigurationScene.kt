@@ -11,7 +11,7 @@ import view.StandardButton
 /**
  * Custom [MenuScene] for the configuration menu.
  */
-class ConfigurationScene :
+class ConfigurationScene(newLoadButton: StandardButton) :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -45,7 +45,7 @@ class ConfigurationScene :
         background = ColorVisual(GameColor.cornSilk)
         addComponents(
             headlineLabel,
-            networkButton, playersButton, backButton, loadGameButton
+            networkButton, playersButton, backButton, newLoadButton//loadGameButton
         )
 
     }

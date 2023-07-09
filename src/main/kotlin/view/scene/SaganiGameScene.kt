@@ -17,7 +17,7 @@ import java.awt.Color
 /**
  * Custom [BoardGameScene] for the Sagani game.
  */
-class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
+class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080), Refreshable {
     /**
      * Upper Pane
      */
@@ -411,7 +411,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
+            simulationSpeedLabel, simulationSpeedDropDown,newSaveButton,// saveGameButton,
             playerName, returnFromOtherPlayerButton
         )
     }
