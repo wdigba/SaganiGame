@@ -5,6 +5,8 @@ import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import tools.aqua.bgw.dialog.FileDialog
+import tools.aqua.bgw.dialog.FileDialogMode
 import view.GameColor
 import view.Refreshable
 import view.StandardButton
@@ -14,7 +16,7 @@ import java.nio.file.Paths
 /**
  * Custom [MenuScene] for the load game menu.
  */
-class LoadGameScene :
+class LoadGameScene(loadButton : StandardButton) :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -43,6 +45,7 @@ class LoadGameScene :
         width = 140,
         text = "Load Game",
     )
+
 
     /**
      * Button leads to the previous MenuScene.

@@ -7,9 +7,12 @@ import service.RootService
 import tools.aqua.bgw.visual.ColorVisual
 import view.GameColor
 import view.Refreshable
+import view.SaganiApplication
 import view.scene.ScoreScene
 
-class ScoreSceneController(private val scoreScene: ScoreScene, private val rootService: RootService) : Refreshable {
+class ScoreSceneController(private val scoreScene: ScoreScene, private val rootService: RootService,
+    private val saganiGameSceneController : SaganiGameSceneController,
+    private val saganiApplication: SaganiApplication) : Refreshable {
     /**
      * [showPlayersScore] sets text fields in playerLabels with current scores
      */
@@ -36,6 +39,13 @@ class ScoreSceneController(private val scoreScene: ScoreScene, private val rootS
                 Color.BROWN -> scoreScene.boardButtons[i].visual = ColorVisual(GameColor.brown)
                 Color.GREY -> scoreScene.boardButtons[i].visual = ColorVisual(GameColor.gray)
                 else -> scoreScene.boardButtons[i].visual = ColorVisual(GameColor.white)
+            }
+
+            scoreScene.boardButtons[i].apply {
+                onMouseClicked = {
+                    saganiGameSceneController.showBoardOfPlayer(i)
+                    saganiApplication.hideMenuScene()
+                }
             }
         }
     }

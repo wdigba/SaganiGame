@@ -21,7 +21,6 @@ import kotlin.random.Random
 class SaganiGameSceneController(
     private val saganiGameScene: SaganiGameScene, private val rootService: RootService
 ) : Refreshable {
-
     private var board: MutableMap<Location, Tile>
 
     // The active Player gets returned by refreshAfterChangeToNextPlayer
@@ -65,6 +64,11 @@ class SaganiGameSceneController(
 
         updateActivePlayerLabel()
 
+        // button for getting back if looking at another players board
+        saganiGameScene.returnFromOtherPlayerButton.isVisible = false
+        saganiGameScene.returnFromOtherPlayerButton.isDisabled = true
+
+
         //TODO Funktion
         saganiGameScene.testButton.apply {
             onMouseClicked = {
@@ -72,9 +76,26 @@ class SaganiGameSceneController(
             }
         }
 
+        saganiGameScene.returnFromOtherPlayerButton.apply {
+            onMouseClicked = {
+                loadBoardTiles(board)
+                saganiGameScene.returnFromOtherPlayerButton.isVisible = false
+                saganiGameScene.returnFromOtherPlayerButton.isDisabled = true
+                //enable all offerings again
+                val game = checkNotNull(rootService.currentGame) { "no game loaded" }
+                reloadCardViews(game)
+            }
+        }
+
         saganiGameScene.confirmButton.apply {
             onMouseClicked = {
                 confirmPlacement()
+            }
+        }
+
+        saganiGameScene.skipButton.apply {
+            onMouseClicked = {
+                rootService.playerActionService.skipIntermezzoTurn()
             }
         }
 
@@ -141,9 +162,7 @@ class SaganiGameSceneController(
         }
 
         saganiGameScene.cardStack.apply {
-            if (game.offerDisplay.size >= 1) {
-                saganiGameScene.cardStack.isDisabled = true
-            }
+
             onMouseClicked = {
                 saganiGameScene.offer1.isDisabled = true
                 saganiGameScene.offer2.isDisabled = true
@@ -156,6 +175,13 @@ class SaganiGameSceneController(
 
                 flipTileToFrontSide(saganiGameScene.cardStack)
                 selectedTile = game.stacks[0]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
                 drawPossiblePlacements()
 
             }
@@ -237,6 +263,58 @@ class SaganiGameSceneController(
             }
         }
 
+        saganiGameScene.intermezzoOffer1.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[0]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
+        saganiGameScene.intermezzoOffer2.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[1]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
+        saganiGameScene.intermezzoOffer3.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[2]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
+        saganiGameScene.intermezzoOffer4.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[3]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
 
         saganiGameScene.sampleTile.apply {
             onMouseClicked = {
@@ -289,7 +367,7 @@ class SaganiGameSceneController(
         }
         // ToDo tile not always in offerDisplay
         rootService.playerActionService.placeTile(
-            game.offerDisplay[chosenOfferDisplay],
+            selectedTile,
             chosenDirection,
             selectedPlacement
         )
@@ -305,7 +383,7 @@ class SaganiGameSceneController(
      * clears the board represented by loadedBoardViews and re-loads it with empty CardViews
      * Update 2023-07-09 -> only create CardViews that hold Tiles or are possible tile locations
      *                      for performance reasons
-     * @param board optional parameter used in case the board of a [Player] that is not actPlayer should be drawn
+     * @param parBoard optional parameter used in case the board of a [Player] that is not actPlayer should be drawn
      */
     private fun resetLoadedBoardViews( parBoard: MutableMap<Pair<Int, Int>, Tile> ) {
 
@@ -382,6 +460,38 @@ class SaganiGameSceneController(
 
 
 
+    }
+
+    /**
+     * called from ScoreSceneController
+     * Loads the player with the given idx
+     */
+    fun showBoardOfPlayer(index : Int) {
+        // load data of player
+        val game = checkNotNull(rootService.currentGame) { "game not loaded in showBoardOfPlayer" }
+        val showPlayer = game.players[index]
+
+        if (showPlayer != game.actPlayer) {
+            //load board
+            loadBoardTiles(showPlayer.board)
+
+            // make back button visible
+            saganiGameScene.returnFromOtherPlayerButton.isVisible = true
+            saganiGameScene.returnFromOtherPlayerButton.isDisabled = false
+
+            // disable offerings and intermezzo cards
+            saganiGameScene.offer1.isDisabled = true
+            saganiGameScene.offer2.isDisabled = true
+            saganiGameScene.offer3.isDisabled = true
+            saganiGameScene.offer4.isDisabled = true
+            saganiGameScene.offer5.isDisabled = true
+
+            saganiGameScene.intermezzoOffer1.isDisabled = true
+            saganiGameScene.intermezzoOffer2.isDisabled = true
+            saganiGameScene.intermezzoOffer3.isDisabled = true
+            saganiGameScene.intermezzoOffer4.isDisabled = true
+
+        }
     }
 
     private fun initScene() {
@@ -472,6 +582,11 @@ class SaganiGameSceneController(
                 tileView.isVisible = true
                 tileView.isDisabled = false
 
+                // flip Tile if it is solved
+                if (it.value.flipped) {
+                    tileView.rotation = 0.0
+                    tileView.flip()
+                }
                 //saganiGameScene.tilePane.add(tileView)
 
             }
@@ -866,6 +981,8 @@ class SaganiGameSceneController(
         this.intermezzo = intermezzo
         reloadCardViews(game)
         loadBoardTiles(board)
+
+        println(actPlayer.playerType)
     }
 
     override fun refreshAfterLoadGame() {
@@ -905,19 +1022,19 @@ class SaganiGameSceneController(
             saganiGameScene.intermezzoOffer4
         )
 
-        intermezzoOffers.forEachIndexed { index, intermezzo ->
-            intermezzo.apply {
+        intermezzoOffers.forEachIndexed { index, intermezzoOffer ->
+            intermezzoOffer.apply {
                 if (game.intermezzoStorage.size > index) {
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
-                    intermezzo.isDisabled = false
+                    intermezzoOffer.isDisabled = !intermezzo
                 }
                 else {
                     frontVisual = ColorVisual.LIGHT_GRAY
                     backVisual = ColorVisual.LIGHT_GRAY
-                    intermezzo.isDisabled = true
+                    intermezzoOffer.isDisabled = true
                 }
-
+                if (flipped) flip()
             }
         }
 
@@ -926,6 +1043,8 @@ class SaganiGameSceneController(
                 frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[0].id))
                 backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
             }
+            isDisabled = (game.offerDisplay.size > 1 || intermezzo)
+            showBack()
         }
 
         saganiGameScene.smallCardStack1.apply {
@@ -943,6 +1062,11 @@ class SaganiGameSceneController(
                 frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
                 backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
             }
+        }
+
+        saganiGameScene.skipButton.apply {
+            isVisible = intermezzo
+            isDisabled = !intermezzo
         }
     }
 

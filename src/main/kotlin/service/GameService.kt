@@ -314,7 +314,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             calculateWinner()
         } else {
             validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
-            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
 
             // If the next player is an AI, calculate its move
             if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
@@ -324,6 +323,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 Thread.sleep(simulationTime.toLong())
                 rootService.kIService.playBestMove()
             }
+            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
         }
     }
 
@@ -470,8 +470,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             "Cannot load game while connected to server"
         }
 
+        val jsonBuilder = Json { allowStructuredMapKeys = true }
+        //
         val loadGame = FileInputStream(File(path)).use {
-            Json.decodeFromStream<String>(it)
+            jsonBuilder.decodeFromStream<String>(it)
         }
 
         // Sagani strings are separated with ";" during saving
@@ -480,7 +482,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         var newGame: Sagani
         for (gameString in loadGame.split(";")) {
 
-            newGame = Json.decodeFromString(gameString)
+            newGame = jsonBuilder.decodeFromString(gameString)
 
             if (iterGame != null) {
 
