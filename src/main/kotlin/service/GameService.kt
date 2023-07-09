@@ -20,7 +20,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * The time in milliseconds that the AI waits before calculating its move.
      * Default is the medium speed setting representing 750ms.
      */
-    var simulationTime = 300
+    var simulationTime = 750
 
     /**
      * [startNewGame] creates a new game
@@ -231,6 +231,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         } else {
             if (currentGame.intermezzoStorage.size == 4) {
                 currentGame.intermezzo = true
+                println("${rootService.networkService.client?.playerName} - Intermezzo started")
                 currentGame.intermezzoPlayers.addAll(currentGame.players)
                 currentGame.intermezzoPlayers.sortByDescending { it.points.second }
                 currentGame.intermezzoPlayers.sortBy { it.points.first }
@@ -260,6 +261,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
         }
 
+        println("${rootService.networkService.client?.playerName} - Current Intermezzo state: ${currentGame.intermezzo}, Tiles in storage: ${currentGame.intermezzoStorage.size}, last rounds state: ${currentGame.lastTurn?.intermezzo}")
+
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
             rootService.networkService.client?.sendTurnMessage(player)
         } else {
@@ -279,6 +282,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 check(it.initiatedLastRound == initiatedLastRound) {
                     "Checksum: Last round did not match. ${it.initiatedLastRound} != $initiatedLastRound"
                 }
+                println("${rootService.networkService.client?.playerName} - Valid Checksum")
                 rootService.networkService.client?.lastTurnChecksum = null
             }
         }
