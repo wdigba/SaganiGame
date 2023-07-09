@@ -5,11 +5,7 @@ import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Color
 import entity.Direction
 import entity.PlayerType
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 /**
  * Class that provides test for the [NetworkService]. It will connect to the server twice, test sending messages and
@@ -119,7 +115,7 @@ class NetworkServiceTest {
         guestRootService.waitForState(ConnectionState.PLAYING_MY_TURN)
         hostRootService.waitForState(ConnectionState.WAITING_FOR_OPPONENTS)
 
-        val guestGame = guestRootService.currentGame
+        var guestGame = guestRootService.currentGame
         checkNotNull(guestGame)
 
         // Place a tile and wait until both clients have received the turn
@@ -131,6 +127,8 @@ class NetworkServiceTest {
         // Check if the turn was received correctly
         val hostGame = hostRootService.currentGame
         checkNotNull(hostGame)
+        guestGame = guestRootService.currentGame
+        checkNotNull(guestGame)
         val guestPlayerHostSide = hostGame.players.first()
         val guestPlayerGuestSide = guestGame.players.first()
 

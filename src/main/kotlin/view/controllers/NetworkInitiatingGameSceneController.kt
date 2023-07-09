@@ -7,7 +7,8 @@ import view.scene.NetworkInitiatingGameScene
  */
 class NetworkInitiatingGameSceneController(private val networkInitiatingGameScene: NetworkInitiatingGameScene) {
 
-    private val playerInput = mutableListOf( Pair(networkInitiatingGameScene.nameInput, networkInitiatingGameScene.keyInput))
+    private val playerInput =
+        mutableListOf(Pair(networkInitiatingGameScene.nameInput, networkInitiatingGameScene.keyInput))
 
 
     init {
@@ -42,8 +43,8 @@ class NetworkInitiatingGameSceneController(private val networkInitiatingGameScen
                 }
 
                 // leere Werte entfernen
-                playerNames.removeIf() { it.isBlank() }
-                playerNames.removeIf() { it.isEmpty() }
+                playerNames.removeIf { it.isBlank() }
+                playerNames.removeIf { it.isEmpty() }
 
                 //neues Spiel starten
                 //rootService.gameService.startNewGame()

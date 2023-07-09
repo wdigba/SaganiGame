@@ -7,13 +7,13 @@ import view.scene.KIMenuScene
  */
 class KIMenuSceneController(private val kiMenuScene: KIMenuScene) {
 
-    private val playerInput = mutableListOf( Pair(kiMenuScene.nameInput, kiMenuScene.kIInput))
+    private val playerInput = mutableListOf(Pair(kiMenuScene.nameInput, kiMenuScene.kIInput))
 
     init {
         kiMenuScene.startButton.isDisabled = true
 
         kiMenuScene.kIInput.items = kiMenuScene.comboBoxKIArt
-        kiMenuScene.kIInput.selectedItemProperty.addListener { _, newValue ->
+        kiMenuScene.kIInput.selectedItemProperty.addListener { _, _ ->
             kiMenuScene.startButton.isDisabled = false
         }
 
@@ -42,8 +42,8 @@ class KIMenuSceneController(private val kiMenuScene: KIMenuScene) {
                 }
 
                 // leere Werte entfernen
-                playerNames.removeIf() { it.isBlank() }
-                playerNames.removeIf() { it.isEmpty() }
+                playerNames.removeIf { it.isBlank() }
+                playerNames.removeIf { it.isEmpty() }
 
                 //neues Spiel starten
                 //rootService.gameService.startNewGame()
@@ -63,8 +63,9 @@ class KIMenuSceneController(private val kiMenuScene: KIMenuScene) {
         // If player has name ID must not be empty
         for (input in playerInput) {
             if (input.first.text.trim() != "") {
-                if (input.second.selectedItem != ""){
-                    return false}
+                if (input.second.selectedItem != "") {
+                    return false
+                }
             }
         }
         return true

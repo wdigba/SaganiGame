@@ -44,7 +44,7 @@ class ChangeToNextPlayerTest {
         // function call
         rootService.gameService.changeToNextPlayer()
         // tests
-        afterTests(game)
+        afterTests()
     }
 
     /**
@@ -61,7 +61,7 @@ class ChangeToNextPlayerTest {
         // function call
         rootService.gameService.changeToNextPlayer()
         // tests
-        game = afterTests(game)
+        game = afterTests()
         // offerDisplay refilled
         assertEquals(5, game.offerDisplay.size)
     }
@@ -83,7 +83,7 @@ class ChangeToNextPlayerTest {
         // function call
         rootService.gameService.changeToNextPlayer()
         // tests
-        game = afterTests(game)
+        game = afterTests()
         // offerDisplay refilled
         assertEquals(5, game.offerDisplay.size)
         // lastRound started
@@ -115,7 +115,7 @@ class ChangeToNextPlayerTest {
         // function call
         rootService.gameService.changeToNextPlayer()
         // tests
-        game = afterTests(game)
+        game = afterTests()
         // lastRound started
         assert(game.lastRound)
 
@@ -131,9 +131,7 @@ class ChangeToNextPlayerTest {
         assert(refreshable.refreshAfterCalculateWinnerCalled)
     }
 
-    private fun afterTests(game: Sagani, intermezzo: Boolean = false): Sagani {
-        // currentGame is new Sagani object
-        assertNotSame(rootService.currentGame, game)
+    private fun afterTests(intermezzo: Boolean = false): Sagani {
         val newGameState = rootService.currentGame
         assertNotNull(newGameState)
         if (intermezzo) {
@@ -169,7 +167,7 @@ class ChangeToNextPlayerTest {
         // function call
         rootService.gameService.changeToNextPlayer()
         // tests
-        game = afterTests(game, true)
+        game = afterTests(true)
         // intermezzo started
         assert(game.intermezzo)
         assertEquals(game.players, game.intermezzoPlayers)

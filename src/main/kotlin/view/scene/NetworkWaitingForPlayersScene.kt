@@ -14,6 +14,7 @@ class NetworkWaitingForPlayersScene(private val rootService: RootService) :
         text = "Waiting for others",
         font = Font(size = 22)
     )
+
     init {
         addComponents(headlineLabel)
     }

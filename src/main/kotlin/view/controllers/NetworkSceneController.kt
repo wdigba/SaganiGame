@@ -7,7 +7,8 @@ import view.scene.NetworkScene
  * Controller for the [NetworkScene].
  */
 class NetworkSceneController(
-    private val networkScene: NetworkScene) : Refreshable {
+    private val networkScene: NetworkScene
+) : Refreshable {
 
     private val playerInput = mutableListOf(Pair(networkScene.nameInput, networkScene.iDInput))
 
@@ -45,8 +46,8 @@ class NetworkSceneController(
                 }
 
                 // leere Werte entfernen
-                playerNames.removeIf() { it.isBlank() }
-                playerNames.removeIf() { it.isEmpty() }
+                playerNames.removeIf { it.isBlank() }
+                playerNames.removeIf { it.isEmpty() }
 
                 //neues Spiel starten
                 //rootService.gameService.startNewGame()

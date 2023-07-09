@@ -4,15 +4,15 @@ import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.LinearLayout
 import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.components.gamecomponentviews.TokenView
-import tools.aqua.bgw.components.layoutviews.*
+import tools.aqua.bgw.components.layoutviews.Pane
+import tools.aqua.bgw.components.uicomponents.ComboBox
 import tools.aqua.bgw.components.uicomponents.Label
+import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 import view.*
 import java.awt.Color
-import tools.aqua.bgw.components.uicomponents.ComboBox
-import tools.aqua.bgw.core.Alignment
 
 /**
  * Custom [BoardGameScene] for the Sagani game.
@@ -97,7 +97,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         opacity = 0.3
     }
 
-     val soundDiscs = TokenView(
+    val soundDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,
@@ -105,7 +105,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual(255, 255, 255)
     )
 
-   val cacophonyDiscs = TokenView(
+    val cacophonyDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,
@@ -122,8 +122,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
 
     val tilePane = Pane<ComponentView>(
-        width = 4440,
-        height = 4440,
+        width = TILE_PANE_WIDTH,
+        height = TILE_PANE_HEIGHT,
         posY = CENTER_TILE_PANE_POS_Y,
         posX = CENTER_TILE_PANE_POS_X,
         visual = ColorVisual(Color.GRAY)
@@ -218,7 +218,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual(221, 161, 94)
     )
 
-     val undoButton = StandardButton(
+    val undoButton = StandardButton(
         width = 100,
         height = 50,
         posX = 20,
@@ -234,7 +234,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "REDO"
     )
 
-     val scoreButton = StandardButton(
+    val scoreButton = StandardButton(
         width = 100,
         height = 50,
         posX = 240,
@@ -242,7 +242,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "SCORE"
     )
 
-     val rotateButton = StandardButton(
+    val rotateButton = StandardButton(
         width = 100,
         height = 50,
         posX = 350,
@@ -321,7 +321,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "HOME"
     )
 
-    val simulationSpeedLabel = Label(
+    private val simulationSpeedLabel = Label(
         width = 70,
         height = 50,
         posX = 1210,
@@ -345,7 +345,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "Save"
     )
 
-    val playerName = Label (
+    val playerName = Label(
         width = 200,
         height = 50,
         posX = 1400,
@@ -381,7 +381,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown,saveGameButton,
+            simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
             playerName
         )
     }
