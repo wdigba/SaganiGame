@@ -582,6 +582,11 @@ class SaganiGameSceneController(
                 tileView.isVisible = true
                 tileView.isDisabled = false
 
+                // flip Tile if it is solved
+                if (it.value.flipped) {
+                    tileView.rotation = 0.0
+                    tileView.flip()
+                }
                 //saganiGameScene.tilePane.add(tileView)
 
             }
