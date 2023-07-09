@@ -15,24 +15,24 @@ import view.StandardButton
 class EndScene(private val rootService: RootService) :
     MenuScene(400, 1080), Refreshable {
 
-    val winnerLabel = Label(
+    private val winnerLabel = Label(
         width = 300, height = 50, posX = 50, posY = 50,
         font = Font(size = 22)
     )
-    val player1Label = Label(
-        width = 100, height = 35,
+    private val player1Label = Label(
+        width = 300, height = 35,
         posX = 50, posY = 205,
     )
-    val player2Label = Label(
-        width = 100, height = 35,
+    private val player2Label = Label(
+        width = 300, height = 35,
         posX = 50, posY = 255,
     )
-    val player3Label = Label(
-        width = 100, height = 35,
+    private val player3Label = Label(
+        width = 300, height = 35,
         posX = 50, posY = 305,
     )
-    val player4Label = Label(
-        width = 100, height = 35,
+    private val player4Label = Label(
+        width = 300, height = 35,
         posX = 50, posY = 355,
     )
 
@@ -57,5 +57,21 @@ class EndScene(private val rootService: RootService) :
         addComponents(winnerLabel, player4Label, player3Label, player2Label, player1Label, quitButton, newGameButton)
     }
 
+    override fun refreshAfterCalculateWinner() {
+        val game = rootService.currentGame
+        checkNotNull(game) { "No started game found." }
 
+        val playerLabels =
+            listOf(player1Label, player2Label, player3Label, player4Label)
+
+        winnerLabel.text = "${game.players[0].name.uppercase()} WON!"
+        for (i in game.players.indices) {
+            playerLabels[i].text = "${game.players[i].name}:         " +
+                    "${game.players[i].points.first} points on turn ${game.players[i].points.second}"
+
+        }
+        for (i in 0 until 4) {
+            playerLabels[i].isVisible = i < game.players.size
+        }
+    }
 }

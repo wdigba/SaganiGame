@@ -45,6 +45,9 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         quitButton.onMouseClicked = {
             exit()
         }
+        newGameButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(newGameMenuScene)
+        }
     }
 
     //private val endSceneController : EndSceneController = EndSceneController(endScene, rootService)
@@ -208,7 +211,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             //networkConfigSceneController,
             playerConfigSceneController,
             saganiGameSceneController,
-            scoreSceneController
+            scoreSceneController,
+            endScene
         )
     }
 
