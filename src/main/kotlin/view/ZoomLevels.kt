@@ -1,5 +1,8 @@
 package view
 
+/**
+ * Enum class for zoom levels.
+ */
 enum class ZoomLevels(val scale: Double) {
     LEVEL0(0.75),
     LEVEL1(1.0),

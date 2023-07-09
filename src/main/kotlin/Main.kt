@@ -3,7 +3,9 @@ import entity.PlayerType
 import service.RootService
 
 typealias Location = Pair<Int, Int>
-
+/**
+ * Main entrypoint of the application.
+ */
 fun main(args: Array<String>) {
     val rootService = RootService()
     val secondRoot = RootService()

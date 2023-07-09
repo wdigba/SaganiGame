@@ -4,21 +4,47 @@ import Location
 import entity.Player
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
-import view.controllers.NetworkSceneController
-import view.controllers.PlayerConfigSceneController
-import view.controllers.SaganiGameSceneController
+import view.controllers.*
 import view.scene.*
 
 class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val rootService = RootService()
 
     private val playerConfigScene = PlayerConfigScene()
-    private val networkScene = NetworkScene(rootService)
+    private val networkScene = NetworkScene()
     private val saganiGameScene = SaganiGameScene()
+    private val kiMenuScene = KIMenuScene()
+    private val networkWaitingForPlayers = NetworkWaitingForPlayersScene(rootService)
+    private val scoreScene = ScoreScene()
 
+    private val endScene: EndScene = EndScene(rootService).apply {
+        quitButton.onMouseClicked = {
+            exit()
+        }
+    }
+
+
+    private val initiatingGame: NetworkInitiatingGameScene = NetworkInitiatingGameScene().apply {
+        backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(networkInitiateOrJoin)
+        }
+    }
+
+
+    private val networkInitiateOrJoin = NetworkInitiateOrJoinScene().apply {
+        joinButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(networkWaitingForPlayers)
+        }
+        initiateButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(initiatingGame)
+        }
+        backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(configurationScene)
+        }
+    }
 
     private val playerConfigSceneController: PlayerConfigSceneController =
-        PlayerConfigSceneController(playerConfigScene, rootService, this).apply {
+        PlayerConfigSceneController(playerConfigScene, rootService).apply {
 
 
             playerConfigScene.backButton.onMouseClicked = {
@@ -26,13 +52,19 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             }
 
         }
+
     private val networkConfigSceneController: NetworkSceneController =
-        NetworkSceneController(networkScene, rootService, this).apply {
+        NetworkSceneController(networkScene).apply {
 
             networkScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
         }
+
+    private val kiMenuSceneController: KIMenuSceneController = KIMenuSceneController(kiMenuScene).apply {
+
+    }
+
 
     private val configurationScene: ConfigurationScene = ConfigurationScene().apply {
         playersButton.onMouseClicked = {
@@ -42,12 +74,48 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
         networkButton.onMouseClicked = {
-            this@SaganiApplication.showMenuScene(networkScene)
+            this@SaganiApplication.showMenuScene(networkInitiateOrJoin)
+        }
+        loadGameButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(loadGameScene)
+        }
+    }
+    private val kIMenuScene: KIMenuScene = KIMenuScene().apply {
+        startButton.onMouseClicked = {
+
+        }
+        backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
     }
 
-    private val scoreScene = ScoreScene(rootService).apply {
+
+    private val scoreSceneController = ScoreSceneController(scoreScene, rootService).apply {
+        scoreScene.backButton.onMouseClicked = {
+            this@SaganiApplication.hideMenuScene()
+        }
+    }
+
+    private val loadGameScene = LoadGameScene().apply {
         backButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(configurationScene)
+        }
+        loadGameButton.onMouseClicked = {
+            val game = checkNotNull(rootService.gameService)
+            val path = checkValidPath(pathInput.text)
+            game.loadGame(path)
+            this@SaganiApplication.hideMenuScene()
+        }
+    }
+
+    private val saveGameScene = SaveGameScene().apply {
+        backButton.onMouseClicked = {
+            this@SaganiApplication.hideMenuScene()
+        }
+        saveGameButton.onMouseClicked = {
+            val game = checkNotNull(rootService.gameService)
+            val path = checkValidPath(pathInput.text)
+            game.saveGame(path)
             this@SaganiApplication.hideMenuScene()
         }
     }
@@ -56,6 +124,9 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         SaganiGameSceneController(saganiGameScene, rootService).apply {
             saganiGameScene.scoreButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(scoreScene)
+            }
+            saganiGameScene.saveGameButton.onMouseClicked = {
+                this@SaganiApplication.showMenuScene(saveGameScene)
             }
         }
 
@@ -66,10 +137,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     }
 
     private val newGameMenuScene: NewGameMenuScene = NewGameMenuScene().apply {
-        playWithKIButton.onMouseClicked = {
-            hideMenuScene()
-            this@SaganiApplication.showGameScene(saganiGameScene)
-        }
+
         playWithOthersButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(configurationScene)
         }
@@ -87,9 +155,10 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         this.showGameScene(saganiGameScene)
         rootService.addEachRefreshable(
             this,
-            networkConfigSceneController,
+            //networkConfigSceneController,
             playerConfigSceneController,
-            saganiGameSceneController
+            saganiGameSceneController,
+            scoreSceneController
         )
     }
 
@@ -97,4 +166,3 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         this@SaganiApplication.hideMenuScene()
     }
 }
-

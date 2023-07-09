@@ -7,8 +7,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 enum class Element {
-    FIRE,
-    WATER,
-    EARTH,
-    AIR
+    FIRE, WATER, EARTH, AIR
 }

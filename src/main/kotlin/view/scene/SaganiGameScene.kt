@@ -4,16 +4,19 @@ import tools.aqua.bgw.components.ComponentView
 import tools.aqua.bgw.components.container.LinearLayout
 import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.components.gamecomponentviews.TokenView
-import tools.aqua.bgw.components.layoutviews.*
+import tools.aqua.bgw.components.layoutviews.Pane
+import tools.aqua.bgw.components.uicomponents.ComboBox
 import tools.aqua.bgw.components.uicomponents.Label
+import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 import view.*
 import java.awt.Color
-import tools.aqua.bgw.components.uicomponents.ComboBox
 
-
+/**
+ * Custom [BoardGameScene] for the Sagani game.
+ */
 class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
     /**
      * Upper Pane
@@ -94,7 +97,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         opacity = 0.3
     }
 
-    private val soundDiscs = TokenView(
+    val soundDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,
@@ -102,13 +105,35 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual(255, 255, 255)
     )
 
-    private val cacophonyDiscs = TokenView(
+    val soundDiscCount =  Label(
+        width = 200,
+        height = 50,
+        posX = 0,
+        posY = 450,
+        text = "0",
+        font = Font(size = 18, color = GameColor.cornSilk),
+        alignment = Alignment.CENTER,
+        isWrapText = true,
+        visual = ColorVisual.TRANSPARENT)
+
+    val cacophonyDiscs = TokenView(
         width = 50,
         height = 50,
         posX = 20,
         posY = 650,
         visual = ColorVisual.RED
     )
+    val cacophonyDiscCount =  Label(
+        width = 200,
+        height = 50,
+        posX = 0,
+        posY = 650,
+        text = "0",
+        font = Font(size = 18, color = GameColor.cornSilk),
+        alignment = Alignment.CENTER,
+        isWrapText = true,
+        visual = ColorVisual.TRANSPARENT)
+
 
     //---------------------------------------------------------
 
@@ -119,10 +144,10 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
 
     val tilePane = Pane<ComponentView>(
-        width = 4440,
-        height = 4440,
-        posY = centerTilePanePosY,
-        posX = centerTilePanePosX,
+        width = TILE_PANE_WIDTH,
+        height = TILE_PANE_HEIGHT,
+        posY = CENTER_TILE_PANE_POS_Y,
+        posX = CENTER_TILE_PANE_POS_X,
         visual = ColorVisual(Color.GRAY)
     )
 
@@ -133,10 +158,10 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
 
     //TODO
     var sampleTile = CardView(
-        width = standardTileViewWidth,
-        height = standardTileViewHeight,
-        posX = centerPosInTilePaneX - 100,
-        posY = centerPosInTilePaneY - 100,
+        width = STANDARD_TILE_VIEW_WIDTH,
+        height = STANDARD_TILE_VIEW_HEIGHT,
+        posX = CENTER_POS_IN_TILE_PANE_X - 100,
+        posY = CENTER_POS_IN_TILE_PANE_Y - 100,
         front = ColorVisual(255, 255, 255, 50)
     )
 
@@ -215,7 +240,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual(221, 161, 94)
     )
 
-     val undoButton = StandardButton(
+    val undoButton = StandardButton(
         width = 100,
         height = 50,
         posX = 20,
@@ -231,7 +256,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "REDO"
     )
 
-     val scoreButton = StandardButton(
+    val scoreButton = StandardButton(
         width = 100,
         height = 50,
         posX = 240,
@@ -239,7 +264,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "SCORE"
     )
 
-     val rotateButton = StandardButton(
+    val rotateButton = StandardButton(
         width = 100,
         height = 50,
         posX = 350,
@@ -318,7 +343,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "HOME"
     )
 
-    val simulationSpeedLabel = Label(
+    private val simulationSpeedLabel = Label(
         width = 70,
         height = 50,
         posX = 1210,
@@ -334,21 +359,29 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         items = listOf("Fast", "Normal", "Slow", "Slowest")
     )
 
+    val saveGameButton = StandardButton(
+        width = 80,
+        height = 50,
+        posX = 1400,
+        posY = 1020,
+        text = "Save"
+    )
+
+    val playerName = Label(
+        width = 200,
+        height = 50,
+        posX = 1400,
+        posY = 40,
+        text = "Active Player: ${""}",
+        font = Font(size = 18, color = GameColor.cornSilk),
+        alignment = Alignment.CENTER,
+        isWrapText = true,
+        visual = ColorVisual.TRANSPARENT,
+    )
+
     //-----------------------------------------------------------------------
 
     init {
-
-        tilePane.add(sampleTile)
-
-        sampleTile.apply {
-            onMouseClicked = {
-                println("HELLO")
-            }
-        }
-
-
-
-
         background = ColorVisual(GameColor.chaletGreen)
         addComponents(
             tilePane,
@@ -368,9 +401,10 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             homeButton,
             intermezzoLayout, intermezzoLabel, intermezzoOffer1, intermezzoOffer2, intermezzoOffer3,
             intermezzoOffer4,
-            smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,
+            smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown
+            simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
+            playerName
         )
     }
 

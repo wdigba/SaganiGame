@@ -28,6 +28,8 @@ class TestRefreshable : Refreshable {
         private set
     var refreshAfterConnectionStateChangeCalled: Boolean = false
         private set
+    var refreshAfterPlayerListChangeCalled: Boolean = false
+        private set
 
     /**
      * reset all properties
@@ -42,6 +44,7 @@ class TestRefreshable : Refreshable {
         refreshAfterUndoCalled = false
         refreshAfterRedoCalled = false
         refreshAfterConnectionStateChangeCalled = false
+        refreshAfterPlayerListChangeCalled = false
     }
 
     /**
@@ -102,5 +105,9 @@ class TestRefreshable : Refreshable {
 
     override fun refreshAfterConnectionStateChange(newState: ConnectionState) {
         refreshAfterConnectionStateChangeCalled = true
+    }
+
+    override fun refreshAfterPlayerListChange(currentPlayers: List<String>) {
+        refreshAfterPlayerListChangeCalled = true
     }
 }

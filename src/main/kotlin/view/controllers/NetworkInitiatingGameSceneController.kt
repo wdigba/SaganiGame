@@ -1,36 +1,33 @@
 package view.controllers
 
-import view.Refreshable
-import view.scene.NetworkScene
+import view.scene.NetworkInitiatingGameScene
 
 /**
- * Controller for the [NetworkScene].
+ * Controller for the [NetworkInitiatingGameScene].
  */
-class NetworkSceneController(
-    private val networkScene: NetworkScene
-) : Refreshable {
+class NetworkInitiatingGameSceneController(private val networkInitiatingGameScene: NetworkInitiatingGameScene) {
 
-    private val playerInput = mutableListOf(Pair(networkScene.nameInput, networkScene.iDInput))
+    private val playerInput =
+        mutableListOf(Pair(networkInitiatingGameScene.nameInput, networkInitiatingGameScene.keyInput))
 
 
     init {
 
-
-        networkScene.nameInput.apply {
+        networkInitiatingGameScene.nameInput.apply {
             componentStyle = "-fx-background-color: #C8CAA7"
             onKeyTyped = {
-                networkScene.startButton.isDisabled = startIsAvailable()
+                networkInitiatingGameScene.startButton.isDisabled = !startIsAvailable()
             }
         }
 
-        networkScene.iDInput.apply {
+        networkInitiatingGameScene.keyInput.apply {
             componentStyle = "-fx-background-color: #C8CAA7"
             onKeyTyped = {
-                networkScene.startButton.isDisabled = !startIsAvailable()
+                networkInitiatingGameScene.startButton.isDisabled = !startIsAvailable()
             }
         }
 
-        networkScene.backButton.apply {
+        networkInitiatingGameScene.backButton.apply {
             onMouseClicked = {
                 for (input in playerInput) {
                     input.first.text = ""
@@ -38,7 +35,7 @@ class NetworkSceneController(
             }
         }
 
-        networkScene.startButton.apply {
+        networkInitiatingGameScene.startButton.apply {
             onMouseClicked = {
                 val playerNames = mutableListOf<String>()
                 for (input in playerInput) {
@@ -53,7 +50,31 @@ class NetworkSceneController(
                 //rootService.gameService.startNewGame()
             }
         }
+
+        networkInitiatingGameScene.randomIDButton.apply {
+            onMouseClicked = {
+
+                val randomID = mutableListOf(
+                    "2efkenekvew9", "90hnoertt889", "cnwleri22", "1vm0r9fh90n", "45tgbjo0uttn"
+                )
+
+                randomID.shuffle()
+
+
+
+                for (input in playerInput) {
+                    // ID
+                    input.second.text = randomID.removeFirst()
+                }
+
+
+                networkInitiatingGameScene.startButton.isDisabled = !startIsAvailable()
+            }
+        }
+
+
     }
+
 
     private fun startIsAvailable(): Boolean {
         // Player Name is not empty

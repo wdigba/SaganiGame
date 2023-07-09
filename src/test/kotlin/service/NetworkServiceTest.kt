@@ -5,11 +5,7 @@ import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.Color
 import entity.Direction
 import entity.PlayerType
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 /**
  * Class that provides test for the [NetworkService]. It will connect to the server twice, test sending messages and
@@ -21,13 +17,20 @@ class NetworkServiceTest {
     private lateinit var hostRootService: RootService
     private lateinit var guestRootService: RootService
 
+    private lateinit var hostRefreshable: TestRefreshable
+    private lateinit var guestRefreshable: TestRefreshable
+
     /**
      * Initializes both connections and start the game.
      */
     @BeforeTest
     fun initConnections() {
+        hostRefreshable = TestRefreshable()
         hostRootService = RootService()
+        hostRootService.addEachRefreshable(hostRefreshable)
+        guestRefreshable = TestRefreshable()
         guestRootService = RootService()
+        guestRootService.addEachRefreshable(guestRefreshable)
 
         hostRootService.networkService.hostGame("Test Host")
         hostRootService.waitForState(ConnectionState.WAITING_FOR_GUESTS)
@@ -36,6 +39,7 @@ class NetworkServiceTest {
 
         guestRootService.networkService.joinGame("Test Guest", sessionID)
         guestRootService.waitForState(ConnectionState.WAITING_FOR_INIT)
+        assertEquals(hostRefreshable.refreshAfterPlayerListChangeCalled, true)
     }
 
     /**
@@ -43,8 +47,8 @@ class NetworkServiceTest {
      */
     @AfterTest
     fun disconnect() {
-        hostRootService.disconnect()
         guestRootService.disconnect()
+        hostRootService.disconnect()
     }
 
     /**
@@ -92,6 +96,9 @@ class NetworkServiceTest {
         assertEquals(guestGame.offerDisplay, hostGame.offerDisplay)
     }
 
+    /**
+     * Test if clients can send a turn and have the same state afterwards.
+     */
     @Test
     fun `test if a turn gets sent correctly`() {
         // Setup game
@@ -108,7 +115,7 @@ class NetworkServiceTest {
         guestRootService.waitForState(ConnectionState.PLAYING_MY_TURN)
         hostRootService.waitForState(ConnectionState.WAITING_FOR_OPPONENTS)
 
-        val guestGame = guestRootService.currentGame
+        var guestGame = guestRootService.currentGame
         checkNotNull(guestGame)
 
         // Place a tile and wait until both clients have received the turn
@@ -120,6 +127,8 @@ class NetworkServiceTest {
         // Check if the turn was received correctly
         val hostGame = hostRootService.currentGame
         checkNotNull(hostGame)
+        guestGame = guestRootService.currentGame
+        checkNotNull(guestGame)
         val guestPlayerHostSide = hostGame.players.first()
         val guestPlayerGuestSide = guestGame.players.first()
 

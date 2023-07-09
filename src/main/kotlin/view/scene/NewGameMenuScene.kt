@@ -1,6 +1,5 @@
 package view.scene
 
-import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
@@ -9,6 +8,9 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
+/**
+ * Custom [MenuScene] for the new game menu.
+ */
 class NewGameMenuScene :
     MenuScene(400, 1080), Refreshable {
 
@@ -18,23 +20,18 @@ class NewGameMenuScene :
         font = Font(size = 22)
     )
 
-    val playWithKIButton = StandardButton(
-        posX = 100, posY = 200,
-        text = "Play with KI",
-    )
-
     val playWithOthersButton = StandardButton(
-        posX = 100, posY = 300,
-        text = "Play with others",
+        posX = 100, posY = 200,
+        text = "Play",
     )
 
     val ruleButton = StandardButton(
-        posX = 100, posY = 400,
+        posX = 100, posY = 300,
         text = "Rules",
     )
 
     val quitButton = StandardButton(
-        posX = 100, posY = 500,
+        posX = 100, posY = 400,
         text = "Quit",
     )
 
@@ -43,7 +40,7 @@ class NewGameMenuScene :
         background = ColorVisual(GameColor.cornSilk)
         addComponents(
             headlineLabel,
-            playWithKIButton, playWithOthersButton, ruleButton, quitButton
+            playWithOthersButton, ruleButton, quitButton
         )
     }
 

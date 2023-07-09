@@ -6,7 +6,7 @@ import kotlin.random.Random
 /**
  * [KIServiceRandom] is responsible for AI strategy, which implements random behavior
  */
-class KIServiceRandom (private val rootService: RootService) {
+class KIServiceRandom(private val rootService: RootService) {
     /**
      * [calculateRandomMove] implements random placement calculation using [PlayerActionService.placeTile]
      */
@@ -35,8 +35,7 @@ class KIServiceRandom (private val rootService: RootService) {
             currentGame.offerDisplay.random()
         } else if (Random.nextBoolean()) { // random decision when only one tile left
             currentGame.offerDisplay.random()
-        }
-        else {
+        } else {
             currentGame.stacks[0]
         }
 

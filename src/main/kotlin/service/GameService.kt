@@ -54,11 +54,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // refresh GUI
         onAllRefreshables {
             refreshAfterStartNewGame(
-                game.players[0],
-                setOf(Location(0, 0)),
-                false
+                game.players[0], setOf(Location(0, 0)), false
             )
         }
+
 
         // If the start player is an AI, calculate its move
         if (game.players[0].playerType == PlayerType.RANDOM_AI) {
@@ -93,18 +92,14 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 if (tiles[line][row] != "NONE") {
                     arrows.add(
                         Arrow(
-                            Element.valueOf(tiles[line][row]),
-                            Direction.values()[row - 2]
+                            Element.valueOf(tiles[line][row]), Direction.values()[row - 2]
                         )
                     )
                 }
             }
             stacks.add(
                 Tile(
-                    tiles[line][0].toInt(),
-                    tiles[line][10].toInt(),
-                    Element.valueOf(tiles[line][1]),
-                    arrows
+                    tiles[line][0].toInt(), tiles[line][10].toInt(), Element.valueOf(tiles[line][1]), arrows
                 )
             )
         }
@@ -124,10 +119,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      *          the arrows, that are being fulfilled, including the arrows of newTile
      */
     fun calculatePoints(
-        player: Player,
-        newTile: Tile,
-        tileDirection: Direction,
-        location: Location
+        player: Player, newTile: Tile, tileDirection: Direction, location: Location
     ): MutableList<Int> {
         // Get old values
         val discPile = player.discs.size
@@ -141,8 +133,12 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         for (direction in Direction.values()) {
             var filteredBoard = rootService.playerActionService.filterInDirection(player.board, direction, location)
             filteredBoard = filteredBoard.filterValues {
-                it.arrows.contains(Arrow(newTile.element, Direction.values()[(direction.ordinal + 4) % 8]))
-                        && !it.flipped
+                it.arrows.contains(
+                    Arrow(
+                        newTile.element,
+                        Direction.values()[(direction.ordinal + 4) % 8]
+                    )
+                ) && !it.flipped
             }
             filteredBoard.values.forEach {
                 it.arrows.forEach { arrow ->
@@ -289,22 +285,21 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // determine next player
         if (nextPlayer == null) {
-            nextPlayer = currentGame.players[
-                (currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size
-            ]
+            nextPlayer =
+                currentGame.players[(currentGame.players.indexOf(currentGame.actPlayer) + 1) % currentGame.players.size]
             currentGame.actPlayer = nextPlayer
         }
 
-        if (nextPlayer.name == rootService.networkService.client?.playerName) {
-            rootService.networkService.connectionState = ConnectionState.PLAYING_MY_TURN
-        } else {
-            rootService.networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
+        if (rootService.networkService.connectionState != ConnectionState.DISCONNECTED) {
+            if (nextPlayer.name == rootService.networkService.client?.playerName) {
+                rootService.networkService.connectionState = ConnectionState.PLAYING_MY_TURN
+            } else {
+                rootService.networkService.connectionState = ConnectionState.WAITING_FOR_OPPONENTS
+            }
         }
 
         // increase turnCount
         currentGame.turnCount++
-        // copy game
-        gameCopy()
 
         // check if game has to end
         if (
@@ -323,15 +318,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 rootService.kIServiceRandom.calculateRandomMove()
             } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
                 Thread.sleep(simulationTime.toLong())
-                rootService.kIService.playBestMove()
-            }
-        }
-
-        if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
-            Thread.sleep(200)
-            if (rootService.networkService.client?.playerType == PlayerType.RANDOM_AI) {
-                rootService.kIServiceRandom.calculateRandomMove()
-            } else if (rootService.networkService.client?.playerType == PlayerType.BEST_AI) {
                 rootService.kIService.playBestMove()
             }
         }
@@ -371,6 +357,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // check if game exists
         val game = rootService.currentGame
         checkNotNull(game) { "currentGame was null, but gameCopy() was called" }
+
+        // delete nextTurn
+        game.nextTurn = null
 
         // store reference to lastTurn and set to null to prevent infinite loop
         val lastGame = game.lastTurn
@@ -487,7 +476,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         var newGame: Sagani
         for (gameString in loadGame.split(";")) {
 
-            newGame = Json.decodeFromString<Sagani>(gameString)
+            newGame = Json.decodeFromString(gameString)
 
             if (iterGame != null) {
 
@@ -526,6 +515,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         if (game.lastTurn != null) {
             rootService.currentGame = game.lastTurn
         }
+
 
         // refresh GUI
         onAllRefreshables { refreshAfterUndo() }

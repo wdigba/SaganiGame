@@ -21,8 +21,7 @@ class PlaceTileTest {
         rootService.addEachRefreshable(refreshable)
         // start game
         rootService.gameService.startNewGame(playerNames)
-        var game = rootService.currentGame
-        assertNotNull(game)
+        var game = assertNotNull(rootService.currentGame)
 
         // place first tile
         game = firstTileTest(game)
@@ -107,7 +106,7 @@ class PlaceTileTest {
         assertEquals(1, tile.discs.size)
         assertEquals(1, tile.arrows[0].disc.size)
         // firstTile flipped
-        assert(previousTile.flipped)
+        assert(nextGameState.players[0].board[Pair(0, 0)]!!.flipped)
         assertEquals(1, nextGameState.players[0].points.first)
         // player gets 1 disc back and uses 2 discs
         assertEquals(22, nextGameState.players[0].discs.size)
@@ -131,6 +130,7 @@ class PlaceTileTest {
         game.actPlayer = game.players[0]
         game.offerDisplay.clear()
         game.offerDisplay.add(anotherTile)
+        game.stacks.remove(tile)
         game.stacks.add(0, tile)
         game.actPlayer.discs.clear()
         // before function call

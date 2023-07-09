@@ -1,5 +1,6 @@
 package view.scene
 
+
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
@@ -10,15 +11,15 @@ import view.Refreshable
 import view.StandardButton
 
 /**
- * [NetworkScene] creates scene to join someone's game using existing key
+ * [NetworkInitiatingGameScene] creates scene for initiating game
  */
 
-class NetworkScene :
+class NetworkInitiatingGameScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
         width = 300, height = 50, posX = 50, posY = 50,
-        text = "Enter your data",
+        text = "Create a key for the game",
         font = Font(size = 22)
     )
 
@@ -32,13 +33,12 @@ class NetworkScene :
         posX = 70, posY = 160
     )
 
-    private val iDLabel = Label(
+    private val keyLabel = Label(
         width = 100, height = 35,
         posX = 50, posY = 205,
-        text = "Host ID:"
+        text = "Key:"
     )
-
-    val iDInput: TextField = TextField(
+    val keyInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 240
     )
@@ -58,15 +58,24 @@ class NetworkScene :
         text = "Start",
     )
 
+    /**
+     * button to generate a key
+     */
+    val randomIDButton = StandardButton(
+        posX = 50, posY = 520,
+        text = "Random ID"
+    )
+
     init {
         opacity = 1.0
         startButton.isDisabled = true
         background = ColorVisual(GameColor.cornSilk)
         addComponents(
             headlineLabel, nameLabel, nameInput,
-            iDInput, iDLabel,
-            startButton, backButton
+            keyInput, keyLabel,
+            startButton, backButton, randomIDButton
         )
     }
+
 
 }

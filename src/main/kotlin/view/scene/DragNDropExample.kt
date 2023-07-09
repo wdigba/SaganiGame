@@ -6,6 +6,9 @@ import tools.aqua.bgw.core.BoardGameApplication
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.visual.ColorVisual
 
+/**
+ * Example for drag and drop functionality.
+ */
 class DragNDropExample : BoardGameApplication("Drag and drop example") {
     private val gameScene: BoardGameScene = BoardGameScene(background = ColorVisual.LIGHT_GRAY)
 

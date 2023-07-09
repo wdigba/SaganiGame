@@ -16,6 +16,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * New tile gets discs and its discs get relocated if possible.
      */
     fun placeTile(tile: Tile, direction: Direction, location: Location, sendUpdate: Boolean = true) {
+        // copy last game state
+        rootService.gameService.gameCopy()
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -34,8 +36,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         // check if position is free
         require(!player.board.contains(location)) { "Location is already used." }
 
-        // check if position is available
-        require(location in validLocations(player.board)) { "Location is not adjacent to another tile." }
+        // check if position is available or it is the first Tile
+        require(location in validLocations(player.board) || player.board.isEmpty()) { "Location is not adjacent to another tile." }
 
         // check if tile is legal to choose and remove it
         if (currentGame.intermezzo) {
@@ -141,6 +143,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * [skipIntermezzoTurn] is called when a player skips their intermezzo turn.
      */
     fun skipIntermezzoTurn() {
+        // copy last game state
+        rootService.gameService.gameCopy()
         // check if game exists
         val currentGame = rootService.currentGame
         checkNotNull(currentGame) { "There is no game." }
@@ -167,8 +171,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         for (direction in Direction.values()) {
             var filteredBoard = filterInDirection(player.board, direction, location)
             filteredBoard = filteredBoard.filterValues {
-                it.arrows.contains(Arrow(tile.element, Direction.values()[(direction.ordinal + 4) % 8]))
-                        && !it.flipped
+                it.arrows.contains(Arrow(tile.element, Direction.values()[(direction.ordinal + 4) % 8])) && !it.flipped
             }
             filteredBoard.values.forEach {
                 var flip = true
@@ -195,9 +198,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * [filterInDirection] returns a filtered Map of all tiles in the given direction from the given tile
      */
     fun filterInDirection(
-        board: MutableMap<Location, Tile>,
-        direction: Direction,
-        location: Location
+        board: MutableMap<Location, Tile>, direction: Direction, location: Location
     ): Map<Location, Tile> {
         return when (direction) {
             Direction.UP -> board.filterKeys {

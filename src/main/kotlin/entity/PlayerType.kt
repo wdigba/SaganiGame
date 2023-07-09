@@ -7,8 +7,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 enum class PlayerType {
-    HUMAN,
-    RANDOM_AI,
-    BEST_AI,
-    NETWORK_PLAYER
+    HUMAN, RANDOM_AI, BEST_AI, NETWORK_PLAYER
 }

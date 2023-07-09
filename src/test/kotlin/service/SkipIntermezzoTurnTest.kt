@@ -11,11 +11,17 @@ import kotlin.test.assertFails
  */
 class SkipIntermezzoTurnTest {
 
+    /**
+     * Test if [PlayerActionService.skipIntermezzoTurn] throws an exception if no game is active.
+     */
     @Test
     fun `calling skipIntermezzoTurn() while not having a game active`() {
         assertFails { RootService().playerActionService.skipIntermezzoTurn() }
     }
 
+    /**
+     * Test if [PlayerActionService.skipIntermezzoTurn] throws an exception if the game is not in the intermezzo phase.
+     */
     @Test
     fun `calling skipIntermezzoTurn() while not being in the intermezzo phase`() {
         val rootService = RootService()
@@ -27,6 +33,9 @@ class SkipIntermezzoTurnTest {
         assertFails { rootService.playerActionService.skipIntermezzoTurn() }
     }
 
+    /**
+     * Test if [PlayerActionService.skipIntermezzoTurn] works correctly in an intermezzo turn.
+     */
     @Test
     fun `correct Test`() {
         val rootService = RootService()

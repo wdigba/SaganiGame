@@ -8,6 +8,9 @@ import view.GameColor
 import view.Refreshable
 import view.StandardButton
 
+/**
+ * Custom [MenuScene] for the configuration menu.
+ */
 class ConfigurationScene :
     MenuScene(400, 1080), Refreshable {
 
@@ -27,8 +30,13 @@ class ConfigurationScene :
         text = "Add players",
     )
 
-    val backButton = StandardButton(
+    val loadGameButton = StandardButton(
         posX = 100, posY = 400,
+        text = "Load game",
+    )
+
+    val backButton = StandardButton(
+        posX = 100, posY = 500,
         text = "Go Back",
     )
 
@@ -37,7 +45,7 @@ class ConfigurationScene :
         background = ColorVisual(GameColor.cornSilk)
         addComponents(
             headlineLabel,
-            networkButton, playersButton, backButton
+            networkButton, playersButton, backButton, loadGameButton
         )
 
     }
