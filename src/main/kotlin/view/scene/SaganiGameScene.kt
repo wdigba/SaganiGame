@@ -288,6 +288,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "CONF"
     )
 
+    val skipButton = StandardButton(
+        width = 100,
+        height = 50,
+        posX = 1670,
+        posY = 1020,
+        text = "SKIP"
+    )
+
     val zoomInButton = StandardButton(
         width = 50,
         height = 50,
@@ -412,7 +420,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
             simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
-            playerName, returnFromOtherPlayerButton
+            playerName, returnFromOtherPlayerButton,
+            skipButton
         )
     }
 
