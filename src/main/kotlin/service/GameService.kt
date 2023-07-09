@@ -58,6 +58,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             )
         }
 
+
         // If the start player is an AI, calculate its move
         if (game.players[0].playerType == PlayerType.RANDOM_AI) {
             Thread.sleep(simulationTime.toLong())
@@ -297,8 +298,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // increase turnCount
         currentGame.turnCount++
-        // copy game
-        gameCopy()
 
         // check if game has to end
         if (
@@ -350,6 +349,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         // check if game exists
         val game = rootService.currentGame
         checkNotNull(game) { "currentGame was null, but gameCopy() was called" }
+
+        // delete nextTurn
+        game.nextTurn = null
 
         // store reference to lastTurn and set to null to prevent infinite loop
         val lastGame = game.lastTurn
@@ -466,7 +468,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         var newGame: Sagani
         for (gameString in loadGame.split(";")) {
 
-            newGame = Json.decodeFromString<Sagani>(gameString)
+            newGame = Json.decodeFromString(gameString)
 
             if (iterGame != null) {
 
@@ -505,6 +507,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         if (game.lastTurn != null) {
             rootService.currentGame = game.lastTurn
         }
+
 
         // refresh GUI
         onAllRefreshables { refreshAfterUndo() }

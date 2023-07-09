@@ -1,4 +1,5 @@
 package view.scene
+
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.MenuScene
@@ -13,7 +14,7 @@ import java.nio.file.Paths
 /**
  * Custom [MenuScene] for the load game menu.
  */
-class LoadGameScene:
+class LoadGameScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(

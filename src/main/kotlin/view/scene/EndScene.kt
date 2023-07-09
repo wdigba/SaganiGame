@@ -37,7 +37,6 @@ class EndScene(private val rootService: RootService) :
     )
 
 
-
     val quitButton = StandardButton(
         posX = 50, posY = 465,
         width = 140,

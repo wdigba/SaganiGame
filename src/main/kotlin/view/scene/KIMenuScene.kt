@@ -13,7 +13,7 @@ import view.StandardButton
 /**
  * Custom [MenuScene] for the KI menu.
  */
-class KIMenuScene:
+class KIMenuScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -65,15 +65,17 @@ class KIMenuScene:
     val comboBoxKIArt = mutableListOf("Random", "Smart")
 
     val kIInput =
-        ComboBox<String>(posX = 70, posY = 240, width = 150,height=35)
+        ComboBox<String>(posX = 70, posY = 240, width = 150, height = 35)
 
 
     init {
         opacity = 1.0
         background = ColorVisual(GameColor.cornSilk)
 
-        addComponents(headlineLabel, nameLabel, nameInput,
+        addComponents(
+            headlineLabel, nameLabel, nameInput,
             kIInput, kIArt,
-            startButton, backButton)
+            startButton, backButton
+        )
     }
 }

@@ -4,7 +4,6 @@ import service.RootService
 import tools.aqua.bgw.visual.ColorVisual
 import view.GameColor
 import view.Refreshable
-import view.SaganiApplication
 import view.scene.PlayerConfigScene
 
 /**
@@ -36,44 +35,44 @@ class PlayerConfigSceneController(
     init {
 
         playerConfigScene.comboBoxKI1.items = playerConfigScene.comboBoxKIArt
-        playerConfigScene.comboBoxKI1.selectedItemProperty.addListener { _, newValue ->
+        playerConfigScene.comboBoxKI1.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI2.items = playerConfigScene.comboBoxKIArt
-        playerConfigScene.comboBoxKI2.selectedItemProperty.addListener { _, newValue ->
+        playerConfigScene.comboBoxKI2.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI3.items = playerConfigScene.comboBoxKIArt
-        playerConfigScene.comboBoxKI3.selectedItemProperty.addListener { _, newValue ->
+        playerConfigScene.comboBoxKI3.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI4.items = playerConfigScene.comboBoxKIArt
-        playerConfigScene.comboBoxKI4.selectedItemProperty.addListener { _, newValue ->
+        playerConfigScene.comboBoxKI4.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
         playerConfigScene.comboBox1.items = comboBoxColors
         playerConfigScene.comboBox1.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox1.visual = returnColorfromString(newValue)
+            playerConfigScene.comboBox1.visual = returnColorFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
 
         playerConfigScene.comboBox2.items = comboBoxColors
         playerConfigScene.comboBox2.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox2.visual = returnColorfromString(newValue)
+            playerConfigScene.comboBox2.visual = returnColorFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
         playerConfigScene.comboBox3.items = comboBoxColors
         playerConfigScene.comboBox3.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox3.visual = returnColorfromString(newValue)
+            playerConfigScene.comboBox3.visual = returnColorFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
         playerConfigScene.comboBox4.items = comboBoxColors
         playerConfigScene.comboBox4.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox4.visual = returnColorfromString(newValue)
+            playerConfigScene.comboBox4.visual = returnColorFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
@@ -93,7 +92,7 @@ class PlayerConfigSceneController(
                     playerInfos.add(
                         Triple(
                             input.first.text,
-                            enumValueOf<entity.Color>(input.second.selectedItem!!),
+                            enumValueOf(input.second.selectedItem!!),
                             input.third
                         )
                     )
@@ -208,7 +207,7 @@ class PlayerConfigSceneController(
         for (comboBox in comboBoxes) {
             comboBox.items = comboBoxColors
             comboBox.selectedItemProperty.addListener { _, newValue ->
-                comboBox.visual = returnColorfromString(newValue)
+                comboBox.visual = returnColorFromString(newValue)
                 playerConfigScene.startButton.isDisabled = !startIsAvailable()
             }
         }
@@ -325,15 +324,15 @@ class PlayerConfigSceneController(
         return colors.size == colors.distinct().size
     }
 
-    private fun returnColorfromString(color: String?): ColorVisual {
+    private fun returnColorFromString(color: String?): ColorVisual {
         checkNotNull(color) { "No color selected." }
-        when (color) {
-            "WHITE" -> return ColorVisual(GameColor.white)
-            "GREY" -> return ColorVisual(GameColor.gray)
-            "BROWN" -> return ColorVisual(GameColor.brown)
-            "BLACK" -> return ColorVisual(GameColor.black)
+        return when (color) {
+            "WHITE" -> ColorVisual(GameColor.white)
+            "GREY" -> ColorVisual(GameColor.gray)
+            "BROWN" -> ColorVisual(GameColor.brown)
+            "BLACK" -> ColorVisual(GameColor.black)
             else -> {
-                return ColorVisual(GameColor.white)
+                ColorVisual(GameColor.white)
             }
         }
     }

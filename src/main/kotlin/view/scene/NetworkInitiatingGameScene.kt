@@ -14,7 +14,7 @@ import view.StandardButton
  * [NetworkInitiatingGameScene] creates scene for initiating game
  */
 
-class NetworkInitiatingGameScene:
+class NetworkInitiatingGameScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -28,7 +28,7 @@ class NetworkInitiatingGameScene:
         posX = 50, posY = 125,
         text = "Name:"
     )
-     val nameInput: TextField = TextField(
+    val nameInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 160
     )
@@ -38,7 +38,7 @@ class NetworkInitiatingGameScene:
         posX = 50, posY = 205,
         text = "Key:"
     )
-     val keyInput: TextField = TextField(
+    val keyInput: TextField = TextField(
         width = 150, height = 35,
         posX = 70, posY = 240
     )
@@ -61,7 +61,7 @@ class NetworkInitiatingGameScene:
     /**
      * button to generate a key
      */
-     val randomIDButton = StandardButton(
+    val randomIDButton = StandardButton(
         posX = 50, posY = 520,
         text = "Random ID"
     )
@@ -70,9 +70,11 @@ class NetworkInitiatingGameScene:
         opacity = 1.0
         startButton.isDisabled = true
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(headlineLabel, nameLabel, nameInput,
+        addComponents(
+            headlineLabel, nameLabel, nameInput,
             keyInput, keyLabel,
-            startButton, backButton, randomIDButton)
+            startButton, backButton, randomIDButton
+        )
     }
 
 

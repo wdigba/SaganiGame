@@ -166,4 +166,3 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         this@SaganiApplication.hideMenuScene()
     }
 }
-

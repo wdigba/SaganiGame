@@ -41,7 +41,7 @@ class NetworkInitiateOrJoinScene :
     init {
         opacity = 1.0
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(headlineLabel,initiateButton, joinButton, backButton)
+        addComponents(headlineLabel, initiateButton, joinButton, backButton)
     }
 
 }

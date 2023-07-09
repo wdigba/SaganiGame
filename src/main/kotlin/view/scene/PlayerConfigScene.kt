@@ -1,6 +1,9 @@
 package view.scene
 
-import tools.aqua.bgw.components.uicomponents.*
+import tools.aqua.bgw.components.uicomponents.Button
+import tools.aqua.bgw.components.uicomponents.ComboBox
+import tools.aqua.bgw.components.uicomponents.Label
+import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
@@ -148,12 +151,12 @@ class PlayerConfigScene :
         text = "Random Names"
     )
 
-    val kI1Label = Label(
+    private val kI1Label = Label(
         width = 150, height = 35,
         posX = 320, posY = 125,
         text = "Who is playing?"
     )
-    val kI2Label = Label(
+    private val kI2Label = Label(
         width = 150, height = 35,
         posX = 320, posY = 205,
         text = "Who is playing?"

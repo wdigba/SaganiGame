@@ -13,7 +13,7 @@ import view.StandardButton
  * [NetworkScene] creates scene to join someone's game using existing key
  */
 
-class NetworkScene:
+class NetworkScene :
     MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -62,9 +62,11 @@ class NetworkScene:
         opacity = 1.0
         startButton.isDisabled = true
         background = ColorVisual(GameColor.cornSilk)
-        addComponents(headlineLabel, nameLabel, nameInput,
+        addComponents(
+            headlineLabel, nameLabel, nameInput,
             iDInput, iDLabel,
-            startButton, backButton)
+            startButton, backButton
+        )
     }
 
 }
