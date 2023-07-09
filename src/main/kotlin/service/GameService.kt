@@ -458,8 +458,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             "Cannot load game while connected to server"
         }
 
+        val jsonBuilder = Json { allowStructuredMapKeys = true }
+
         val loadGame = FileInputStream(File(path)).use {
-            Json.decodeFromStream<String>(it)
+            jsonBuilder.decodeFromStream<String>(it)
         }
 
         // Sagani strings are separated with ";" during saving
