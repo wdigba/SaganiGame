@@ -966,6 +966,10 @@ class SaganiGameSceneController(
         this.intermezzo = intermezzo
         reloadCardViews(game)
         loadBoardTiles(board)
+
+        if (actPlayer.playerType in listOf(PlayerType.BEST_AI, PlayerType.RANDOM_AI)) {
+            rootService.gameService.changeToNextPlayer()
+        }
     }
 
     override fun refreshAfterChangeToNextPlayer(
@@ -983,6 +987,9 @@ class SaganiGameSceneController(
         loadBoardTiles(board)
 
         println(actPlayer.playerType)
+        if (actPlayer.playerType in listOf(PlayerType.BEST_AI, PlayerType.RANDOM_AI)) {
+            rootService.gameService.changeToNextPlayer()
+        }
     }
 
     override fun refreshAfterLoadGame() {
