@@ -65,10 +65,26 @@ class SaganiGameSceneController(
 
         updateActivePlayerLabel()
 
+        // button for getting back if looking at another players board
+        saganiGameScene.returnFromOtherPlayerButton.isVisible = false
+        saganiGameScene.returnFromOtherPlayerButton.isDisabled = true
+
+
         //TODO Funktion
         saganiGameScene.testButton.apply {
             onMouseClicked = {
                 updateActivePlayerLabel()
+            }
+        }
+
+        saganiGameScene.returnFromOtherPlayerButton.apply {
+            onMouseClicked = {
+                loadBoardTiles(board)
+                saganiGameScene.returnFromOtherPlayerButton.isVisible = false
+                saganiGameScene.returnFromOtherPlayerButton.isDisabled = true
+                //enable all offerings again
+                val game = checkNotNull(rootService.currentGame) { "no game loaded" }
+                reloadCardViews(game)
             }
         }
 
@@ -305,7 +321,7 @@ class SaganiGameSceneController(
      * clears the board represented by loadedBoardViews and re-loads it with empty CardViews
      * Update 2023-07-09 -> only create CardViews that hold Tiles or are possible tile locations
      *                      for performance reasons
-     * @param board optional parameter used in case the board of a [Player] that is not actPlayer should be drawn
+     * @param parBoard optional parameter used in case the board of a [Player] that is not actPlayer should be drawn
      */
     private fun resetLoadedBoardViews( parBoard: MutableMap<Pair<Int, Int>, Tile> ) {
 
@@ -382,6 +398,38 @@ class SaganiGameSceneController(
 
 
 
+    }
+
+    /**
+     * called from ScoreSceneController
+     * Loads the player with the given idx
+     */
+    fun showBoardOfPlayer(index : Int) {
+        // load data of player
+        val game = checkNotNull(rootService.currentGame) { "game not loaded in showBoardOfPlayer" }
+        val showPlayer = game.players[index]
+
+        if (showPlayer != game.actPlayer) {
+            //load board
+            loadBoardTiles(showPlayer.board)
+
+            // make back button visible
+            saganiGameScene.returnFromOtherPlayerButton.isVisible = true
+            saganiGameScene.returnFromOtherPlayerButton.isDisabled = false
+
+            // disable offerings and intermezzo cards
+            saganiGameScene.offer1.isDisabled = true
+            saganiGameScene.offer2.isDisabled = true
+            saganiGameScene.offer3.isDisabled = true
+            saganiGameScene.offer4.isDisabled = true
+            saganiGameScene.offer5.isDisabled = true
+
+            saganiGameScene.intermezzoOffer1.isDisabled = true
+            saganiGameScene.intermezzoOffer2.isDisabled = true
+            saganiGameScene.intermezzoOffer3.isDisabled = true
+            saganiGameScene.intermezzoOffer4.isDisabled = true
+
+        }
     }
 
     private fun initScene() {

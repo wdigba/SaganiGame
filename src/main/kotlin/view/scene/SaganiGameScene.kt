@@ -379,6 +379,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         visual = ColorVisual.TRANSPARENT,
     )
 
+    val returnFromOtherPlayerButton = StandardButton(
+        width = 200,
+        height = 50,
+        posX = 1600,
+        posY = 40,
+        text = "Back to own Board"
+    )
+
     //-----------------------------------------------------------------------
 
     init {
@@ -404,7 +412,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
             simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
-            playerName
+            playerName, returnFromOtherPlayerButton
         )
     }
 
