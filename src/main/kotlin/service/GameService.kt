@@ -216,6 +216,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
 
+        val lastRoundIntermezzo = !currentGame.intermezzo
+        val previousRoundLastRound = !currentGame.lastRound
+
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
             // remove first player who had their intermezzo turn already
@@ -231,7 +234,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         } else {
             if (currentGame.intermezzoStorage.size == 4) {
                 currentGame.intermezzo = true
-                println("${rootService.networkService.client?.playerName} - Intermezzo started")
                 currentGame.intermezzoPlayers.addAll(currentGame.players)
                 currentGame.intermezzoPlayers.sortByDescending { it.points.second }
                 currentGame.intermezzoPlayers.sortBy { it.points.first }
@@ -261,8 +263,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             }
         }
 
-        println("${rootService.networkService.client?.playerName} - Current Intermezzo state: ${currentGame.intermezzo}, Tiles in storage: ${currentGame.intermezzoStorage.size}, last rounds state: ${currentGame.lastTurn?.intermezzo}")
-
         if (rootService.networkService.connectionState == ConnectionState.PLAYING_MY_TURN) {
             rootService.networkService.client?.sendTurnMessage(player)
         } else {
@@ -274,11 +274,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 check(it.availableDiscs == player.discs.size) {
                     "Checksum: Available discs did not match. ${it.availableDiscs} != ${player.discs.size}"
                 }
-                val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
+                val startedIntermezzo = lastRoundIntermezzo && currentGame.intermezzo
                 check(it.startedIntermezzo == startedIntermezzo) {
                     "Checksum: Intermezzo did not match. ${it.startedIntermezzo} != $startedIntermezzo"
                 }
-                val initiatedLastRound = (!(currentGame.lastTurn?.lastRound ?: false) && currentGame.lastRound)
+                val initiatedLastRound = previousRoundLastRound && currentGame.lastRound
                 check(it.initiatedLastRound == initiatedLastRound) {
                     "Checksum: Last round did not match. ${it.initiatedLastRound} != $initiatedLastRound"
                 }
