@@ -216,6 +216,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
 
+        val previousRoundIntermezzo = !currentGame.intermezzo
+        val previousRoundLastRound = !currentGame.lastRound
+
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
             // remove first player who had their intermezzo turn already
@@ -269,11 +272,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 check(it.availableDiscs == player.discs.size) {
                     "Checksum: Available discs did not match. ${it.availableDiscs} != ${player.discs.size}"
                 }
-                val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
+                val startedIntermezzo = previousRoundIntermezzo && currentGame.intermezzo
                 check(it.startedIntermezzo == startedIntermezzo) {
                     "Checksum: Intermezzo did not match. ${it.startedIntermezzo} != $startedIntermezzo"
                 }
-                val initiatedLastRound = (!(currentGame.lastTurn?.lastRound ?: false) && currentGame.lastRound)
+                val initiatedLastRound = previousRoundLastRound && currentGame.lastRound
                 check(it.initiatedLastRound == initiatedLastRound) {
                     "Checksum: Last round did not match. ${it.initiatedLastRound} != $initiatedLastRound"
                 }
