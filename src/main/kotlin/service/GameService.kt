@@ -308,7 +308,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             calculateWinner()
         } else {
             validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
-            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
 
             // If the next player is an AI, calculate its move
             if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
@@ -318,6 +317,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 Thread.sleep(simulationTime.toLong())
                 rootService.kIService.playBestMove()
             }
+            onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
         }
     }
 
