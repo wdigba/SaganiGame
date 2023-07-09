@@ -411,7 +411,7 @@ class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown,newSaveButton,// saveGameButton,
+            simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
             playerName, returnFromOtherPlayerButton
         )
     }
