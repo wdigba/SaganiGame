@@ -255,12 +255,12 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                     println("Triggered last round by empty stacks ${currentGame.stacks.size}")
                 }
             }
-            // check if player has needed amount of points to end the game
-            currentGame.players.forEach {
-                if (it.points.first >= 105 - currentGame.players.size * 15) {
-                    currentGame.lastRound = true
-                    println("Triggered last round by points ${it.name} | ${it.points.first}")
-                }
+        }
+        // check if player has needed amount of points to end the game
+        currentGame.players.forEach {
+            if (it.points.first >= 105 - currentGame.players.size * 15) {
+                currentGame.lastRound = true
+                println("Triggered last round by points ${it.name} | ${it.points.first}")
             }
         }
 
