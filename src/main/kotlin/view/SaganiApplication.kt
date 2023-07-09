@@ -17,7 +17,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val networkScene = NetworkScene()
 
     val newSaveGameButton = StandardButton(posX = 1400, posY = 1020, width = 80,
-        height = 50,text = "Save").apply {
+        height = 50,text = "Save",visual = ColorVisual.TRANSPARENT,).apply {
         visual = ColorVisual.WHITE
         onMouseClicked = {
 
@@ -90,7 +90,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
 
     }
 
-    private val newLoadGameButton = StandardButton(posX = 100, posY = 400, text = "Load").apply {
+    private val newLoadGameButton = StandardButton(posX = 100, posY = 400, text = "Load",
+        visual = ColorVisual.TRANSPARENT).apply {
         visual = ColorVisual.WHITE
         onMouseClicked = {
             try {

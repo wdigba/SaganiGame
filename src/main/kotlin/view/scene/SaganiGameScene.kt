@@ -372,7 +372,8 @@ class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080
         height = 50,
         posX = 1400,
         posY = 1020,
-        text = "Save"
+        text = "Save",
+        visual = ColorVisual.TRANSPARENT
     )
 
     val playerName = Label(
@@ -419,7 +420,7 @@ class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
+            simulationSpeedLabel, simulationSpeedDropDown, newSaveButton,//saveGameButton,
             playerName, returnFromOtherPlayerButton,
             skipButton
         )
