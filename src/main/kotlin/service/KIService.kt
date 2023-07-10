@@ -13,10 +13,10 @@ class KIService(private val rootService: RootService) {
     private val range = 3
 
     var checkDiscleftWeight: Double = 1.0
-    var arrowWeight: Double = 0.8
-    var discWeight: Double = 2.0
-    var arrowBlockedWeight: Double = 0.4
-    var discBlockedWeight: Double = 0.7
+    var arrowWeight: Double = 2.0
+    var discWeight: Double = 2.6
+    var arrowBlockedWeight: Double = 0.9
+    var discBlockedWeight: Double = 0.4
 
     /**
      * [CoordinateInformation] contains specific information about possible tile placement
