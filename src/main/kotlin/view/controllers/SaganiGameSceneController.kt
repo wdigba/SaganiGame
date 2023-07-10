@@ -34,7 +34,7 @@ class SaganiGameSceneController(
     private var loadedBoardViews = mutableMapOf<Location, CardView>()
 
     private var selectedTile: Tile
-    private var selectedTilePlacement = saganiGameScene.sampleTile
+
     private var currentZoom = LEVEL1
 
     private var chosenOfferDisplay = -1
@@ -58,7 +58,7 @@ class SaganiGameSceneController(
         board = actPlayer.board
         intermezzo = false
         selectedTile = game.offerDisplay[0]
-        chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 90))
+        chosenTileView = CardView(0, 0, 120, 120, front = ColorVisual(225, 225, 225, 50))
 
         reloadCardViews(game, true)
 
@@ -356,11 +356,13 @@ class SaganiGameSceneController(
         // -> so to get x from pixel (selectedTilePlacement.posX - center)/120
         //    and y from pixel : (center-selectedTilePlacement.posY)/120
         val selectedPlacement =
-            Location((chosenTileView.posX.toInt() - CENTER_POS_IN_TILE_PANE_X.toInt())/120,
-                (CENTER_POS_IN_TILE_PANE_Y.toInt()  - chosenTileView.posY.toInt())/120)
+            Location(
+                (chosenTileView.posX.toInt() - CENTER_POS_IN_TILE_PANE_X.toInt()) / 120,
+                (CENTER_POS_IN_TILE_PANE_Y.toInt() - chosenTileView.posY.toInt()) / 120
+            )
 
         println(selectedPlacement)
-        val chosenDirection : Direction = when(chosenTileView.rotation) {
+        val chosenDirection: Direction = when (chosenTileView.rotation) {
             90.0 -> Direction.RIGHT
             180.0 -> Direction.DOWN
             270.0 -> Direction.LEFT
@@ -376,8 +378,7 @@ class SaganiGameSceneController(
 
         // deactivate confirm button until a new offering is clicked
         saganiGameScene.confirmButton.isDisabled = true
-//        rootService.gameService.changeToNextPlayer()
-//        game.let {  } //TODO: Hier richtig?
+
     }
 
     /**
@@ -386,31 +387,23 @@ class SaganiGameSceneController(
      *                      for performance reasons
      * @param parBoard optional parameter used in case the board of a [Player] that is not actPlayer should be drawn
      */
-    private fun resetLoadedBoardViews( parBoard: MutableMap<Pair<Int, Int>, Tile> ) {
+    private fun resetLoadedBoardViews(parBoard: MutableMap<Pair<Int, Int>, Tile>) {
 
         // clear everything
         loadedBoardViews.clear()
         saganiGameScene.tilePane.clear()
 
-        // geht erst alle y von 0 bis 4440 in 120er schritten durch und dann ein x (120er schritte) weiter
+        // geht erst alle y von 0 bis 8880 in 120er schritten durch und dann ein x (120er schritte) weiter
         // Daniel Gast: changed to step and height/width of 60 -> 4440/120 = 37 Tiles
         //              To get 36 Tiles in each direction 4440/(72+1) = 60.82 ~ 61px
-        /*
-        for (x in 0..TILE_PANE_WIDTH.toInt() step 120) {
-            for (y in 0..TILE_PANE_HEIGHT.toInt() step 120) {
-                loadedBoardViews[Location(x, y)] = CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50))
-                saganiGameScene.tilePane.add(CardView(x, y, 120, 120, front = ColorVisual(255, 255, 255, 50)))
 
-            }
-        }
-        */
 
         // for the game start ... duplicate code from below
         if (parBoard.isEmpty()) {
 
             val tileSlotX = CENTER_POS_IN_TILE_PANE_X.toInt()
             val tileSlotY = CENTER_POS_IN_TILE_PANE_Y.toInt()
-            val relevantLocations = listOf(Pair(0, 0), Pair(0, -120), Pair(120, 0), Pair(0, 120), Pair(-120, 0))
+            val relevantLocations = listOf(Pair(0, 0))
 
             for (delta in relevantLocations) {
 
@@ -418,8 +411,10 @@ class SaganiGameSceneController(
 
                     val iterX = tileSlotX + delta.first
                     val iterY = tileSlotY + delta.second
-                    val emptyCardView = CardView(iterX, iterY, 120, 120,
-                        front = ColorVisual(225, 225, 225, 50))
+                    val emptyCardView = CardView(
+                        iterX, iterY, 120, 120,
+                        front = ColorVisual(225, 225, 225, 50)
+                    )
 
                     loadedBoardViews[Location(iterX, iterY)] = emptyCardView
                     saganiGameScene.tilePane.add(emptyCardView)
@@ -427,8 +422,7 @@ class SaganiGameSceneController(
                 }
 
             }
-        }
-        else {
+        } else {
 
             // for each Tile in board -> get px coordinates for tile and 4 neighbors
             // create cardView at that location of none exists yet
@@ -445,8 +439,10 @@ class SaganiGameSceneController(
 
                         val iterX = tileSlotX + delta.first
                         val iterY = tileSlotY + delta.second
-                        val emptyCardView = CardView(iterX, iterY, 120, 120,
-                            front = ColorVisual(225, 225, 225, 50))
+                        val emptyCardView = CardView(
+                            iterX, iterY, 120, 120,
+                            front = ColorVisual(225, 225, 225, 50)
+                        )
 
                         loadedBoardViews[Location(iterX, iterY)] = emptyCardView
                         saganiGameScene.tilePane.add(emptyCardView)
@@ -457,8 +453,7 @@ class SaganiGameSceneController(
 
             }
 
-                }
-
+        }
 
 
     }
@@ -467,7 +462,7 @@ class SaganiGameSceneController(
      * called from ScoreSceneController
      * Loads the player with the given idx
      */
-    fun showBoardOfPlayer(index : Int) {
+    fun showBoardOfPlayer(index: Int) {
         // load data of player
         val game = checkNotNull(rootService.currentGame) { "game not loaded in showBoardOfPlayer" }
         val showPlayer = game.players[index]
@@ -499,16 +494,11 @@ class SaganiGameSceneController(
 
         // reset board
         resetLoadedBoardViews(board)
-        // saganiGameScene.i.addAll(loadedBoardViews.values)
 
         for (tile in loadedBoardViews) {
-
             tile.value.isVisible = true
             tile.value.isDisabled = true
         }
-
-        // checkNotNull(loadedBoardViews.get(Location(840, 480))).isVisible = true
-
 
         //TODO: SampleTile Weg?
         //saganiGameScene.sampleTile.isVisible = true
@@ -531,15 +521,6 @@ class SaganiGameSceneController(
         println("loaded board")
         print("Active player is: ")
         println(game.actPlayer.name)
-
-        /*
-           if (!tilePlaced) {
-               drawPossiblePlacements()
-               saganiGameScene.sampleTile.apply {
-                   //TODO Load and show front
-               }
-           }
-           loadBoardTiles()*/
     }
 
     /**
@@ -547,13 +528,13 @@ class SaganiGameSceneController(
      */
     private fun loadBoardTiles(board: MutableMap<Pair<Int, Int>, Tile>) {
 
-
         // clear current board
         resetLoadedBoardViews(board)
 
         // check if board is not from actPlayer. In this case a different label needs to
         // be pushed to saganiGameScene.playerName
         val ownerPlayer = (game.players.filter { it.board == board }).first()
+
         // assuming there is only one element in list -> board objects should be unique
         if (ownerPlayer != actPlayer) {
             saganiGameScene.playerName.text = "Board owner: ${ownerPlayer.name}"
@@ -562,8 +543,8 @@ class SaganiGameSceneController(
         }
 
         // count and display cacaphony and sound discs
-        val soundDiscs = ( ownerPlayer.discs.filter { it == Disc.SOUND } ).size
-        val cacaphonyDiscs = ( ownerPlayer.discs.filter { it == Disc.CACOPHONY } ).size
+        val soundDiscs = (ownerPlayer.discs.filter { it == Disc.SOUND }).size
+        val cacaphonyDiscs = (ownerPlayer.discs.filter { it == Disc.CACOPHONY }).size
         saganiGameScene.soundDiscCount.text = "$soundDiscs"
         saganiGameScene.cacophonyDiscCount.text = "$cacaphonyDiscs"
 
@@ -719,8 +700,7 @@ class SaganiGameSceneController(
         tileView.frontVisual = ImageVisual(tileImageLoader.getFrontImage(tile.id))
         tileView.backVisual = ImageVisual(tileImageLoader.getBackImage(tile.id))
 
-
-        when(tile.direction) {
+        when (tile.direction) {
             Direction.RIGHT -> tileView.rotation = 90.0
             Direction.DOWN -> tileView.rotation = 180.0
             Direction.LEFT -> tileView.rotation = 270.0
@@ -738,8 +718,6 @@ class SaganiGameSceneController(
      */
     private fun isOccupied(x: Int, y: Int): Boolean {
 
-        //return board.containsKey(Location(x, y))
-
         // get cardview and check if View has ImageVisual or ColorVisual
         // ColorVisual means that no card is loaded -> not occupied
         val toCheckCardView = loadedBoardViews[Location(x, y)]
@@ -748,7 +726,6 @@ class SaganiGameSceneController(
         } else if (toCheckCardView?.frontVisual is ImageVisual) {
             return true
         }
-
         return true
 
     }
@@ -810,8 +787,6 @@ class SaganiGameSceneController(
                 val currentView = checkNotNull(
                     loadedBoardViews[Location(bottomX, bottomY)]
                 ) { "Something went wrong!" }
-
-
 
                 possibleMovements += currentView
                 currentView.isVisible = true
@@ -880,8 +855,6 @@ class SaganiGameSceneController(
                 val currentView = checkNotNull(
                     loadedBoardViews[Location(leftX, leftY)]
                 ) { "Something went wrong!" }
-
-
 
                 possibleMovements += currentView
                 currentView.isVisible = true
@@ -1017,8 +990,8 @@ class SaganiGameSceneController(
                     offer.isDisabled = false
                 } else {
                     println(game.offerDisplay.size)
-                    frontVisual = ColorVisual.LIGHT_GRAY
-                    backVisual = ColorVisual.LIGHT_GRAY
+                    frontVisual = ColorVisual(255, 255, 255, 50)
+                    backVisual = ColorVisual(255, 255, 255, 50)
                     offer.isDisabled = true
                 }
                 if (flipped) flip()
@@ -1037,16 +1010,18 @@ class SaganiGameSceneController(
                 if (game.intermezzoStorage.size > index) {
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
-                    intermezzoOffer.isDisabled = !intermezzo
-                }
-                else {
-                    frontVisual = ColorVisual.LIGHT_GRAY
-                    backVisual = ColorVisual.LIGHT_GRAY
+                    intermezzoOffer.isDisabled = false
+                } else {
+                    frontVisual = ColorVisual(GameColor.chaletGreen)
+                    backVisual = ColorVisual(GameColor.chaletGreen)
                     intermezzoOffer.isDisabled = true
                 }
                 if (flipped) flip()
             }
         }
+
+
+
 
         saganiGameScene.cardStack.apply {
             if (game.stacks.size > 0) {
