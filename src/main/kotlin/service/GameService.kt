@@ -346,13 +346,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
         // update GUI
         onAllRefreshables { refreshAfterCalculateWinner() }
-        rootService.networkService.disconnect()
         println()
         println("Scores: ")
 
         rootService.currentGame!!.players.forEach {
             println("${it.name}: ${it.points.first} points after ${it.points.second} rounds")
         }
+        rootService.networkService.disconnect()
     }
 
     /**
