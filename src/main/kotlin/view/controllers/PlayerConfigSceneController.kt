@@ -1,6 +1,10 @@
 package view.controllers
 
+import entity.Color
+import entity.PlayerType
 import service.RootService
+import tools.aqua.bgw.components.uicomponents.ComboBox
+import tools.aqua.bgw.components.uicomponents.TextField
 import tools.aqua.bgw.visual.ColorVisual
 import view.GameColor
 import view.Refreshable
@@ -18,10 +22,32 @@ class PlayerConfigSceneController(
      * List contains player inputs. If a player is added/removed in GUI the input is added/removed to the list accordingly.
      * This happens in [repositionButtonsMinus]/[repositionButtonsPlus].
      */
-    private val playerInputs = mutableListOf(
-        Triple(playerConfigScene.player1Input, playerConfigScene.comboBox1, entity.PlayerType.HUMAN),
-        Triple(playerConfigScene.player2Input, playerConfigScene.comboBox2, entity.PlayerType.HUMAN)
+
+    private val playerInputs: MutableList<Pair<TextField, ComboBox<String>>> = mutableListOf(
+        Pair(
+            playerConfigScene.player1Input,
+            playerConfigScene.comboBox1
+        ),
+        Pair(
+            playerConfigScene.player2Input,
+            playerConfigScene.comboBox2
+        )
     )
+
+
+    /*
+private var playerInputs = mutableListOf(
+Triple(
+    playerConfigScene.player1Input,
+    playerConfigScene.comboBox1,
+    playerConfigScene.comboBoxKI1.selectedItem.toString()
+),
+Triple(
+    playerConfigScene.player2Input,
+    playerConfigScene.comboBox2,
+    playerConfigScene.comboBoxKI2.selectedItem.toString()
+)
+)*/
 
     private val comboBoxes = mutableListOf(
         playerConfigScene.comboBox1,
@@ -34,10 +60,12 @@ class PlayerConfigSceneController(
 
     init {
 
+        // init player type Combo boxes
         playerConfigScene.comboBoxKI1.items = playerConfigScene.comboBoxKIArt
         playerConfigScene.comboBoxKI1.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
+
         playerConfigScene.comboBoxKI2.items = playerConfigScene.comboBoxKIArt
         playerConfigScene.comboBoxKI2.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
@@ -51,94 +79,52 @@ class PlayerConfigSceneController(
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
+        // init Color Combo boxes
         playerConfigScene.comboBox1.items = comboBoxColors
         playerConfigScene.comboBox1.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox1.visual = returnColorFromString(newValue)
+            playerConfigScene.comboBox1.visual = returnColorVisualFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
 
         playerConfigScene.comboBox2.items = comboBoxColors
         playerConfigScene.comboBox2.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox2.visual = returnColorFromString(newValue)
+            playerConfigScene.comboBox2.visual = returnColorVisualFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
         playerConfigScene.comboBox3.items = comboBoxColors
         playerConfigScene.comboBox3.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox3.visual = returnColorFromString(newValue)
+            playerConfigScene.comboBox3.visual = returnColorVisualFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
         playerConfigScene.comboBox4.items = comboBoxColors
         playerConfigScene.comboBox4.selectedItemProperty.addListener { _, newValue ->
-            playerConfigScene.comboBox4.visual = returnColorFromString(newValue)
+            playerConfigScene.comboBox4.visual = returnColorVisualFromString(newValue)
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
         // Farben aus der Entity Schicht übernehmen
-        entity.Color.values().forEach {
+        Color.values().forEach {
             comboBoxColors.add(it.toString())
         }
 
+
         playerConfigScene.startButton.apply {
             onMouseClicked = {
-
-                // Convert PlayerInputs to necessary input for startNewGame
-                val playerInfos: MutableList<Triple<String, entity.Color, entity.PlayerType>> = mutableListOf()
-
-
-                for (input in playerInputs) {
-                    playerInfos.add(
-                        Triple(
-                            input.first.text,
-                            enumValueOf(input.second.selectedItem!!),
-                            input.third
-                        )
-                    )
-                }
-
-
-//                val playerNames = mutableListOf<String>()
-//                for (input in playerInputs) {
-//                    playerNames.add(input.first.text.trim())
-//                }
-//
-//                // leere Werte entfernen
-//                playerNames.removeIf() { it.isBlank() }
-//                playerNames.removeIf() { it.isEmpty() }
-
                 //neues Spiel starten
-                rootService.gameService.startNewGame(playerInfos)
+                rootService.gameService.startNewGame(getInfosFromScene())
             }
         }
 
         playerConfigScene.backButton.apply {
             onMouseClicked = {
                 for (input in playerInputs) {
-                    input.first.text = ""
+                    input.first
                 }
             }
         }
-
-        /*
-        playerConfigScene.player1Input.apply {
-            onKeyTyped = {
-                playerConfigScene.startButton.isDisabled = !startIsAvailable()
-            }
-        }
-
-        playerConfigScene.player2Input.apply {
-            onKeyTyped = {
-                playerConfigScene.startButton.isDisabled = !startIsAvailable()
-            }
-        }
-
-        playerConfigScene.player3Input.apply {
-            onKeyTyped = {
-                playerConfigScene.startButton.isDisabled = !startIsAvailable()
-            }
-        }*/
 
         initPlayerLabels()
         initComboBoxes()
@@ -157,33 +143,79 @@ class PlayerConfigSceneController(
 
         playerConfigScene.randomNamesButton.apply {
             onMouseClicked = {
-                val randomNames = mutableListOf(
-                    "Till", "Marc", "Luka", "Sven", "Nick", "Friedemann", "Moritz", "Stefan", "Kai", "Vadym",
-                    "Nils", "Marie", "Niklas", "Polina", "Christian", "Torben", "Daniel", "Noah", "Karina"
-                )
-                randomNames.shuffle()
-
-                val randomAdjectives = mutableListOf(
-                    "Awesome", "Brilliant", "Clumsy", "Aggressive", "Scary",
-                    "Amazing", "Bored", "Weird", "Ambitious"
-                )
-                randomAdjectives.shuffle()
-
-
-                // get a copy of comboBoxColors to not delete any colors in comboBoxColors
-                val colors = comboBoxColors.toMutableList()
-                colors.shuffle()
-
-                for (input in playerInputs) {
-                    // Names
-                    input.first.text = "${randomAdjectives.removeFirst()} ${randomNames.removeFirst()}"
-                    // Colors
-                    input.second.selectedItem = colors.removeFirst()
-                }
-                playerConfigScene.startButton.isDisabled = !startIsAvailable()
+                createRandomNames()
             }
         }
     }
+
+    private fun createRandomNames() {
+        val randomNames = mutableListOf(
+            "Till", "Marc", "Luka", "Sven", "Nick", "Friedemann", "Moritz", "Stefan", "Kai", "Vadym",
+            "Nils", "Marie", "Niklas", "Polina", "Christian", "Torben", "Daniel", "Noah", "Karina"
+        )
+        randomNames.shuffle()
+
+        val randomAdjectives = mutableListOf(
+            "Awesome", "Brilliant", "Clumsy", "Aggressive", "Scary",
+            "Amazing", "Bored", "Weird", "Ambitious"
+        )
+        randomAdjectives.shuffle()
+
+
+        // get a copy of comboBoxColors to not delete any colors in comboBoxColors
+        val colors = comboBoxColors.toMutableList()
+        colors.shuffle()
+
+        for (input in playerInputs) {
+            // Names
+            input.first.text = "${randomAdjectives.removeFirst()} ${randomNames.removeFirst()}"
+            // Colors
+
+            input.second.items = colors
+            colors.removeFirst()
+        }
+        playerConfigScene.startButton.isDisabled = !startIsAvailable()
+    }
+
+    private val playerTypes = mutableListOf(
+        playerConfigScene.comboBoxKI1,
+        playerConfigScene.comboBoxKI2,
+        playerConfigScene.comboBoxKI3,
+        playerConfigScene.comboBoxKI4
+    )
+
+    private fun getInfosFromScene(): MutableList<Triple<String, Color, PlayerType>> {
+
+        println("TESTFUNKTION   " + playerConfigScene.comboBoxKI2.selectedItem.toString())
+        val playerInfos: MutableList<Triple<String, Color, PlayerType>> = mutableListOf()
+
+        println("1: "+ getPlayerTypeFromString(playerTypes[0].selectedItem.toString()))
+        println("2: "+ getPlayerTypeFromString(playerTypes[1].selectedItem.toString()))
+
+        println("Funktion??  " + getPlayerTypeFromString(playerConfigScene.comboBoxKI2.selectedItem.toString()))
+
+        // Convert PlayerInputs to necessary input for startNewGame
+        var playerType = 0
+        for (input in playerInputs) {
+
+            playerInfos.add(
+                Triple(
+                    input.first.text,
+                    getPlayerEntityColorFromString(input.second.selectedItem),
+                    getPlayerTypeFromString(playerTypes[playerType].selectedItem.toString())
+                )
+            )
+            println("counter: " + playerType)
+
+            println("inFor.."+ getPlayerTypeFromString(playerTypes[playerType].selectedItem.toString()))
+            playerType++
+        }
+
+
+        return playerInfos
+
+    }
+
 
     /**
      * Automatisiert:
@@ -207,13 +239,14 @@ class PlayerConfigSceneController(
         for (comboBox in comboBoxes) {
             comboBox.items = comboBoxColors
             comboBox.selectedItemProperty.addListener { _, newValue ->
-                comboBox.visual = returnColorFromString(newValue)
+                comboBox.visual = returnColorVisualFromString(newValue)
                 playerConfigScene.startButton.isDisabled = !startIsAvailable()
             }
         }
     }
 
     private fun repositionButtonsPlus() {
+        println("in reposPLus" + playerConfigScene.comboBoxKI1.selectedItem.toString())
         if (!playerConfigScene.player3Label.isVisible) {
             playerConfigScene.minusButton.isVisible = true
             playerConfigScene.plusButton.reposition(500, 320)
@@ -224,10 +257,9 @@ class PlayerConfigSceneController(
             playerConfigScene.comboBoxKI3.isVisible = true
             playerConfigScene.kI3Label.isVisible = true
             playerInputs.add(
-                Triple(
+                Pair(
                     playerConfigScene.player3Input,
-                    playerConfigScene.comboBox3,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBox3
                 )
             )
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
@@ -242,10 +274,9 @@ class PlayerConfigSceneController(
             playerConfigScene.comboBoxKI4.isVisible = true
             playerConfigScene.kI4Label.isVisible = true
             playerInputs.add(
-                Triple(
+                Pair(
                     playerConfigScene.player4Input,
-                    playerConfigScene.comboBox4,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBox4
                 )
             )
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
@@ -264,10 +295,9 @@ class PlayerConfigSceneController(
             playerConfigScene.comboBoxKI4.isVisible = false
             playerConfigScene.kI4Label.isVisible = false
             playerInputs.remove(
-                Triple(
+                Pair(
                     playerConfigScene.player4Input,
-                    playerConfigScene.comboBox4,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBox4
                 )
             )
             playerConfigScene.minusButton.reposition(550, 320)
@@ -283,10 +313,9 @@ class PlayerConfigSceneController(
             playerConfigScene.comboBoxKI3.isVisible = false
             playerConfigScene.kI3Label.isVisible = false
             playerInputs.remove(
-                Triple(
+                Pair(
                     playerConfigScene.player3Input,
-                    playerConfigScene.comboBox3,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBox3
                 )
             )
             playerConfigScene.minusButton.isVisible = false
@@ -310,21 +339,21 @@ class PlayerConfigSceneController(
         // If player has name color must not be empty
         for (input in playerInputs) {
             if (input.first.text.trim() != "") {
-                if (input.second.selectedItem == null)
+                if (input.second == null)
                     return false
             }
         }
         // Player Colors all different
         val colors = arrayListOf<String>()
         for (comboBox in playerInputs.map { it.second }) {
-            if (comboBox.selectedItem != null) {
-                colors.add(comboBox.selectedItem!!)
+            if (comboBox != null) {
+                colors.add(comboBox.selectedItem.toString())
             }
         }
         return colors.size == colors.distinct().size
     }
 
-    private fun returnColorFromString(color: String?): ColorVisual {
+    private fun returnColorVisualFromString(color: String?): ColorVisual {
         checkNotNull(color) { "No color selected." }
         return when (color) {
             "WHITE" -> ColorVisual(GameColor.white)
@@ -335,6 +364,34 @@ class PlayerConfigSceneController(
                 ColorVisual(GameColor.white)
             }
         }
+    }
+
+    private fun getPlayerTypeFromString(playerType: String?): PlayerType {
+        checkNotNull(playerType) { "No playerType selected" }
+
+        return when (playerType) {
+            "Human" -> PlayerType.HUMAN
+            "Random AI" -> PlayerType.RANDOM_AI
+            "Best AI" -> PlayerType.BEST_AI
+            else -> {
+                PlayerType.HUMAN
+            }
+        }
+
+    }
+
+    private fun getPlayerEntityColorFromString(color: String?): Color {
+        checkNotNull(color) { "No color selected." }
+        return when (color) {
+            "WHITE" -> entity.Color.WHITE
+            "GREY" -> entity.Color.GREY
+            "BROWN" -> entity.Color.BROWN
+            "BLACK" -> entity.Color.BLACK
+            else -> {
+                entity.Color.WHITE
+            }
+        }
+
     }
 }
 

@@ -171,7 +171,7 @@ class PlayerConfigScene :
         posX = 320, posY = 365,
         text = "Who is playing?"
     )
-    val comboBoxKIArt = mutableListOf("Human", "Random KI", "Smart KI")
+    val comboBoxKIArt = mutableListOf("Human", "Random AI", "Best AI")
 
     val comboBoxKI1 =
         ComboBox<String>(posX = 320, posY = 160, width = 150)
