@@ -347,6 +347,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      * Disconnects from the server and throws an [IllegalStateException] with the given [message].
      */
     private fun disconnectAndError(message: Any) {
+        println(message)
         networkService.disconnect()
         error(message)
     }

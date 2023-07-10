@@ -14,7 +14,11 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     private val rootService = RootService()
 
     private val playerConfigScene = PlayerConfigScene()
-    private val networkScene = NetworkScene()
+    private val networkScene = NetworkSceneAlt(rootService).apply {
+        this.backButton.onMouseClicked = {
+            showMenuScene(newGameMenuScene)
+        }
+    }
 
     val newSaveGameButton = StandardButton(posX = 1400, posY = 1020, width = 80,
         height = 50,text = "Save",visual = ColorVisual.TRANSPARENT,).apply {
@@ -54,7 +58,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
 
     private val initiatingGame: NetworkInitiatingGameScene = NetworkInitiatingGameScene().apply {
         backButton.onMouseClicked = {
-            this@SaganiApplication.showMenuScene(networkInitiateOrJoin)
+            this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
     }
 
@@ -81,13 +85,13 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
 
         }
 
-    private val networkConfigSceneController: NetworkSceneController =
+    /*private val networkConfigSceneController: NetworkSceneController =
         NetworkSceneController(networkScene).apply {
 
             networkScene.backButton.onMouseClicked = {
                 this@SaganiApplication.showMenuScene(configurationScene)
             }
-        }
+        }*/
 
     private val kiMenuSceneController: KIMenuSceneController = KIMenuSceneController(kiMenuScene).apply {
 
@@ -120,7 +124,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this@SaganiApplication.showMenuScene(newGameMenuScene)
         }
         networkButton.onMouseClicked = {
-            this@SaganiApplication.showMenuScene(networkInitiateOrJoin)
+            this@SaganiApplication.showMenuScene(networkScene)
         }
         loadGameButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(loadGameScene)
@@ -212,7 +216,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             playerConfigSceneController,
             saganiGameSceneController,
             scoreSceneController,
-            endScene
+            endScene,
+            networkScene
         )
     }
 
