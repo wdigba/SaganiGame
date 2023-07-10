@@ -18,9 +18,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
     /**
      * The time in milliseconds that the AI waits before calculating its move.
-     * Default is the medium speed setting representing 750ms.
+     * Default is the medium speed setting representing 2000ms.
      */
-    var simulationTime = 750
+    var simulationTime = 2000
 
     /**
      * [startNewGame] creates a new game
@@ -316,9 +316,16 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
                 Thread.sleep(simulationTime.toLong())
                 rootService.kIServiceRandom.calculateRandomMove()
+
             } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
                 Thread.sleep(simulationTime.toLong())
                 rootService.kIService.playBestMove()
+            }
+
+            // Add a delay so the player can see the move of the AI
+            // But only if the player is playing a single player game to not break the UI in multiplayer
+            if (rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+                Thread.sleep(simulationTime.toLong() / 2)
             }
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
         }

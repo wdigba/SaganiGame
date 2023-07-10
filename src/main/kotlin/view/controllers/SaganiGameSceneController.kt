@@ -326,10 +326,11 @@ class SaganiGameSceneController(
             selectedItem = "Normal"
             selectedItemProperty.addListener { _, newValue ->
                 rootService.gameService.simulationTime = when (newValue) {
-                    "Fast" -> 200
-                    "Normal" -> 750
-                    "Slow" -> 2000
-                    "Slowest" -> 5000
+                    "Fastest" -> 200
+                    "Fast" -> 750
+                    "Normal" -> 200
+                    "Slow" -> 5000
+                    "Slowest" -> 10000
                     else -> error("Invalid simulation speed")
                 }
             }
