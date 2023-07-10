@@ -186,13 +186,7 @@ Triple(
 
     private fun getInfosFromScene(): MutableList<Triple<String, Color, PlayerType>> {
 
-        println("TESTFUNKTION   " + playerConfigScene.comboBoxKI2.selectedItem.toString())
         val playerInfos: MutableList<Triple<String, Color, PlayerType>> = mutableListOf()
-
-        println("1: "+ getPlayerTypeFromString(playerTypes[0].selectedItem.toString()))
-        println("2: "+ getPlayerTypeFromString(playerTypes[1].selectedItem.toString()))
-
-        println("Funktion??  " + getPlayerTypeFromString(playerConfigScene.comboBoxKI2.selectedItem.toString()))
 
         // Convert PlayerInputs to necessary input for startNewGame
         var playerType = 0
@@ -205,9 +199,7 @@ Triple(
                     getPlayerTypeFromString(playerTypes[playerType].selectedItem.toString())
                 )
             )
-            println("counter: " + playerType)
 
-            println("inFor.."+ getPlayerTypeFromString(playerTypes[playerType].selectedItem.toString()))
             playerType++
         }
 
@@ -246,7 +238,6 @@ Triple(
     }
 
     private fun repositionButtonsPlus() {
-        println("in reposPLus" + playerConfigScene.comboBoxKI1.selectedItem.toString())
         if (!playerConfigScene.player3Label.isVisible) {
             playerConfigScene.minusButton.isVisible = true
             playerConfigScene.plusButton.reposition(500, 320)
