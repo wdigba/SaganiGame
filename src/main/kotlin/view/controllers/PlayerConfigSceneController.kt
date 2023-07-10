@@ -344,7 +344,7 @@ class PlayerConfigSceneController(
 
     private fun getPlayerType(input: String): PlayerType {
         return when (input) {
-            "HUMAN" -> PlayerType.HUMAN
+            "Human" -> PlayerType.HUMAN
             "Smart KI" -> PlayerType.BEST_AI
             else -> PlayerType.RANDOM_AI
         }
