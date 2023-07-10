@@ -5,11 +5,13 @@ import edu.udo.cs.sopra.ntf.ConnectionState
 import entity.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
+import tools.aqua.bgw.core.BoardGameApplication
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Integer.min
 import java.net.URI
+import kotlin.concurrent.thread
 
 /**
  * [GameService] provides server function for the game
@@ -215,6 +217,8 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         } else {
             currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
+        
+
 
         val previousRoundIntermezzo = !currentGame.intermezzo
         val previousRoundLastRound = !currentGame.lastRound
@@ -313,19 +317,36 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             // Add a delay so the player can see the move of the AI
             // But only if the player is playing a single player game to not break the UI in multiplayer
             if (rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
-                Thread.sleep(simulationTime.toLong() / 2)
+                //Thread.sleep(simulationTime.toLong() / 2)
             }
             validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
+
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
 
-            // If the next player is an AI, calculate its move
-            if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
-                Thread.sleep(simulationTime.toLong())
-                rootService.kIServiceRandom.calculateRandomMove()
-            } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
-                Thread.sleep(simulationTime.toLong())
-                rootService.kIService.playBestMove()
+            if (nextPlayer.playerType == PlayerType.RANDOM_AI || nextPlayer.playerType == PlayerType.BEST_AI) {
+                Thread {
+                    // Simulate the AI's "thinking" time
+                    Thread.sleep(simulationTime.toLong()/2)
+                    BoardGameApplication.runOnGUIThread {
+                        if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
+                            rootService.kIServiceRandom.calculateRandomMove()
+                        } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
+                            rootService.kIService.playBestMove()
+                        }
+                    }
+
+
+                    // No need to refresh or switch to UI thread here since it will be handled
+                    // in `playBestMove()` or `calculateRandomMove()`
+
+                }.start()
             }
+
+
+
+
+
+
         }
     }
 

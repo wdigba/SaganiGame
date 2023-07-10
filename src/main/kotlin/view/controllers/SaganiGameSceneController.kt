@@ -766,6 +766,7 @@ class SaganiGameSceneController(
 
         }
 
+
         //TODO: Fehler Abfangen wenn ein Tile am Rand gesetzt wird. da sonst koordinate negativ
 
         board.forEach {
@@ -971,6 +972,25 @@ class SaganiGameSceneController(
     override fun refreshAfterLoadGame() {
         refreshAfterRedo()
     }
+
+
+    override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
+        game = checkNotNull(rootService.currentGame)
+        // active Player gets returned by refreshAfterChangeToNextPlayer
+        actPlayer = player
+        board = actPlayer.board
+        this.validLocations = validLocations
+        this.intermezzo = intermezzo
+        reloadCardViews(game)
+        loadBoardTiles(board)
+
+        println(actPlayer.playerType)
+        // if (actPlayer.playerType in listOf(PlayerType.BEST_AI, PlayerType.RANDOM_AI)) {
+        //    rootService.gameService.changeToNextPlayer()
+        //}
+    }
+
+
 
     private fun reloadCardViews(game: Sagani, flipped: Boolean = false) {
         // Search for the tile and reload offer stack, offers or intermezzo

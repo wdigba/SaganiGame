@@ -3,6 +3,8 @@ package service
 import Location
 import edu.udo.cs.sopra.ntf.MoveType
 import entity.*
+import tools.aqua.bgw.core.BoardGameApplication
+import kotlin.concurrent.thread
 
 /**
  * [PlayerActionService] provides player functions for the game.
@@ -103,11 +105,24 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
 
+
+
         // refresh GUI
         onAllRefreshables { refreshAfterPlaceTile(player, tile, location) }
 
-        // change to next player
-        rootService.gameService.changeToNextPlayer()
+        Thread {
+            if (player.playerType == PlayerType.BEST_AI || player.playerType == PlayerType.RANDOM_AI) {
+                Thread.sleep(rootService.gameService.simulationTime.toLong()/2)
+            }
+
+            BoardGameApplication.runOnGUIThread(
+                {
+                    rootService.gameService.changeToNextPlayer()
+                }
+            )
+            // change to next player
+
+        }.start()
     }
 
     /**
