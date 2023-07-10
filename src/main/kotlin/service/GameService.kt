@@ -310,24 +310,22 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         ) {
             calculateWinner()
         } else {
-            validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
-
-            // If the next player is an AI, calculate its move
-            if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
-                Thread.sleep(simulationTime.toLong())
-                rootService.kIServiceRandom.calculateRandomMove()
-
-            } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
-                Thread.sleep(simulationTime.toLong())
-                rootService.kIService.playBestMove()
-            }
-
             // Add a delay so the player can see the move of the AI
             // But only if the player is playing a single player game to not break the UI in multiplayer
             if (rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
                 Thread.sleep(simulationTime.toLong() / 2)
             }
+            validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
+
+            // If the next player is an AI, calculate its move
+            if (nextPlayer.playerType == PlayerType.RANDOM_AI) {
+                Thread.sleep(simulationTime.toLong())
+                rootService.kIServiceRandom.calculateRandomMove()
+            } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
+                Thread.sleep(simulationTime.toLong())
+                rootService.kIService.playBestMove()
+            }
         }
     }
 
