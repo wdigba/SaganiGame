@@ -364,7 +364,7 @@ class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080
         height = 50,
         posX = 1270,
         posY = 1020,
-        items = listOf("Faster", "Fast", "Normal", "Slow", "Slowest")
+        items = listOf("Fastest", "Fast", "Normal", "Slow", "Slowest")
     )
 
     val saveGameButton = StandardButton(
