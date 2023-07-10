@@ -189,8 +189,7 @@ Triple(
         val playerInfos: MutableList<Triple<String, Color, PlayerType>> = mutableListOf()
 
         // Convert PlayerInputs to necessary input for startNewGame
-        var playerType = 0
-        for (input in playerInputs) {
+        for ((playerType, input) in playerInputs.withIndex()) {
 
             playerInfos.add(
                 Triple(
@@ -200,12 +199,8 @@ Triple(
                 )
             )
 
-            playerType++
         }
-
-
         return playerInfos
-
     }
 
 
@@ -330,14 +325,14 @@ Triple(
         // If player has name color must not be empty
         for (input in playerInputs) {
             if (input.first.text.trim() != "") {
-                if (input.second == null)
+                if (input.second.selectedItem == null)
                     return false
             }
         }
         // Player Colors all different
         val colors = arrayListOf<String>()
         for (comboBox in playerInputs.map { it.second }) {
-            if (comboBox != null) {
+            if (comboBox.selectedItem != null) {
                 colors.add(comboBox.selectedItem.toString())
             }
         }
