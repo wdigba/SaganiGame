@@ -35,7 +35,7 @@ class SaganiGameSceneController(
     private var loadedBoardViews = mutableMapOf<Location, CardView>()
 
     private var selectedTile: Tile
-    private var selectedTilePlacement = saganiGameScene.sampleTile
+
     private var currentZoom = LEVEL1
 
     private var chosenOfferDisplay = -1
