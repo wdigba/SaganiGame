@@ -766,6 +766,7 @@ class SaganiGameSceneController(
 
         }
 
+
         //TODO: Fehler Abfangen wenn ein Tile am Rand gesetzt wird. da sonst koordinate negativ
 
         board.forEach {
@@ -972,6 +973,25 @@ class SaganiGameSceneController(
         refreshAfterRedo()
     }
 
+
+    override fun refreshAfterPlaceTile(player: Player, tile: Tile, location: Location) {
+        game = checkNotNull(rootService.currentGame)
+        // active Player gets returned by refreshAfterChangeToNextPlayer
+        actPlayer = player
+        board = actPlayer.board
+        this.validLocations = validLocations
+        this.intermezzo = intermezzo
+        reloadCardViews(game)
+        loadBoardTiles(board)
+
+        println(actPlayer.playerType)
+        // if (actPlayer.playerType in listOf(PlayerType.BEST_AI, PlayerType.RANDOM_AI)) {
+        //    rootService.gameService.changeToNextPlayer()
+        //}
+    }
+
+
+
     private fun reloadCardViews(game: Sagani, flipped: Boolean = false) {
         // Search for the tile and reload offer stack, offers or intermezzo
         val offers = listOf(
@@ -1010,7 +1030,7 @@ class SaganiGameSceneController(
                 if (game.intermezzoStorage.size > index) {
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
-                    intermezzoOffer.isDisabled = false
+                    intermezzoOffer.isDisabled = !intermezzo
                 } else {
                     frontVisual = ColorVisual(GameColor.chaletGreen)
                     backVisual = ColorVisual(GameColor.chaletGreen)
