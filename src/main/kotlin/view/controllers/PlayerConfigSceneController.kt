@@ -171,7 +171,7 @@ Triple(
             input.first.text = "${randomAdjectives.removeFirst()} ${randomNames.removeFirst()}"
             // Colors
 
-            input.second.items = colors
+            input.second.selectedItem = colors.first()
             colors.removeFirst()
         }
         playerConfigScene.startButton.isDisabled = !startIsAvailable()
