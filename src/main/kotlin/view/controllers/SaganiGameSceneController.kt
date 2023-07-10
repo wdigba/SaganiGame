@@ -70,11 +70,11 @@ class SaganiGameSceneController(
 
 
         //TODO Funktion
-        saganiGameScene.testButton.apply {
-            onMouseClicked = {
-                updateActivePlayerLabel()
-            }
-        }
+//        saganiGameScene.testButton.apply {
+//            onMouseClicked = {
+//                updateActivePlayerLabel()
+//            }
+//        }
 
         saganiGameScene.returnFromOtherPlayerButton.apply {
             onMouseClicked = {

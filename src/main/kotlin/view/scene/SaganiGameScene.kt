@@ -271,13 +271,13 @@ class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080
         text = "ROTATE"
     )
 
-    val testButton = StandardButton(
-        width = 100,
-        height = 50,
-        posX = 460,
-        posY = 1020,
-        text = "TEST"
-    )
+//    val testButton = StandardButton(
+//        width = 100,
+//        height = 50,
+//        posX = 460,
+//        posY = 1020,
+//        text = "TEST"
+//    )
 
     val confirmButton = StandardButton(
         width = 100,
@@ -407,7 +407,7 @@ class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080
             scoreButton,
             confirmButton,
             rotateButton,
-            testButton,
+//            testButton,
             zoomInButton,
             zoomOutButton,
             moveLeftButton,
