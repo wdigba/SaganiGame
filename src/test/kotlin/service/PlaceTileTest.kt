@@ -101,7 +101,7 @@ class PlaceTileTest {
         // tile has given direction
         assertEquals(direction, tile.direction)
         // tile is placed in given location
-        assertEquals(nextGameState.players[0].board[location], tile)
+        assertEquals(nextGameState.players[0].board[location]!!.id, tile.id)
         // disc placed
         assertEquals(1, tile.discs.size)
         assertEquals(1, tile.arrows[0].disc.size)
