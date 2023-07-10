@@ -1,5 +1,6 @@
 package view.controllers
 
+import entity.PlayerType
 import service.RootService
 import tools.aqua.bgw.visual.ColorVisual
 import view.GameColor
@@ -19,8 +20,8 @@ class PlayerConfigSceneController(
      * This happens in [repositionButtonsMinus]/[repositionButtonsPlus].
      */
     private val playerInputs = mutableListOf(
-        Triple(playerConfigScene.player1Input, playerConfigScene.comboBox1, entity.PlayerType.HUMAN),
-        Triple(playerConfigScene.player2Input, playerConfigScene.comboBox2, entity.PlayerType.HUMAN)
+        Triple(playerConfigScene.player1Input, playerConfigScene.comboBox1, playerConfigScene.comboBoxKI1),
+        Triple(playerConfigScene.player2Input, playerConfigScene.comboBox2, playerConfigScene.comboBoxKI2)
     )
 
     private val comboBoxes = mutableListOf(
@@ -35,18 +36,22 @@ class PlayerConfigSceneController(
     init {
 
         playerConfigScene.comboBoxKI1.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI1.selectedItem = "Human"
         playerConfigScene.comboBoxKI1.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI2.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI2.selectedItem = "Human"
         playerConfigScene.comboBoxKI2.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI3.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI3.selectedItem = "Human"
         playerConfigScene.comboBoxKI3.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI4.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI4.selectedItem = "Human"
         playerConfigScene.comboBoxKI4.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
@@ -93,7 +98,7 @@ class PlayerConfigSceneController(
                         Triple(
                             input.first.text,
                             enumValueOf(input.second.selectedItem!!),
-                            input.third
+                            getPlayerType(input.third.selectedItem!!)
                         )
                     )
                 }
@@ -227,7 +232,7 @@ class PlayerConfigSceneController(
                 Triple(
                     playerConfigScene.player3Input,
                     playerConfigScene.comboBox3,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBoxKI3
                 )
             )
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
@@ -245,7 +250,7 @@ class PlayerConfigSceneController(
                 Triple(
                     playerConfigScene.player4Input,
                     playerConfigScene.comboBox4,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBoxKI4
                 )
             )
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
@@ -267,7 +272,7 @@ class PlayerConfigSceneController(
                 Triple(
                     playerConfigScene.player4Input,
                     playerConfigScene.comboBox4,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBoxKI4
                 )
             )
             playerConfigScene.minusButton.reposition(550, 320)
@@ -286,7 +291,7 @@ class PlayerConfigSceneController(
                 Triple(
                     playerConfigScene.player3Input,
                     playerConfigScene.comboBox3,
-                    entity.PlayerType.HUMAN
+                    playerConfigScene.comboBoxKI3
                 )
             )
             playerConfigScene.minusButton.isVisible = false
@@ -334,6 +339,14 @@ class PlayerConfigSceneController(
             else -> {
                 ColorVisual(GameColor.white)
             }
+        }
+    }
+
+    private fun getPlayerType(input: String): PlayerType {
+        return when (input) {
+            "HUMAN" -> PlayerType.HUMAN
+            "Smart KI" -> PlayerType.BEST_AI
+            else -> PlayerType.RANDOM_AI
         }
     }
 }
