@@ -21,7 +21,6 @@ import kotlin.random.Random
 class SaganiGameSceneController(
     private val saganiGameScene: SaganiGameScene, private val rootService: RootService
 ) : Refreshable {
-
     private var board: MutableMap<Location, Tile>
 
     // The active Player gets returned by refreshAfterChangeToNextPlayer
@@ -94,6 +93,12 @@ class SaganiGameSceneController(
             }
         }
 
+        saganiGameScene.skipButton.apply {
+            onMouseClicked = {
+                rootService.playerActionService.skipIntermezzoTurn()
+            }
+        }
+
         saganiGameScene.zoomInButton.apply {
             onMouseClicked = {
                 println(ZoomLevels.values()[min(ZoomLevels.values().size - 1, currentZoom.ordinal + 1)])
@@ -157,9 +162,7 @@ class SaganiGameSceneController(
         }
 
         saganiGameScene.cardStack.apply {
-            if (game.offerDisplay.size >= 1) {
-                saganiGameScene.cardStack.isDisabled = true
-            }
+
             onMouseClicked = {
                 saganiGameScene.offer1.isDisabled = true
                 saganiGameScene.offer2.isDisabled = true
@@ -172,6 +175,13 @@ class SaganiGameSceneController(
 
                 flipTileToFrontSide(saganiGameScene.cardStack)
                 selectedTile = game.stacks[0]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
                 drawPossiblePlacements()
 
             }
@@ -253,6 +263,58 @@ class SaganiGameSceneController(
             }
         }
 
+        saganiGameScene.intermezzoOffer1.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[0]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
+        saganiGameScene.intermezzoOffer2.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[1]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
+        saganiGameScene.intermezzoOffer3.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[2]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
+        saganiGameScene.intermezzoOffer4.apply {
+            onMouseClicked = {
+                selectedTile = game.intermezzoStorage[3]
+                // override chosenTileView to clear all possiblePlacements if this is not the first offering
+                // chosen this turn
+                chosenTileView = CardView(
+                    0, 0, 120, 120,
+                    front = ColorVisual(225, 225, 225, 90)
+                )
+                clearPossibleMoves()
+                drawPossiblePlacements()
+            }
+        }
 
         saganiGameScene.sampleTile.apply {
             onMouseClicked = {
@@ -264,10 +326,11 @@ class SaganiGameSceneController(
             selectedItem = "Normal"
             selectedItemProperty.addListener { _, newValue ->
                 rootService.gameService.simulationTime = when (newValue) {
-                    "Fast" -> 200
-                    "Normal" -> 750
-                    "Slow" -> 2000
-                    "Slowest" -> 5000
+                    "Fastest" -> 200
+                    "Fast" -> 750
+                    "Normal" -> 200
+                    "Slow" -> 5000
+                    "Slowest" -> 10000
                     else -> error("Invalid simulation speed")
                 }
             }
@@ -307,7 +370,7 @@ class SaganiGameSceneController(
         }
         // ToDo tile not always in offerDisplay
         rootService.playerActionService.placeTile(
-            game.offerDisplay[chosenOfferDisplay],
+            selectedTile,
             chosenDirection,
             selectedPlacement
         )
@@ -501,6 +564,11 @@ class SaganiGameSceneController(
                 tileView.isVisible = true
                 tileView.isDisabled = false
 
+                // flip Tile if it is solved
+                if (it.value.flipped) {
+                    tileView.rotation = 0.0
+                    tileView.flip()
+                }
                 //saganiGameScene.tilePane.add(tileView)
 
             }
@@ -872,6 +940,12 @@ class SaganiGameSceneController(
         this.intermezzo = intermezzo
         reloadCardViews(game)
         loadBoardTiles(board)
+
+        println("test")
+
+        //if (actPlayer.playerType in listOf(PlayerType.BEST_AI, PlayerType.RANDOM_AI)) {
+        //    rootService.gameService.changeToNextPlayer()
+        //}
     }
 
     override fun refreshAfterChangeToNextPlayer(
@@ -887,6 +961,11 @@ class SaganiGameSceneController(
         this.intermezzo = intermezzo
         reloadCardViews(game)
         loadBoardTiles(board)
+
+        println(actPlayer.playerType)
+        // if (actPlayer.playerType in listOf(PlayerType.BEST_AI, PlayerType.RANDOM_AI)) {
+        //    rootService.gameService.changeToNextPlayer()
+        //}
     }
 
     override fun refreshAfterLoadGame() {
@@ -926,8 +1005,8 @@ class SaganiGameSceneController(
             saganiGameScene.intermezzoOffer4
         )
 
-        intermezzoOffers.forEachIndexed { index, intermezzo ->
-            intermezzo.apply {
+        intermezzoOffers.forEachIndexed { index, intermezzoOffer ->
+            intermezzoOffer.apply {
                 if (game.intermezzoStorage.size > index) {
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
@@ -937,7 +1016,7 @@ class SaganiGameSceneController(
                     backVisual = ColorVisual(GameColor.chaletGreen)
                     intermezzo.isDisabled = true
                 }
-
+                if (flipped) flip()
             }
         }
 
@@ -949,6 +1028,8 @@ class SaganiGameSceneController(
                 frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[0].id))
                 backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[0].id))
             }
+            isDisabled = (game.offerDisplay.size > 1 || intermezzo)
+            showBack()
         }
 
         saganiGameScene.smallCardStack1.apply {
@@ -966,6 +1047,11 @@ class SaganiGameSceneController(
                 frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.stacks[game.stacks.size - 24].id))
                 backVisual = ImageVisual(tileImageLoader.getBackImage(game.stacks[game.stacks.size - 24].id))
             }
+        }
+
+        saganiGameScene.skipButton.apply {
+            isVisible = intermezzo
+            isDisabled = !intermezzo
         }
     }
 

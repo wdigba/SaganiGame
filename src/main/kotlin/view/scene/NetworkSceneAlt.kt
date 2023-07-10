@@ -294,6 +294,10 @@ class NetworkSceneAlt(private val rootService: RootService) :
                 headlineWaitingForGuestsLabel.text = "$sessionID: Waiting for host"
             }
 
+            ConnectionState.DISCONNECTED -> {
+                resetScene()
+            }
+
             else -> {}
         }
     }

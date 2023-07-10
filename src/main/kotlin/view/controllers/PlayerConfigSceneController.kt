@@ -62,19 +62,23 @@ Triple(
 
         // init player type Combo boxes
         playerConfigScene.comboBoxKI1.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI1.selectedItem = "Human"
         playerConfigScene.comboBoxKI1.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
 
         playerConfigScene.comboBoxKI2.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI2.selectedItem = "Human"
         playerConfigScene.comboBoxKI2.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI3.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI3.selectedItem = "Human"
         playerConfigScene.comboBoxKI3.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }
         playerConfigScene.comboBoxKI4.items = playerConfigScene.comboBoxKIArt
+        playerConfigScene.comboBoxKI4.selectedItem = "Human"
         playerConfigScene.comboBoxKI4.selectedItemProperty.addListener { _, _ ->
             playerConfigScene.startButton.isDisabled = !startIsAvailable()
         }

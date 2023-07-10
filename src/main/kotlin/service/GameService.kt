@@ -18,9 +18,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
     /**
      * The time in milliseconds that the AI waits before calculating its move.
-     * Default is the medium speed setting representing 750ms.
+     * Default is the medium speed setting representing 2000ms.
      */
-    var simulationTime = 750
+    var simulationTime = 2000
 
     /**
      * [startNewGame] creates a new game
@@ -216,6 +216,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             currentGame.players.find { it.color == currentGame.actPlayer.color }!!
         }
 
+        val previousRoundIntermezzo = !currentGame.intermezzo
+        val previousRoundLastRound = !currentGame.lastRound
+
         // check if intermezzo has to start/end
         if (currentGame.intermezzo) {
             // remove first player who had their intermezzo turn already
@@ -269,11 +272,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 check(it.availableDiscs == player.discs.size) {
                     "Checksum: Available discs did not match. ${it.availableDiscs} != ${player.discs.size}"
                 }
-                val startedIntermezzo = (!(currentGame.lastTurn?.intermezzo ?: false) && currentGame.intermezzo)
+                val startedIntermezzo = previousRoundIntermezzo && currentGame.intermezzo
                 check(it.startedIntermezzo == startedIntermezzo) {
                     "Checksum: Intermezzo did not match. ${it.startedIntermezzo} != $startedIntermezzo"
                 }
-                val initiatedLastRound = (!(currentGame.lastTurn?.lastRound ?: false) && currentGame.lastRound)
+                val initiatedLastRound = previousRoundLastRound && currentGame.lastRound
                 check(it.initiatedLastRound == initiatedLastRound) {
                     "Checksum: Last round did not match. ${it.initiatedLastRound} != $initiatedLastRound"
                 }
@@ -307,6 +310,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         ) {
             calculateWinner()
         } else {
+            // Add a delay so the player can see the move of the AI
+            // But only if the player is playing a single player game to not break the UI in multiplayer
+            if (rootService.networkService.connectionState == ConnectionState.DISCONNECTED) {
+                Thread.sleep(simulationTime.toLong() / 2)
+            }
             validLocations = rootService.playerActionService.validLocations(nextPlayer.board)
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
 
@@ -458,8 +466,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             "Cannot load game while connected to server"
         }
 
+        val jsonBuilder = Json { allowStructuredMapKeys = true }
+        //
         val loadGame = FileInputStream(File(path)).use {
-            Json.decodeFromStream<String>(it)
+            jsonBuilder.decodeFromStream<String>(it)
         }
 
         // Sagani strings are separated with ";" during saving
@@ -468,7 +478,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         var newGame: Sagani
         for (gameString in loadGame.split(";")) {
 
-            newGame = Json.decodeFromString(gameString)
+            newGame = jsonBuilder.decodeFromString(gameString)
 
             if (iterGame != null) {
 

@@ -4,6 +4,9 @@ import Location
 import entity.Player
 import service.RootService
 import tools.aqua.bgw.core.BoardGameApplication
+import tools.aqua.bgw.dialog.FileDialog
+import tools.aqua.bgw.dialog.FileDialogMode
+import tools.aqua.bgw.visual.ColorVisual
 import view.controllers.*
 import view.scene.*
 
@@ -12,7 +15,28 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
 
     private val playerConfigScene = PlayerConfigScene()
     private val networkScene = NetworkScene()
-    private val saganiGameScene = SaganiGameScene()
+
+    val newSaveGameButton = StandardButton(posX = 1400, posY = 1020, width = 80,
+        height = 50,text = "Save",visual = ColorVisual.TRANSPARENT,).apply {
+        visual = ColorVisual.WHITE
+        onMouseClicked = {
+
+            try {
+                val filePath = showFileDialog(
+                    FileDialog(
+                        mode = FileDialogMode.SAVE_FILE,
+                        title = "Save Sagani game",
+                    )
+                ).get()[0].path
+
+                rootService.gameService.saveGame(filePath)
+                this@SaganiApplication.hideMenuScene()
+            } catch (e : NoSuchElementException) {}
+
+        }
+    }
+
+    private val saganiGameScene = SaganiGameScene(newSaveGameButton)
     private val kiMenuScene = KIMenuScene()
     private val networkWaitingForPlayers = NetworkWaitingForPlayersScene(rootService)
     private val scoreScene = ScoreScene()
@@ -21,8 +45,12 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         quitButton.onMouseClicked = {
             exit()
         }
+        newGameButton.onMouseClicked = {
+            this@SaganiApplication.showMenuScene(newGameMenuScene)
+        }
     }
 
+    //private val endSceneController : EndSceneController = EndSceneController(endScene, rootService)
 
     private val initiatingGame: NetworkInitiatingGameScene = NetworkInitiatingGameScene().apply {
         backButton.onMouseClicked = {
@@ -65,8 +93,26 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
 
     }
 
+    private val newLoadGameButton = StandardButton(posX = 100, posY = 400, text = "Load",
+        visual = ColorVisual.TRANSPARENT).apply {
+        visual = ColorVisual.WHITE
+        onMouseClicked = {
+            try {
+                val filePath = showFileDialog(
+                    FileDialog(
+                        mode = FileDialogMode.OPEN_FILE,
+                        title = "Load Sagani savegame",
+                    )
+                ).get()[0].path
 
-    private val configurationScene: ConfigurationScene = ConfigurationScene().apply {
+                rootService.gameService.loadGame(filePath)
+                this@SaganiApplication.hideMenuScene()
+            } catch (e : NoSuchElementException) {}
+
+        }
+    }
+
+    private val configurationScene: ConfigurationScene = ConfigurationScene(newLoadGameButton).apply {
         playersButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(playerConfigScene)
         }
@@ -90,17 +136,20 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
     }
 
 
-    private val loadGameScene = LoadGameScene().apply {
+
+
+    private val loadGameScene = LoadGameScene(newLoadGameButton).apply {
         backButton.onMouseClicked = {
             this@SaganiApplication.showMenuScene(configurationScene)
         }
         loadGameButton.onMouseClicked = {
             val game = checkNotNull(rootService.gameService)
-            val path = checkValidPath(pathInput.text)
-            game.loadGame(path)
+            //val path = checkValidPath(pathInput.text)
+            //game.loadGame(path)
             this@SaganiApplication.hideMenuScene()
         }
     }
+
 
     private val saveGameScene = SaveGameScene().apply {
         backButton.onMouseClicked = {
@@ -113,6 +162,8 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             this@SaganiApplication.hideMenuScene()
         }
     }
+
+
 
     private val saganiGameSceneController: SaganiGameSceneController =
         SaganiGameSceneController(saganiGameScene, rootService).apply {
@@ -151,6 +202,7 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
         }
     }
 
+
     init {
         this.showMenuScene(newGameMenuScene)
         this.showGameScene(saganiGameScene)
@@ -159,11 +211,17 @@ class SaganiApplication : BoardGameApplication("SoPra Game"), Refreshable {
             //networkConfigSceneController,
             playerConfigSceneController,
             saganiGameSceneController,
-            scoreSceneController
+            scoreSceneController,
+            endScene
         )
     }
 
+
     override fun refreshAfterStartNewGame(player: Player, validLocations: Set<Location>, intermezzo: Boolean) {
         this@SaganiApplication.hideMenuScene()
+    }
+
+    override fun refreshAfterCalculateWinner() {
+        this@SaganiApplication.showMenuScene(endScene)
     }
 }

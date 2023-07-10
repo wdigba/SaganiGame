@@ -16,7 +16,7 @@ import view.*
 /**
  * Custom [BoardGameScene] for the Sagani game.
  */
-class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
+class SaganiGameScene(newSaveButton: StandardButton) : BoardGameScene(1920, 1080), Refreshable {
     /**
      * Upper Pane
      */
@@ -287,6 +287,14 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         text = "CONF"
     )
 
+    val skipButton = StandardButton(
+        width = 100,
+        height = 50,
+        posX = 1670,
+        posY = 1020,
+        text = "SKIP"
+    )
+
     val zoomInButton = StandardButton(
         width = 50,
         height = 50,
@@ -355,7 +363,7 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         height = 50,
         posX = 1270,
         posY = 1020,
-        items = listOf("Fast", "Normal", "Slow", "Slowest")
+        items = listOf("Fastest", "Fast", "Normal", "Slow", "Slowest")
     )
 
     val saveGameButton = StandardButton(
@@ -363,7 +371,8 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
         height = 50,
         posX = 1400,
         posY = 1020,
-        text = "Save"
+        text = "Save",
+        visual = ColorVisual.TRANSPARENT
     )
 
     val playerName = Label(
@@ -410,8 +419,9 @@ class SaganiGameScene : BoardGameScene(1920, 1080), Refreshable {
             intermezzoOffer4,
             smallCardStack1, smallCardStack2, cacophonyDiscs, soundDiscs,soundDiscCount, cacophonyDiscCount,
             cardStack, offer1, offer2, offer3, offer4, offer5,
-            simulationSpeedLabel, simulationSpeedDropDown, saveGameButton,
-            playerName, returnFromOtherPlayerButton
+            simulationSpeedLabel, simulationSpeedDropDown, newSaveButton,//saveGameButton,
+            playerName, returnFromOtherPlayerButton,
+            skipButton
         )
     }
 
