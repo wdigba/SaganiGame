@@ -322,7 +322,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
                 rootService.kIServiceRandom.calculateRandomMove()
             } else if (nextPlayer.playerType == PlayerType.BEST_AI) {
                 Thread.sleep(simulationTime.toLong())
+                println("Start time: ${System.currentTimeMillis()}")
                 rootService.kIService.playBestMove()
+                println("End time: ${System.currentTimeMillis()}")
             }
             onAllRefreshables { refreshAfterChangeToNextPlayer(nextPlayer, validLocations, currentGame.intermezzo) }
         }

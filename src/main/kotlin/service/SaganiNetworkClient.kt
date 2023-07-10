@@ -88,6 +88,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
             when (response.status) {
                 CreateGameResponseStatus.SUCCESS -> {
+                    println("Successfully hosted game ${response.sessionID}.")
                     sessionID = response.sessionID
                     networkService.connectionState = ConnectionState.WAITING_FOR_GUESTS
                 }
@@ -113,6 +114,7 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
 
             when (response.status) {
                 JoinGameResponseStatus.SUCCESS -> {
+                    println("Successfully joined game.")
                     otherPlayers = response.opponents
                     sessionID = response.sessionID
                     networkService.connectionState = ConnectionState.WAITING_FOR_INIT
@@ -365,8 +367,8 @@ class SaganiNetworkClient(playerName: String, host: String, private val networkS
      * Disconnects from the server and throws an [IllegalStateException] with the given [message].
      */
     private fun disconnectAndError(message: Any) {
-        networkService.disconnect()
         error(message)
+        networkService.disconnect()
     }
 
     /**
