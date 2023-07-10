@@ -1010,11 +1010,11 @@ class SaganiGameSceneController(
                 if (game.intermezzoStorage.size > index) {
                     frontVisual = ImageVisual(tileImageLoader.getFrontImage(game.intermezzoStorage[index].id))
                     backVisual = ImageVisual(tileImageLoader.getBackImage(game.intermezzoStorage[index].id))
-                    intermezzo.isDisabled = false
+                    intermezzoOffer.isDisabled = false
                 } else {
                     frontVisual = ColorVisual(GameColor.chaletGreen)
                     backVisual = ColorVisual(GameColor.chaletGreen)
-                    intermezzo.isDisabled = true
+                    intermezzoOffer.isDisabled = true
                 }
                 if (flipped) flip()
             }
