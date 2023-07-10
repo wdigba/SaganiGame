@@ -76,12 +76,12 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      */
     fun createStacks(): MutableList<Tile> {
         // read each line of .csv-file
-//        val lines = File(GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path).readLines()
-        val url = GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path
+        //val lines = File(GameService::class.java.getResource("tiles_colornames_v2.csv")!!.path).readLines()
+        //val url = GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.path
         // Convert url to uri to which will remove the %20 (space) characters:
-        val uri = URI(url.toString())
-        val lines = File(uri.path).readLines()
-
+        //val uri = URI(url.toString())
+        //val lines = File(uri.path).readLines()
+        val lines = GameService::class.java.getResource("/tiles_colornames_v2.csv")!!.readText().split("\n")
 
         val tiles: MutableList<List<String>> = mutableListOf()
         // split each line
